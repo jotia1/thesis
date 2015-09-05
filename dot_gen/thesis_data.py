@@ -24,12 +24,10 @@ class Controller(object):
 		self.root = root  #tkroot
 		self.dot_size = 6
 		self.dot_rad = self.dot_size/2
-		#self.setBounds(800, 800)
 		self.vx = 5
 		self.vy = 5
 		self.cur_line = None
 		self.callback = None
-		#self.offset = 0
 
 		self.canvas = tk.Canvas(root,bg='white', relief='sunken', bd=2)
 		self.canvas.pack(fill=tk.BOTH, expand=True)
@@ -89,7 +87,7 @@ class Controller(object):
 	def clear(self):
 		""" Clear cur_line (created in flashMeta) from the screen
 		"""
-		self.canvas.delete(self.cur_line)
+		#self.canvas.delete(self.cur_line)
 		self.cur_line = None
 
 	def pos2box(self, pos):
@@ -117,27 +115,33 @@ class Controller(object):
 		self.vx = -self.vx
 		self.vy = -self.vy
 		self.flashMeta()
-		r1 = bool(random.getrandbits(1))
-		r2 = bool(random.getrandbits(1))
 
-		# Choose a random point on a random edge to start dot at
-		if (r1): # start on a horizontal edge (i.e. top or bot)
-			x = random.randint(-self.dot_rad, self.boundx)
-			y = -self.dot_rad if r2 else self.boundy
-			print("First x: {}, y: {}".format( x, y))
-		else:
-			x = -self.dot_rad if r2 else self.boundx
-			y = random.randint(-self.dot_rad, self.boundy)
-			print("Second x: {}, y: {}".format( x, y))
-
-		# Now set the new gradient and velocity
+		
+		# set the new gradient and velocity
 		self.vx = random.random() * 4 + 4  # range is [4,8]
 		self.vy = random.random() * 4 + 4
 
-		self.vx = self.vx if r2 else -self.vx
-		self.vy = self.vy if r2 else -self.vy
+		# Generate new (x, y) and velocities
+		edge = random.choice(["top", "bottom", "left", "right"])
+		if edge == "top":
+			y = 0
+			x = random.randint(-self.dot_rad, self.boundx)
+			self.vx = self.vx if bool(random.getrandbits(1)) else -self.vx
+		elif edge == "bottom":
+			y = self.boundy
+			x = random.randint(-self.dot_rad, self.boundx)
+			self.vy = -self.vy
+			self.vx = self.vx if bool(random.getrandbits(1)) else -self.vx
+		elif edge == "left":
+			x = 0
+			y = random.randint(-self.dot_rad, self.boundy)
+			self.vy = self.vy if bool(random.getrandbits(1)) else -self.vy
+		else:
+			x = self.boundx
+			y = random.randint(-self.dot_rad, self.boundy)
+			self.vx = -self.vx
+			self.vy = self.vy if bool(random.getrandbits(1)) else -self.vy
 
-		print("vx: {}, vy: {}".format(self.vx, self.vy))
 		self.canvas.coords(self.dot, self.pos2box((x,y)))
 		# wait for last samples flash to finish
 		self.root.after(self.DELAY_MS * 2, self.flashMeta) 
@@ -152,11 +156,6 @@ class Controller(object):
 		self.root.destroy()
 
 def main():
-	"""
-	if len(sys.argv) != 2:
-		print("Usage: thesis_data mode")
-		return
-	"""
 	root = tk.Tk()
 	root.geometry("800x800")
 	root.title("Thesis dataset generator")
