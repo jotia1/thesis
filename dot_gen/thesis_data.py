@@ -18,11 +18,10 @@ class Controller(object):
 	"""
 	VERBOSE = False
 	DELAY_MS = 30
-	def __init__(self, root, mode):
+	def __init__(self, root):
 		""" Initialise all variables to do with dot movement.
 		"""
 		self.root = root  #tkroot
-		self.mode = mode
 		self.dot_size = 6
 		self.dot_rad = self.dot_size/2
 		#self.setBounds(800, 800)
@@ -153,14 +152,15 @@ class Controller(object):
 		self.root.destroy()
 
 def main():
+	"""
 	if len(sys.argv) != 2:
 		print("Usage: thesis_data mode")
 		return
-
+	"""
 	root = tk.Tk()
 	root.geometry("800x800")
 	root.title("Thesis dataset generator")
-	window = Controller(root, sys.argv[1])
+	window = Controller(root)
 	window.setBounds(800, 800)
 	window.start()
 
