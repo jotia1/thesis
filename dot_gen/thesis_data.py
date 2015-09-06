@@ -10,6 +10,7 @@ import tkinter as tk
 import sys
 import random
 import time
+import math
 
 
 class Controller(object):
@@ -26,16 +27,27 @@ class Controller(object):
 		self.dot_rad = self.dot_size/2
 		self.vx = 5
 		self.vy = 5
+		self.speed = 7
+		self.grad = self.vy / self.vx
 		self.cur_line = None
 		self.callback = None
+		self.shouldFlash = False
 
 		self.canvas = tk.Canvas(root,bg='white', relief='sunken', bd=2)
 		self.canvas.pack(fill=tk.BOTH, expand=True)
 
 		self.dot = self.create_circle(-self.dot_rad, -self.dot_rad, \
 			self.canvas)
+		self.createTopLevel()
+		self.borders = [None for x in range(4)]
 		self.canvas.bind("<Configure>", lambda e: self.setBounds(e.width, e.height))
 		
+	def createTopLevel(self):
+		self.top = tk.Toplevel()
+		self.top.title("Controls")
+		self.top.geometry("80x100")
+		tk.Button(self.top, text="Setup", command=self.togFlashBorders).pack()
+		tk.Button(self.top, text="Exit All", command=self.root.destroy).pack()
 
 	def setBounds(self, width, height):
 		""" At initialisation and when window resizes the bounds need to be 
@@ -47,6 +59,32 @@ class Controller(object):
 		self.boundy = self.cheight + self.dot_rad
 		self.diagonal = self.cwidth + self.cheight
 
+		# Order: Top, right, bottom, left
+		tl = (self.dot_rad, self.dot_rad)
+		tr = (self.cwidth - self.dot_rad, self.dot_rad)
+		bl = (self.dot_rad, self.cheight - self.dot_rad)
+		br = (self.cwidth - self.dot_rad, self.cheight - self.dot_rad)
+
+		self.border_lines = [(tl, tr), (tr, br), (br, bl), (bl, tl)]
+
+	def togFlashBorders(self):
+		self.shouldFlash = not self.shouldFlash
+		if self.shouldFlash:
+			self.flashBorders()
+
+	def flashBorders(self):
+		draw_line = lambda l: self.canvas.create_line(l, \
+												fill='black',  \
+												width=self.dot_size)
+		if self.borders[0]:
+			for i, b in enumerate(self.borders):
+				self.canvas.delete(b)
+				self.borders[i] = None
+		else:
+			for i, l in enumerate(self.border_lines):
+				self.borders[i] = draw_line(l)
+		if self.shouldFlash:
+			self.root.after(self.DELAY_MS, self.flashBorders)
 
 	def draw(self):
 		""" Responsible for moving the dot to it's next position and redrawing
@@ -87,7 +125,7 @@ class Controller(object):
 	def clear(self):
 		""" Clear cur_line (created in flashMeta) from the screen
 		"""
-		#self.canvas.delete(self.cur_line)
+		self.canvas.delete(self.cur_line)
 		self.cur_line = None
 
 	def pos2box(self, pos):
@@ -141,6 +179,10 @@ class Controller(object):
 			y = random.randint(-self.dot_rad, self.boundy)
 			self.vx = -self.vx
 			self.vy = self.vy if bool(random.getrandbits(1)) else -self.vy
+
+		theta = math.atan(self.vy / self.vx) # unlikely to be zero here
+		self.vx = self.speed * math.cos(theta)
+		self.vy = self.speed * math.sin(theta)
 
 		self.canvas.coords(self.dot, self.pos2box((x,y)))
 		# wait for last samples flash to finish
