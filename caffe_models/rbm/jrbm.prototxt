@@ -1,0 +1,14 @@
+name: "jrbm"
+input: data
+input_shape {
+    dim: 64
+    dim: 1
+    dim: 28
+        dim: 28
+}
+layer {                                                                         
+  name: "relu1"                                                                 
+  type: "ReLU"                                                                  
+  bottom: "data"                                                               
+  top: "pool1"                                                                  
+}
