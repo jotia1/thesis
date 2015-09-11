@@ -1,0 +1,27 @@
+name: "snet"
+layer {
+  name: "dvs"
+  type: "Data"
+  top: "data"
+  top: "label"
+  data_param {
+    source: "input_leveldb"
+    batch_size: 64
+  }
+}
+layer {
+  name: "bot"
+  type: "ReLU"
+  bottom: "data"
+  top: "botOut"
+  inner_product_param {
+    num_output: 2
+  }
+}
+layer {
+  name: "loss"
+  type: "ReLU"
+  bottom: "botOut"
+  bottom: "label"
+  top: "loss"
+}
