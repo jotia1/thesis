@@ -93,8 +93,10 @@ class Controller(object):
 		self.canvas.move(self.dot, self.vx, self.vy)
 		if self.contain():  # went off screen
 			# allow time for flashes
+			print("WAIT FOR FLASH: {}".format(self.canvas.coords(self.dot)))
 			self.callback = self.root.after(self.DELAY_MS * 4, self.draw)
 		else:
+			print("No flash, lets go")
 			self.callback = self.root.after(self.DELAY_MS, self.draw)
 
 		if (self.VERBOSE):
@@ -147,7 +149,7 @@ class Controller(object):
 		x, y = self.box2pos(self.canvas.coords(self.dot))
 		if not (-self.dot_rad > x or x > self.boundx or -self.dot_rad > y or y > self.boundy): #Not out
 			return False  #still on screen
-		self.root.after_cancel(self.callback)
+		#self.root.after_cancel(self.callback)
 		# this is a hack so flash meta works
 		# flash is based on self.vx and vy (at end of run draw go backwards)
 		self.vx = -self.vx
