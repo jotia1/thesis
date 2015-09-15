@@ -93,10 +93,8 @@ class Controller(object):
 		self.canvas.move(self.dot, self.vx, self.vy)
 		if self.contain():  # went off screen
 			# allow time for flashes
-			print("WAIT FOR FLASH: {}".format(self.canvas.coords(self.dot)))
 			self.callback = self.root.after(self.DELAY_MS * 4, self.draw)
 		else:
-			print("No flash, lets go")
 			self.callback = self.root.after(self.DELAY_MS, self.draw)
 
 		if (self.VERBOSE):
@@ -152,6 +150,9 @@ class Controller(object):
 		#self.root.after_cancel(self.callback)
 		# this is a hack so flash meta works
 		# flash is based on self.vx and vy (at end of run draw go backwards)
+		bef = self.box2pos(self.canvas.coords(self.dot))
+		bvx = self.vx
+		bvy = self.vy
 		self.vx = -self.vx
 		self.vy = -self.vy
 		self.flashMeta()
@@ -160,6 +161,9 @@ class Controller(object):
 		# set the new gradient and velocity
 		self.vx = random.random() * 4 + 4  # range is [4,8]
 		self.vy = random.random() * 4 + 4
+		theta = math.atan(self.vy / self.vx) # unlikely to be zero here
+		self.vx = self.speed * math.cos(theta)
+		self.vy = self.speed * math.sin(theta)
 
 		# Generate new (x, y) and velocities
 		edge = random.choice(["top", "bottom", "left", "right"])
@@ -181,10 +185,6 @@ class Controller(object):
 			y = random.randint(-self.dot_rad, self.boundy)
 			self.vx = -self.vx
 			self.vy = self.vy if bool(random.getrandbits(1)) else -self.vy
-
-		theta = math.atan(self.vy / self.vx) # unlikely to be zero here
-		self.vx = self.speed * math.cos(theta)
-		self.vy = self.speed * math.sin(theta)
 
 		self.canvas.coords(self.dot, self.pos2box((x,y)))
 		# wait for last samples flash to finish
