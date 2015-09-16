@@ -28,7 +28,8 @@ function [  ] = plotSpikeGraph( filename, timeslice )
     plot(buckets)
     xlabel('Time')
     ylabel('# spikes')
-    title(strcat('Spike graph from:  ', filename));
+    title(sprintf('Spike graph for: %s, %d ms buckets', filename, timeslice));
+    %title(strcat(strcat('Spike graph from:  ', filename), strcat(num2str(timeslice), 'ms buckets.')));
     
 end
 
