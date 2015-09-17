@@ -27,7 +27,7 @@ function [  ] = aedat2avi( filename )
     
     im = zeros(DVS_RESOLUTION, DVS_RESOLUTION);
     cur_spike = 1;
-    frame_len = 30 * 1000; % 30 ms converted to microseconds
+    frame_len = 33 * 1000; % 33 ms converted to microseconds (
     
     while cur_spike < total_spikes;  % not finished
        im = zeros(DVS_RESOLUTION, DVS_RESOLUTION);
@@ -38,7 +38,7 @@ function [  ] = aedat2avi( filename )
            if pol == 1 % pixel went white
                im(x, y) = 1;
            else
-               im(x, y) = -1;
+               im(x, y) = 0;
            end
            cur_spike = cur_spike + 1;
            if cur_spike == total_spikes;
@@ -53,13 +53,12 @@ function [  ] = aedat2avi( filename )
     end
     num_frames = cur_frame;
     cur_frame = 1;
-    
-    vidObj = VideoWriter('test3.avi','Motion JPEG AVI');
+    vidObj = VideoWriter('test3.avi', 'Motion JPEG AVI');
     open(vidObj);
     
     for k = 1:num_frames;
         disp(k)
-       writeVideo(vidObj, M(k));
+        writeVideo(vidObj, M(k));
     end
     vidObj.FrameRate = 30;
 
