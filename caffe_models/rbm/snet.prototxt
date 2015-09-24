@@ -1,0 +1,58 @@
+name: "snet"
+layer {
+  name: "dvspast"
+  type: "Data"
+  top: "datapast"
+  top: "label"
+  data_param {
+    source: "input_leveldb_past"
+    batch_size: 64
+  }
+}
+
+layer {
+  name: "dvsfuture"
+  type: "Data"
+  top: "datafuture"
+  top: "label"
+  data_param {
+    source: "input_leveldb_future"
+    batch_size: 64
+  }
+}
+
+
+layer {
+  name: "ip1"
+  type: "InnerProduct"
+  bottom: "datapast"
+  top: "ip1out"
+  inner_product_param {
+    num_output: 16384
+    weight_filler {
+      type: "xavier"
+    }
+  }
+}
+
+layer {
+  name: "ip2"
+  type: "InnerProduct"
+  bottom: "ip1out"
+  top: "ip2out"
+  inner_product_param {
+    num_output: 16384
+    weight_filler {
+      type: "xavier"
+    }
+  }
+}
+
+layer {
+  name: "loss"
+  type: "EuclideanLoss"
+  bottom: "ip2out"
+  bottom: "datafuture"
+  top: "l_error"
+}
+
