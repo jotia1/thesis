@@ -1,27 +1,56 @@
 name: "snet"
 layer {
-  name: "dvs"
+  name: "dvspast"
   type: "Data"
-  top: "data"
+  top: "datapast"
   top: "label"
   data_param {
-    source: "input_leveldb"
+    source: "input_leveldb_past"
     batch_size: 64
   }
 }
+
 layer {
-  name: "bot"
-  type: "ReLU"
-  bottom: "data"
-  top: "botOut"
-  inner_product_param {
-    num_output: 2
+  name: "dvsfuture"
+  type: "Data"
+  top: "datafuture"
+  top: "label"
+  data_param {
+    source: "input_leveldb_future"
+    batch_size: 64
   }
 }
+
+layers: {
+ name: "loss"
+ type: "EuclideanLoss"
+ bottom: "ip2out"
+ bottom: "datafuture"
+ top: "loss"
+}
+
 layer {
-  name: "loss"
-  type: "ReLU"
-  bottom: "botOut"
-  bottom: "label"
-  top: "loss"
+  name: "ip1"
+  type: "InnerProduct"
+  bottom: "datapast"
+  top: "ip1out"
+  inner_product_param {
+    num_output: 16384
+    weight_filler {
+      type: "xavier"
+    }
+  }
+}
+
+layer {
+  name: "ip2"
+  type: "InnerProduct"
+  bottom: "ip1out"
+  top: "ip2out"
+  inner_product_param {
+    num_output: 16384
+    weight_filler {
+      type: "xavier"
+    }
+  }
 }
