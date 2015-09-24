@@ -5,7 +5,7 @@ layer {
   top: "datapast"
   top: "label"
   data_param {
-    source: "input_leveldb_past"
+    source: "input_past_lmdb"
     batch_size: 64
   }
 }
@@ -16,7 +16,7 @@ layer {
   top: "datafuture"
   top: "label"
   data_param {
-    source: "input_leveldb_future"
+    source: "input_future_lmdb"
     batch_size: 64
   }
 }
