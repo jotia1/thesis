@@ -5,19 +5,9 @@ layer {
   top: "datapast"
   top: "label"
   data_param {
-    source: "input_past_lmdb"
+    source: "/home/Student/s4290365/thesis/caffe_models/rbm/input_past_lmdb"
     batch_size: 64
-  }
-}
-
-layer {
-  name: "dvsfuture"
-  type: "Data"
-  top: "datafuture"
-  top: "label"
-  data_param {
-    source: "input_future_lmdb"
-    batch_size: 64
+    backend: LMDB 
   }
 }
 
@@ -49,10 +39,24 @@ layer {
 }
 
 layer {
+  name: "clc"
+  type: "InnerProduct"
+  bottom: "datapast"
+  top: "edata"
+  inner_product_param {
+    num_output: 16384
+    weight_filler {
+      type: "xavier"
+    }
+  }
+}
+
+
+layer {
   name: "loss"
   type: "EuclideanLoss"
   bottom: "ip2out"
-  bottom: "datafuture"
+  bottom: "edata"
   top: "l_error"
 }
 
