@@ -23,17 +23,17 @@ class Controller(object):
 		""" Initialise all variables to do with dot movement.
 		"""
 		self.root = root  #tkroot
-		self.dot_size = 6
+		self.dot_size = 32
 		self.dot_rad = self.dot_size/2
 		self.vx = 5
 		self.vy = 5
-		self.speed = 7
+		self.speed = 12
 		self.grad = self.vy / self.vx
 		self.cur_line = None
 		self.callback = None
 		self.shouldFlash = False
 
-		self.canvas = tk.Canvas(root,bg='white', relief='sunken', bd=2)
+		self.canvas = tk.Canvas(root,bg='#A0A0A0', relief='sunken', bd=2)
 		self.canvas.pack(fill=tk.BOTH, expand=True)
 
 		self.dot = self.create_circle(-self.dot_rad, -self.dot_rad, \
@@ -42,10 +42,28 @@ class Controller(object):
 		self.borders = [None for x in range(4)]
 		self.canvas.bind("<Configure>", lambda e: self.setBounds(e.width, e.height))
 		
+	def change_speed(self):
+		self.speed = int(self._speedE.get())
+
+	def change_size(self):
+		self.dot_size = int(self._sizeE.get())
+		self.dot_rad = self.dot_size/2
+		self.setBounds(self.cwidth, self.cheight)
+
 	def createTopLevel(self):
 		self.top = tk.Toplevel()
 		self.top.title("Controls")
 		self.top.geometry("80x100")
+		tk.Label(self.top, text="Speed:").pack()
+		self._speedE = tk.Entry(self.top)
+		self._speedE.pack()
+		tk.Button(self.top, text="ChangeSpeed", command=self.change_speed).pack()
+
+		tk.Label(self.top, text="Size:").pack()
+		self._sizeE = tk.Entry(self.top)
+		self._sizeE.pack()
+		tk.Button(self.top, text="ChangeSize", command=self.change_size).pack()
+
 		tk.Button(self.top, text="Setup", command=self.togFlashBorders).pack()
 		tk.Button(self.top, text="Exit All", command=self.root.destroy).pack()
 
@@ -74,7 +92,7 @@ class Controller(object):
 
 	def flashBorders(self):
 		draw_line = lambda l: self.canvas.create_line(l, \
-												fill='black',  \
+												fill='white',  \
 												width=self.dot_size)
 		if self.borders[0]:
 			for i, b in enumerate(self.borders):
@@ -116,7 +134,7 @@ class Controller(object):
 		x1 = x0 + self.diagonal * self.vx
 		y1 = y0 + self.diagonal * self.vy
 		self.cur_line = self.canvas.create_line(x0, y0, x1, y1, \
-												fill='black',  \
+												fill='white',  \
 												width=self.dot_size)
 
 		self.root.after(self.DELAY_MS, self.clear)
@@ -194,17 +212,17 @@ class Controller(object):
 	def create_circle(self, x, y, canvas, **kwargs):
 		""" Draw the circle on the canvas at the specified x and y position
 		"""
-		return canvas.create_oval(self.pos2box((x,y)), fill='black', **kwargs)
+		return canvas.create_oval(self.pos2box((x,y)), fill='white', **kwargs)
 
 	def exit(self):
 		self.root.destroy()
 
 def main():
 	root = tk.Tk()
-	root.geometry("800x800")
+	root.geometry("896x896")
 	root.title("Thesis dataset generator")
 	window = Controller(root)
-	window.setBounds(800, 800)
+	window.setBounds(896, 896)
 	window.start()
 
 	root.mainloop()
