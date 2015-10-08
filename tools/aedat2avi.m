@@ -27,7 +27,7 @@ function [  ] = aedat2avi( filename )
     
     im = zeros(DVS_RESOLUTION, DVS_RESOLUTION);
     cur_spike = 1;
-    frame_len = 33 * 1000; % 33 ms converted to microseconds (
+    frame_len = 100 * 1000; % 33 ms converted to microseconds (
     
     while cur_spike < total_spikes;  % not finished
        im = zeros(DVS_RESOLUTION, DVS_RESOLUTION);
@@ -48,7 +48,8 @@ function [  ] = aedat2avi( filename )
        cur_frame = cur_frame + 1;
        imagesc(flipud(im.'), [-1, 1]);
        colormap(gray(256))
-       M(cur_frame) = getframe(gcf);
+       thing = getframe(gcf);  %TODO HACK FOR COMPCON IMAGES, fixme
+       imwrite(thing.cdata, 'linearbucket.png');
        nvar = 10;
     end
     num_frames = cur_frame;

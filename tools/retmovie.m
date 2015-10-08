@@ -111,7 +111,10 @@ height = 128;
 timeStep = 1/fps*1e6*playRate; % in us
 
 delete(outFileName);
-mov = avifile(outFileName, 'fps', fps, 'compression', compression, 'quality', quality);
+%mov = avifile(outFileName, 'fps', fps, 'compression', compression, 'quality', quality);
+mov = VideoWriter(outFileName, 'Motion JPEG AVI');
+mov.FrameRate = fps;
+open(mov);
 
 try
     frameCount = 0;
@@ -130,7 +133,7 @@ try
             mat(128 - y(i) + 1, x(i), :) = (pol(i) > 0)*onColor + (pol(i) < 0)*offColor + squeeze(sum(squeeze(mat(128 - y(i) + 1, x(i), :)) ~= squeeze(bgColor))*mixOnOff*mat(128 - y(i) + 1, x(i), :));
         else
             mat = min(mat, 1);
-            mov = addframe(mov, mat);
+            writeVideo(mov, mat);
             if videoPreview
                 figure(f)
                 mat((height - 1):height, 1:ceil(width*frameCount/totalFrames), :) = 1;

@@ -23,7 +23,11 @@ class Controller(object):
 		""" Initialise all variables to do with dot movement.
 		"""
 		self.root = root  #tkroot
+<<<<<<< Updated upstream
 		self.dot_size = 32
+=======
+		self.dot_size = 24
+>>>>>>> Stashed changes
 		self.dot_rad = self.dot_size/2
 		self.vx = 5
 		self.vy = 5
@@ -32,6 +36,7 @@ class Controller(object):
 		self.cur_line = None
 		self.callback = None
 		self.shouldFlash = False
+		self.line_hack = []
 
 		self.canvas = tk.Canvas(root,bg='#A0A0A0', relief='sunken', bd=2)
 		self.canvas.pack(fill=tk.BOTH, expand=True)
@@ -136,14 +141,16 @@ class Controller(object):
 		self.cur_line = self.canvas.create_line(x0, y0, x1, y1, \
 												fill='white',  \
 												width=self.dot_size)
-
-		self.root.after(self.DELAY_MS, self.clear)
+		self.line_hack.append(self.cur_line)
+		self.root.after(self.DELAY_MS*4, self.clear)
 		
 
 	def clear(self):
 		""" Clear cur_line (created in flashMeta) from the screen
 		"""
-		self.canvas.delete(self.cur_line)
+		#self.canvas.delete(self.cur_line)
+		[self.canvas.delete(l) for l in self.line_hack]
+		self.line_hack = []
 		self.cur_line = None
 
 	def pos2box(self, pos):
