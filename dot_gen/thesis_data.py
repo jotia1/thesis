@@ -23,11 +23,11 @@ class Controller(object):
 		""" Initialise all variables to do with dot movement.
 		"""
 		self.root = root  #tkroot
-		self.dot_size = 17
+		self.dot_size = 11
 		self.dot_rad = self.dot_size//2
 		self.vx = 5
 		self.vy = 5
-		self.speed = 12
+		self.speed = 7
 		self.grad = self.vy / self.vx
 		self.cur_line = None
 		self.callback = None
@@ -41,6 +41,7 @@ class Controller(object):
 			self.canvas)
 		self.createTopLevel()
 		self.borders = [None for x in range(4)]
+		self.markers = []
 		self.canvas.bind("<Configure>", lambda e: self.setBounds(e.width, e.height))
 		
 	def change_speed(self):
@@ -123,7 +124,6 @@ class Controller(object):
 		
 
 	def start(self):
-		self.flashMeta()
 		self.draw()
 		
 
@@ -138,7 +138,6 @@ class Controller(object):
 												fill='black',  \
 												width=self.dot_size)
 		self.root.after(self.DELAY_MS, self.clear)
-		self.root.after(self.DELAY_MS*4, self.clear)
 		
 
 	def clear(self):
@@ -159,6 +158,31 @@ class Controller(object):
 		"""
 		return (box[0] + self.dot_rad, box[1] + self.dot_rad)
 
+	def flashMarker(self):
+		""" flash data in the middle of flash spikes
+		"""
+		ypos = 0
+		gap = self.cheight // 5
+		lwidth = self.dot_size
+		mcolour = 'black'
+		self.markers.append(self.canvas.create_line(0, self.cheight//2, self.cwidth, \
+												self.cheight//2, \
+												fill=mcolour,  \
+												width=lwidth))
+		self.markers.append(self.canvas.create_line(self.cwidth//2, 0, self.cwidth//2, \
+												self.cheight, \
+												fill=mcolour,  \
+												width=lwidth))
+
+		self.root.after(self.DELAY_MS, self.delMarkers)
+
+	def delMarkers(self):
+		""" Clear any tk objects in the self.markers list
+		"""
+		for i in self.markers:
+			self.canvas.delete(i)
+		self.markers = []
+
 	def contain(self):
 		""" Keep the dot from leaving the screen and update the gradient if 
 			off screen
@@ -166,6 +190,7 @@ class Controller(object):
 		x, y = self.box2pos(self.canvas.coords(self.dot))
 		if not (-self.dot_rad > x or x > self.boundx or -self.dot_rad > y or y > self.boundy): #Not out
 			return False  #still on screen
+
 		#self.root.after_cancel(self.callback)
 		# this is a hack so flash meta works
 		# flash is based on self.vx and vy (at end of run draw go backwards)
@@ -206,8 +231,9 @@ class Controller(object):
 			self.vy = self.vy if bool(random.getrandbits(1)) else -self.vy
 
 		self.canvas.coords(self.dot, self.pos2box((x,y)))
-		# wait for last samples flash to finish
-		self.root.after(self.DELAY_MS * 2, self.flashMeta) 
+		# wait for last samples flash to finish then flash
+		self.root.after(self.DELAY_MS * 2, self.flashMarker)
+		self.root.after(self.DELAY_MS * 4, self.flashMeta) 
 		return True
 
 	def create_circle(self, x, y, canvas, **kwargs):
