@@ -23,12 +23,8 @@ class Controller(object):
 		""" Initialise all variables to do with dot movement.
 		"""
 		self.root = root  #tkroot
-<<<<<<< Updated upstream
-		self.dot_size = 32
-=======
-		self.dot_size = 24
->>>>>>> Stashed changes
-		self.dot_rad = self.dot_size/2
+		self.dot_size = 17
+		self.dot_rad = self.dot_size//2
 		self.vx = 5
 		self.vy = 5
 		self.speed = 12
@@ -36,9 +32,9 @@ class Controller(object):
 		self.cur_line = None
 		self.callback = None
 		self.shouldFlash = False
-		self.line_hack = []
 
-		self.canvas = tk.Canvas(root,bg='#A0A0A0', relief='sunken', bd=2)
+		# grey used was #A0A0A0
+		self.canvas = tk.Canvas(root,bg='white', relief='sunken', bd=2)
 		self.canvas.pack(fill=tk.BOTH, expand=True)
 
 		self.dot = self.create_circle(-self.dot_rad, -self.dot_rad, \
@@ -52,7 +48,7 @@ class Controller(object):
 
 	def change_size(self):
 		self.dot_size = int(self._sizeE.get())
-		self.dot_rad = self.dot_size/2
+		self.dot_rad = self.dot_size//2
 		self.setBounds(self.cwidth, self.cheight)
 
 	def createTopLevel(self):
@@ -97,7 +93,7 @@ class Controller(object):
 
 	def flashBorders(self):
 		draw_line = lambda l: self.canvas.create_line(l, \
-												fill='white',  \
+												fill='black',  \
 												width=self.dot_size)
 		if self.borders[0]:
 			for i, b in enumerate(self.borders):
@@ -139,18 +135,16 @@ class Controller(object):
 		x1 = x0 + self.diagonal * self.vx
 		y1 = y0 + self.diagonal * self.vy
 		self.cur_line = self.canvas.create_line(x0, y0, x1, y1, \
-												fill='white',  \
+												fill='black',  \
 												width=self.dot_size)
-		self.line_hack.append(self.cur_line)
+		self.root.after(self.DELAY_MS, self.clear)
 		self.root.after(self.DELAY_MS*4, self.clear)
 		
 
 	def clear(self):
 		""" Clear cur_line (created in flashMeta) from the screen
 		"""
-		#self.canvas.delete(self.cur_line)
-		[self.canvas.delete(l) for l in self.line_hack]
-		self.line_hack = []
+		self.canvas.delete(self.cur_line)
 		self.cur_line = None
 
 	def pos2box(self, pos):
@@ -219,7 +213,7 @@ class Controller(object):
 	def create_circle(self, x, y, canvas, **kwargs):
 		""" Draw the circle on the canvas at the specified x and y position
 		"""
-		return canvas.create_oval(self.pos2box((x,y)), fill='white', **kwargs)
+		return canvas.create_oval(self.pos2box((x,y)), fill='black', **kwargs)
 
 	def exit(self):
 		self.root.destroy()
