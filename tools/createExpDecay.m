@@ -1,8 +1,10 @@
 function [ ] = createExpDecay( filename, outDir, msin, kin )
 %CREATEEXPDECAY Convert a given aedat file to a data set with exponential decay
 %   Open the given aedat file and apply decay with the given parameters
-%   saving an image of the decay to the out. msin is milliseconds in
-%   Example: createExpDecay('ball.aedat', 'play', 30, 0.5)
+%   saving an image of the decay to the out
+%   k is how long to apply decay over, value of 1 will give 0.5 seconds
+%   Example: createExpDecay('ball.aedat', 'play', 5000, 0.5)
+
 
     disp('start loading aedat file');
     [allAddr, allTs] = loadaerdat(filename);
