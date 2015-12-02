@@ -1,28 +1,24 @@
-function [ count ] = applyExpDecay( count, starti, endi, xs, ys, ts, varargin )
+function [ count ] = applyExpDecay( count, starti, endi, xs, ys, ts, filename, outDir, varargin )
 %APPLYEXPDECAY Summary of this function goes here
 %   Detailed explanation goes here
     fprintf('%05f, %d, diff: %d\n', ts(starti)/30000, endi, endi-starti);
-    msin = 3e4; % 3e4 is 30000us or 30ms
+    msin = 30; %30ms
     k = 0.5; % A decent default
-    for arg = 1:2:(nargin - 6)
+    for arg = 1:2:(nargin - 8)
         
        switch lower(varargin{arg})
            case 'msin'
                msin = varargin{arg + 1};
            case 'k'
                k = varargin{arg + 1};
-           case 'outdir'
-               outDir = varargin{arg + 1};
-           case 'filename'
-               filename = varargin{arg + 1};
            otherwise
                disp('unrecognised arg');
                return;
        end
            
     end
-        
-
+    
+    % set up variables
     DVS_RESOLUTION = 128;
     cur_spike = starti;
     lastSave = starti;
@@ -31,10 +27,18 @@ function [ count ] = applyExpDecay( count, starti, endi, xs, ys, ts, varargin )
     timesliceus = msin * 1e3;
     lastSpikeTimes = double(zeros(DVS_RESOLUTION, DVS_RESOLUTION));
     tmpcount = count;
+        
+    %% Write meta data to text file
+    fileID = fopen(sprintf('%s/readme.txt', outDir), 'w');
+    fprintf(fileID, 'Created at: %s\n', datestr(datetime('now')));
+    fprintf(fileID, 'Exponential Decay: filename outdir msPerImage k\n');
+    fprintf(fileID, '%s %s %d %d\n', filename, outDir, msin, kin);
+    fclose(fileID);
+    
     while cur_spike < endi
         x = xs(cur_spike)+1; %offset as DVS numbers from 0
         y = ys(cur_spike)+1;
-        %pol = infomatrix3(cur_spike); %unused atm
+
         time = ts(cur_spike);
         
         lastSpikeTimes(x, y) = time;
