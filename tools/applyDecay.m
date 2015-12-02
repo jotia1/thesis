@@ -6,24 +6,16 @@ function [ output_args ] = applyDecay( filename, outDir, decay_type, varargin )
 
 
     disp('start loading aedat file');
-    [allAddr, allTs] = loadaerdat(filename);
+    [allAddr, ts] = loadaerdat(filename);
     %extracts all the information from the address matrices in the form
     %[xcoordinate, ycoordinate, polarity]
-    [infomatrix1, infomatrix2, infomatrix3] = extractRetina128EventsFromAddr(allAddr);
+    [xs, ys, ps] = extractRetina128EventsFromAddr(allAddr);
     %times are in us
-    allTs = double(allTs);
+    ts = double(ts);
     %k = kin * 5e5;  % 1 second is 1e6 so just do half second (5e5)
     timesliceus = 30 * 1e3;
-    
     DVS_RESOLUTION = 128;
-    total_spikes = size(allTs);
-    total_spikes = total_spikes(1);
-    starttime = allTs(1);
-    thres = 45;
-    
-    lastSpikeTimes = double(zeros(DVS_RESOLUTION, DVS_RESOLUTION));
-    cur_spike = 1;
-    lastSave = 1;
+    total_spikes = size(ts, 1);
     count = 1;
 
     % Write meta data to text file
@@ -43,12 +35,16 @@ function [ output_args ] = applyDecay( filename, outDir, decay_type, varargin )
     cur_spike = 0; %start 0 increment first in loop
     indata = true;
     last_trigger = 1;
+    
     % capture one frame then call a function to process it
     while endp < total_spikes   % for each spike
         
-        time_distance = allTs(endp) - allTs(startp);
+        % TODO add a catch in here to circular time stuff (fix wrapping
+        % problem)
+        
+        time_distance = ts(endp) - ts(startp);
         % if not in data is triggered then delay 60ms
-        if ~indata && allTs(endp) - allTs(last_trigger) < tthres *2
+        if ~indata && ts(endp) - ts(last_trigger) < tthres *2
             startp = startp + 1;
             endp = endp + 1;
             continue;
@@ -63,8 +59,8 @@ function [ output_args ] = applyDecay( filename, outDir, decay_type, varargin )
             endi = endp;
         elseif time_distance < tthres && indata % in meta but was in data before
             % starti and endi are now set. 
-            count = applyExpDecay(count, starti, startp, infomatrix1, ...
-                            infomatrix2, allTs, 'filename', filename, 'outdir', outDir, varargin{:});
+            count = applyExpDecay(count, starti, startp, xs, ...
+                            ys, ts, filename, outDir, varargin{:});
             startp = endp;
             endp = startp + ethres;
             starti = startp;
@@ -85,8 +81,8 @@ function [ output_args ] = applyDecay( filename, outDir, decay_type, varargin )
         endp = endp + ethres;
     end
     % Decay last section
-    applyExpDecay(count, starti, startp, infomatrix1, ...
-                            infomatrix2, allTs, 'filename', filename, 'outdir', outDir, varargin{:});
+    applyExpDecay(count, starti, startp, xs, ...
+                            ys, ts, 'filename', filename, 'outdir', outDir, varargin{:});
     
     
     

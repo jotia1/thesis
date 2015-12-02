@@ -5,7 +5,7 @@ function [  ] = plotSpikeGraph( filename, timeslice )
     clc;
     [allAddr, allTs] = loadaerdat(filename);
     [infomatrix1, infomatrix2, infomatrix3] = extractRetina128EventsFromAddr(allAddr);
-    allTs = int32(allTs);
+    %allTs = int32(allTs);
     
     cur_spike = 1;
     num_spikes = size(allTs, 1);
