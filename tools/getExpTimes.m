@@ -15,7 +15,7 @@ function [ poss ] = getExpTimes( ts, xs, ys, tpb, maxSpikes )
 
     poss = [];
     cbin = 1;
-    bps = 10; % bins per sample (number of bins to have between spikes)
+    bps = 15; % bins per sample (number of bins to have between spikes)
     uspb = tpb * 1e3; %us per bucket - convert ms buckets to us
     if nnz(ts==ts(1)) > 1
        % We have wrap around
@@ -25,13 +25,15 @@ function [ poss ] = getExpTimes( ts, xs, ys, tpb, maxSpikes )
        return;
     else
         nbins = ceil((ts(end) - ts(1)) / uspb); 
+        counts = hist(ts, nbins);  % main line, does the bucketing
     end
-    counts = hist(ts, nbins);
+    
     metaflashes = counts > maxSpikes;  % logical matrix
 
     % loop variables
     npzeros = 0;  % number of previous zeros
-    lastmf = 0; % last meta flash seen
+    lastmf = 1; % last meta flash seen
+    slastmf = 1; %start of the last meta flash (used to sum over the flash)
     indata = true;
 
     % put spikes into buckets based on bucket size
@@ -39,8 +41,19 @@ function [ poss ] = getExpTimes( ts, xs, ys, tpb, maxSpikes )
         if (metaflashes(cbin) == 1) && indata % was in data but now am not.
             % TODO below line does not work, need to figure out what to add
             % to make poss a list of indexs rather than bins. 
-            poss(end + 1) = sum(counts(1:poss(lastmf + 2))); %lastmf + 2;
-            poss(end + 1) = sum(counts(1:poss(cbin - 2))); %cbin - 2;
+            %poss(end + 1) = sum(counts(1:poss(lastmf + 2))); %lastmf + 2;
+            %poss(end + 1) = sum(counts(1:poss(cbin - 2))); %cbin - 2;
+            % poss(end) is the number of spikes up to the last flash start
+            % need to add on the number of spikes in the flash...
+            samps = lastmf + 7;
+            sampe = cbin - 7;
+            if size(poss, 2) == 0  % if poss is empty, matlab index issue
+                poss(1) = sum(counts(slastmf:samps-1));
+            else
+                poss(end + 1) = poss(end) + sum(counts(slastmf:samps-1));
+            end
+            poss(end + 1) = poss(end) + sum(counts(samps:sampe-1));
+            slastmf = sampe;  % set for next time around
         end
 
         if metaflashes(cbin) == 1
@@ -51,7 +64,7 @@ function [ poss ] = getExpTimes( ts, xs, ys, tpb, maxSpikes )
             npzeros = npzeros + 1;
         end
 
-        if npzeros > bps && ~indata  % seen at least 10 good buckets
+        if npzeros > bps && ~indata  % seen at least `bps` good buckets
             indata = true;
         end
 
