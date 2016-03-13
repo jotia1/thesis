@@ -25,8 +25,8 @@ function [ poss ] = getExpTimes( ts, xs, ys, tpb, maxSpikes )
        return;
     else
         nbins = ceil((ts(end) - ts(1)) / uspb); 
+        counts = hist(ts, nbins);
     end
-    counts = hist(ts, nbins);
     metaflashes = counts > maxSpikes;  % logical matrix
 
     % loop variables
@@ -39,7 +39,7 @@ function [ poss ] = getExpTimes( ts, xs, ys, tpb, maxSpikes )
         if (metaflashes(cbin) == 1) && indata % was in data but now am not.
             % TODO below line does not work, need to figure out what to add
             % to make poss a list of indexs rather than bins. 
-            poss(end + 1) = sum(counts(1:poss(lastmf + 2))); %lastmf + 2;
+            poss(end + 1) = poss(end) + sum(counts(lastmf + 2:cbin - 2)); %lastmf + 2;
             poss(end + 1) = sum(counts(1:poss(cbin - 2))); %cbin - 2;
         end
 
