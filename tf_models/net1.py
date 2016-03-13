@@ -35,12 +35,18 @@ print 'Test set', test_dataset.shape, test_labels.shape
 ################   DEFINING NETWORK #########################
 
 graph = tf.Graph()
+batch_size = 40
 
 with graph.as_default():
     
     # Load all the input data as constants on the graph
-    tf_train_dataset = tf.constant(train_dataset)
-    tf_train_labels = tf.constant(train_labels)
+    #tf_train_dataset = tf.constant(train_dataset)
+    #tf_train_labels = tf.constant(train_labels)
+    
+    tf_train_dataset = tf.placeholder(tf.float32,
+            shape=(batch_size, image_size * image_size))
+    tf_train_labels = tf.placeholder(tf.float32,
+            shape=(batch_size, image_size * image_size))
     tf_valid_dataset = tf.constant(valid_dataset)
     tf_test_dataset = tf.constant(test_dataset)
 
@@ -76,13 +82,21 @@ with tf.Session(graph=graph) as session:
 
     for step in xrange(num_steps):
         print "step:", step
-        _, l, predictions = session.run([optimizer, loss, train_prediction])
+        offset = (step * batch_size) % (train_labels.shape[0] - batch_size)
+        # Create minibatch
+        batch_data = train_dataset[offset:(offset + batch_size), :]
+        batch_labels = train_labels[offset:(offset + batch_size), :]
+        feed_dict = {tf_train_dataset : batch_data, 
+                      tf_train_labels : batch_labels}
+
+        _, l, predictions = session.run([optimizer, loss, train_prediction], 
+            feed_dict=feed_dict)
         
         if True: #step % 100 == 0:
             print "loss at step", step, ":", l
             print type(valid_prediction.eval())
             print type(valid_labels)
-            print "Training accuracy: %.1f%%" % accuracy(predictions, train_labels)
+            print "Training accuracy: %.1f%%" % accuracy(predictions, batch_labels)
             print 'Validation accuracy: %1.f%%' % accuracy(valid_prediction.eval(), valid_labels)
     print 'Test accuracy: %.1f%%' % accuracy(test_prediction.eval(), test_labels)
 
