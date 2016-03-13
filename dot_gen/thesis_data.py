@@ -6,7 +6,10 @@ neuromorphic event-based dynmaic vision sesnor (DVS).
 Created by Joshua Arnold
 5/09/2015
 """
-import tkinter as tk
+try:
+	import tkinter as tk
+except ImportError:
+	import Tkinter as tk
 import sys
 import random
 import time

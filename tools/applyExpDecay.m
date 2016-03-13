@@ -11,6 +11,8 @@ function [ count ] = applyExpDecay( count, starti, endi, xs, ys, ts, filename, o
                msin = varargin{arg + 1};
            case 'k'
                k = varargin{arg + 1};
+           case 'pol'
+               continue;
            otherwise
                disp('unrecognised arg');
                return;
@@ -35,6 +37,8 @@ function [ count ] = applyExpDecay( count, starti, endi, xs, ys, ts, filename, o
     fprintf(fileID, '%s %s %d %d\n', filename, outDir, msin, kin);
     fclose(fileID);
     
+    sigspikes = []; % index's of spikes at which images were made
+    
     while cur_spike < endi
         x = xs(cur_spike)+1; %offset as DVS numbers from 0
         y = ys(cur_spike)+1;
@@ -43,6 +47,7 @@ function [ count ] = applyExpDecay( count, starti, endi, xs, ys, ts, filename, o
         
         lastSpikeTimes(x, y) = time;
         if time - ts(lastSave) > timesliceus
+            sigspikes(end + 1) = cur_spike;
             timeDif = time - lastSpikeTimes;
             % THIS IS EXP DECAY
             res = 1./(1 + exp(-double(timeDif)./k));
@@ -61,6 +66,7 @@ function [ count ] = applyExpDecay( count, starti, endi, xs, ys, ts, filename, o
     
     lastSpikeTimes = double(zeros(DVS_RESOLUTION, DVS_RESOLUTION));
     lastSave = timesliceus + lastSave;
+    spikei = size(sigspikes, 2);  % index of next spike to create image at
     while cur_spike > starti
         x = xs(cur_spike)+1; %offset as DVS numbers from 0
         y = ys(cur_spike)+1;
@@ -69,7 +75,9 @@ function [ count ] = applyExpDecay( count, starti, endi, xs, ys, ts, filename, o
         
         lastSpikeTimes(x, y) = time;
 
-        if lastSave > size(ts,1) || ts(lastSave) - ts(cur_spike) > timesliceus
+        %if lastSave > size(ts,1) || ts(lastSave) - ts(cur_spike) > timesliceus
+        if spikei > 0 && cur_spike == sigspikes(spikei)
+            spikei = spikei - 1;
             timeDif = lastSpikeTimes - time;
             timeDif(timeDif == -time) = time;
             % THIS IS EXP DECAY
