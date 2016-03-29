@@ -16,6 +16,8 @@ import time
 import math
 import socket  #To send UDP to DAVIS
 
+# Ratio between screen pixels to DVS pixels
+PIXEL_FACTOR = 4
 
 class Controller(object):
     """ This class will act as the controller of the display window.
@@ -23,6 +25,7 @@ class Controller(object):
     """
     VERBOSE = False
     DELAY_MS = 30
+    OUTSTR = "{0}, {1}, {2}\n"
     def __init__(self, root):
         """ Initialise all variables to do with dot movement.
         """
@@ -37,6 +40,9 @@ class Controller(object):
         self.callback = None
         self.shouldFlash = False
         self.recording = False
+        self.outfile = None
+        self.last_file_write = None
+        self.time_passed = 0
 
         # grey used was #A0A0A0
         self.canvas = tk.Canvas(root,bg='white', relief='sunken', bd=2)
@@ -66,9 +72,25 @@ class Controller(object):
         if self.recording:
             line = 'stoplogging' 
             self._recordingB.config(bg='grey')
+            if not self.outfile:
+                raise Exception("Outfile already closed")
+            self.outfile.close()
+            self.outfile = None
+            self.last_file_write = None
+            self.time_passed = 0
         else:
-            line = 'startlogging test' #+ self.fnameE.get()
+            fname = self._fnameE.get()
+            line = 'startlogging ' + fname
             self._recordingB.config(bg='red')
+            if self.outfile or self.last_file_write or self.time_passed != 0:
+                raise Exception("Logging variables not reset")
+            self.outfile = open(fname + '_log.csv', 'w')
+            # send UDP reset command to DAVIS
+            s.sendto(bytes("zerotimestamps", 'UTF-8'), addr)
+            data, fromaddr = s.recvfrom(BUFSIZE)
+            print('client recived %r from %r' % (data, fromaddr))
+            # TODO not technically accurate but why not?
+            self.last_file_write = time.perf_counter()
         self.recording = not self.recording
 
         s.sendto(bytes(line, 'UTF-8'), addr)
@@ -141,6 +163,21 @@ class Controller(object):
             the screen. Will set a callback for 30ms to call itself.
         """
         self.canvas.move(self.dot, self.vx, self.vy)
+        if self.recording:
+            now = time.perf_counter()
+            print('-' * 10)
+            if not self.last_file_write:
+                self.last_file_write = now
+            cur_time = self.time_passed + (now - self.last_file_write)
+            print('cur_time: ', cur_time, 'now: ', now, 'lfw: ', self.last_file_write)
+            self.time_passed = cur_time
+            self.last_file_write = now
+            print('time passed: ', self.time_passed, 'lfw', self.last_file_write)
+            x, y = self.box2pos(self.canvas.coords(self.dot))
+            timeus = int(cur_time * 1e6)
+            self.outfile.write(self.OUTSTR.format(timeus, int(x/PIXEL_FACTOR),\
+                     int(y/PIXEL_FACTOR)))
+
         if self.contain():  # went off screen
             # allow time for flashes
             self.callback = self.root.after(self.DELAY_MS * 4, self.draw)
@@ -274,7 +311,8 @@ class Controller(object):
 
 def main():
     root = tk.Tk()
-    winx, winy = (190*5, 180*5)
+    camx, camy = (190, 180)
+    winx, winy = (camx*PIXEL_FACTOR, camy*PIXEL_FACTOR)
     root.geometry(str(winx) + 'x' + str(winy))
     root.title("Thesis dataset generator")
     window = Controller(root)
