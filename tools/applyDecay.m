@@ -4,35 +4,17 @@ function [ output_args ] = applyDecay( filename, outDir, decay_type, varargin )
 %   file and save series of those images to the specified outdir. 
 %   Example: applyDecay('samp3.aedat', 'play', 'exponential')
 
-
-    disp('start loading aedat file');
     [allAddr, ts] = loadaerdat(filename);
-    %extracts all the information from the address matrices in the form
-    %[xcoordinate, ycoordinate, polarity]
     [xs, ys, ps] = extractRetina128EventsFromAddr(allAddr);
-    %times are in us
     ts = double(ts);
-    %k = kin * 5e5;  % 1 second is 1e6 so just do half second (5e5)
-    timesliceus = 30 * 1e3;
-    DVS_RESOLUTION = 128;
     total_spikes = size(ts, 1);
     count = 1;
-
-    % Write meta data to text file
-    %fileID = fopen(sprintf('%s/readme.txt', outDir), 'w');
-    %fprintf(fileID, 'Exponential Decay: filename outdir eventsPerImage k\n');
-    %fprintf(fileID, '%s %s %d %d\n', filename, outDir, msin, kin);
-    %fclose(fileID);
     
-    
-    ethres = 45 * 2;   % TODO This needs to be experimentally determined
-    tthres = 3e4;  % 3e5 is 30ms
+    ethres = 100;   % TODO This needs to be experimentally determined
+    tthres = 3e4;  % 3e4 is 30ms
     startp = 1;
     endp = startp + ethres;
     starti = 1;
-    endi = 1;
-    freq = 0;
-    cur_spike = 0; %start 0 increment first in loop
     indata = true;
     last_trigger = 1;
     
@@ -51,7 +33,7 @@ function [ output_args ] = applyDecay( filename, outDir, decay_type, varargin )
         end
             
         if time_distance > tthres && ~indata % in data and was in meta
-            indata = true;      
+            indata = true;
             starti = endp;
             endi = endp;
         elseif time_distance > tthres && indata % in data and still in data
@@ -59,14 +41,14 @@ function [ output_args ] = applyDecay( filename, outDir, decay_type, varargin )
             endi = endp;
         elseif time_distance < tthres && indata % in meta but was in data before
             % starti and endi are now set. 
-            count = applyExpDecay(count, starti, startp, xs, ...
+            count = applyExpDecay(count, starti, startp - ethres * 2, xs, ...
                             ys, ts, filename, outDir, varargin{:});
             startp = endp;
             endp = startp + ethres;
             starti = startp;
             endi = endp;
             indata = false;
-            last_trigger = startp;
+            last_trigger = startp - ethres;
         elseif time_distance < tthres && ~indata % Else in meta and was in meta before
             %fprintf('METAMETA: Start: %d, end: %d, diff: %d\n', starti, endi, endi-starti);
             startp = endp;
@@ -81,8 +63,8 @@ function [ output_args ] = applyDecay( filename, outDir, decay_type, varargin )
         endp = endp + ethres;
     end
     % Decay last section
-    applyExpDecay(count, starti, startp, xs, ...
-                            ys, ts, 'filename', filename, 'outdir', outDir, varargin{:});
+    %applyExpDecay(count, starti, startp, xs, ...
+    %                        ys, ts, 'filename', filename, 'outdir', outDir, varargin{:});
     
     
     

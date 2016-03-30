@@ -1,7 +1,7 @@
 function [ count ] = applyExpDecay( count, starti, endi, xs, ys, ts, filename, outDir, varargin )
 %APPLYEXPDECAY Summary of this function goes here
 %   Detailed explanation goes here
-    fprintf('%05f, %d, diff: %d\n', ts(starti)/30000, endi, endi-starti);
+    fprintf('%d, %d, diff: %d\n', starti, endi, endi-starti);
     msin = 30; %30ms
     k = 0.5; % A decent default
     for arg = 1:2:(nargin - 8)
@@ -49,8 +49,10 @@ function [ count ] = applyExpDecay( count, starti, endi, xs, ys, ts, filename, o
         if time - ts(lastSave) > timesliceus
             sigspikes(end + 1) = cur_spike;
             timeDif = time - lastSpikeTimes;
+            %zeroz = lastSpikeTimes == 0);
             % THIS IS EXP DECAY
             res = 1./(1 + exp(-double(timeDif)./k));
+            res(lastSpikeTimes == 0) = 1;
             outfile = sprintf('%s/%s_%dms_k%0.2f_%05d_past.pgm', ...
                     outDir, filename, msin, kin, tmpcount);
             imwrite(flipud(res.'), outfile);%'InitialMagnification', 300); %
@@ -80,8 +82,10 @@ function [ count ] = applyExpDecay( count, starti, endi, xs, ys, ts, filename, o
             spikei = spikei - 1;
             timeDif = lastSpikeTimes - time;
             timeDif(timeDif == -time) = time;
+            %zeroz = find(lastSpikeTimes == 0);
             % THIS IS EXP DECAY
             res = 1./(1 + exp(-double(timeDif)./k));
+            res(lastSpikeTimes == 0) = 1;
             outfile = sprintf('%s/%s_%dms_k%0.2f_%05d_futr.pgm', ...
                     outDir, filename, msin, kin, tmpcount);
             imwrite(flipud(res.'), outfile);%'InitialMagnification', 300); %

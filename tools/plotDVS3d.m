@@ -19,7 +19,8 @@ function [ ] = plotDVS3d( filename, start, finish, polstr, unit )
     [allAddr, allTs] = loadaerdat(filename);
     [infomatrix1, infomatrix2, infomatrix3] = extractRetina128EventsFromAddr(allAddr);
     %times are in us
-    allTs = int32(allTs);
+    allTs = int32(allTs); 
+    %allTs = allTs - allTs(start);
     starttimeus = allTs(1);
     endtimeus = allTs(end);
 
@@ -65,6 +66,6 @@ function [ ] = plotDVS3d( filename, start, finish, polstr, unit )
     title(strcat('plot of: ', filename)) 
     xlabel('xs', 'fontsize',14,'fontweight','bold','color',[1 0 0])
     ylabel('ys','fontsize',14,'fontweight','bold','color',[0 0 0]) 
-    zlabel('Time','fontsize',14,'fontweight','bold','color',[0 0 1]) 
+    zlabel('Time (ms)','fontsize',14,'fontweight','bold','color',[0 0 1]) 
 end
 
