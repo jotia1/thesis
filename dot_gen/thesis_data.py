@@ -30,11 +30,11 @@ class Controller(object):
         """ Initialise all variables to do with dot movement.
         """
         self.root = root  #tkroot
-        self.dot_size = 11
+        self.dot_size = 4
         self.dot_rad = self.dot_size//2
         self.vx = 5
         self.vy = 5
-        self.speed = 7
+        self.speed = 6
         self.grad = self.vy / self.vx
         self.cur_line = None
         self.callback = None
@@ -165,14 +165,11 @@ class Controller(object):
         self.canvas.move(self.dot, self.vx, self.vy)
         if self.recording:
             now = time.perf_counter()
-            print('-' * 10)
             if not self.last_file_write:
                 self.last_file_write = now
             cur_time = self.time_passed + (now - self.last_file_write)
-            print('cur_time: ', cur_time, 'now: ', now, 'lfw: ', self.last_file_write)
             self.time_passed = cur_time
             self.last_file_write = now
-            print('time passed: ', self.time_passed, 'lfw', self.last_file_write)
             x, y = self.box2pos(self.canvas.coords(self.dot))
             timeus = int(cur_time * 1e6)
             self.outfile.write(self.OUTSTR.format(timeus, int(x/PIXEL_FACTOR),\
@@ -268,8 +265,8 @@ class Controller(object):
 
         
         # set the new gradient and velocity
-        self.vx = random.random() * 4 + 4  # range is [4,8]
-        self.vy = random.random() * 4 + 4
+        self.vx = random.random() * 4  # range is [0,4]
+        self.vy = random.random() * 4
         theta = math.atan(self.vy / self.vx) # unlikely to be zero here
         self.vx = self.speed * math.cos(theta)
         self.vy = self.speed * math.sin(theta)
@@ -278,20 +275,20 @@ class Controller(object):
         edge = random.choice(["top", "bottom", "left", "right"])
         if edge == "top":
             y = 0
-            x = random.randint(-self.dot_rad, self.boundx)
+            x = random.randint(int(self.boundx*0.25), int(self.boundx*0.75))
             self.vx = self.vx if bool(random.getrandbits(1)) else -self.vx
         elif edge == "bottom":
             y = self.boundy
-            x = random.randint(-self.dot_rad, self.boundx)
+            x = random.randint(int(self.boundx*0.25), int(self.boundx*0.75))
             self.vy = -self.vy
             self.vx = self.vx if bool(random.getrandbits(1)) else -self.vx
         elif edge == "left":
             x = 0
-            y = random.randint(-self.dot_rad, self.boundy)
+            y = random.randint(int(self.boundy*0.25), int(self.boundy*0.75))
             self.vy = self.vy if bool(random.getrandbits(1)) else -self.vy
         else:
             x = self.boundx
-            y = random.randint(-self.dot_rad, self.boundy)
+            y = random.randint(int(self.boundy*0.25), int(self.boundy*0.75))
             self.vx = -self.vx
             self.vy = self.vy if bool(random.getrandbits(1)) else -self.vy
 
@@ -311,7 +308,7 @@ class Controller(object):
 
 def main():
     root = tk.Tk()
-    camx, camy = (190, 180)
+    camx, camy = (128, 128)
     winx, winy = (camx*PIXEL_FACTOR, camy*PIXEL_FACTOR)
     root.geometry(str(winx) + 'x' + str(winy))
     root.title("Thesis dataset generator")
