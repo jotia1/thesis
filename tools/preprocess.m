@@ -30,7 +30,7 @@ function [ ] = preprocess(filename, outDir, decay_type, varargin);
     % Constants
     ETHRES = 100; % Number of events to be considered a spike
     FRAMESPERSPIKE = 6; % Number of frames to skip per spike
-    EDGEBUFFER = 2; % How many frames to drop from sample edges
+    EDGEBUFFER = 3; % How many frames to drop from sample edges
     
     % Variables
     lastSpikeBuck = -1;  % Last bucket that had a spike

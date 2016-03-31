@@ -12,6 +12,11 @@ from scipy import ndimage
 from sklearn.linear_model import LogisticRegression
 import cPickle as pickle
 
+# CONSTANTS
+IMG_FOLDER = 'gt5/data'
+MAX_NUM_IMGS = 50000
+
+
 image_size = 128
 pixel_depth = 255.0  # TODO double check this is correct
 
@@ -60,7 +65,7 @@ def load(data_folder, max_num_images):
     print 'Label tensor shape: ' + str(labels.shape)
     return dataset, labels
 
-dataset, labels = load('relearn/data', 3000)
+dataset, labels = load(IMG_FOLDER, MAX_NUM_IMGS)
 
 #plt.imshow(dataset[1, :, :], plt.cm.gray)
 #plt.show()  # Verify data

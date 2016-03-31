@@ -101,24 +101,3 @@ with tf.Session(graph=graph) as session:
     print 'Test accuracy: %.1f%%' % accuracy(test_prediction.eval(), test_labels)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

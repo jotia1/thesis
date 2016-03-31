@@ -6,8 +6,8 @@
 #   Find a way to sort data into seperate folders after processing so to be 
 #       completely ready to run the neural network.
 
-AEDATFILE='data/dvs_gt4.aedat'
-OUTFOLDER='gt4'
+AEDATFILE='data/dvs_gt5.aedat'
+OUTFOLDER='gt5'
 MSIN='30'
 K='0.5'
 
@@ -19,5 +19,9 @@ fi
 mkdir $OUTFOLDER
 mkdir $OUTFOLDER/data
 
-#matlab -nodisplay -r 'runpreprocess, exit'
-matlab -nosplash -nodisplay -r "preprocess('$AEDATFILE', '$OUTFOLDER', 'exponential', 'msin', $MSIN, 'k', $K), exit"
+matlab -nosplash -nodisplay -r "preprocess('$AEDATFILE', '$OUTFOLDER', 'exponential', 'msin', $MSIN, 'k', $K), exit" > $OUTFOLDER/matlab.log
+
+## HACK TO FIX NUMBERING
+ls $OUTFOLDER/data | head -n 1 | xargs -I {} rm $OUTFOLDER/data/{}
+ls $OUTFOLDER/data | tail -n 1 | xargs -I {} rm $OUTFOLDER/data/{}
+
