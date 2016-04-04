@@ -57,16 +57,23 @@ with graph.as_default():
     biases = tf.Variable(tf.zeros([num_outputs]))
     
     # Compuation 
-    logits = tf.matmul(tf_train_dataset, weights) + biases
+    # Can replace sigmoid with tf.nn.relu
+    hidden_output = tf.sigmoid(tf.matmul(tf_train_dataset, weights) + biases)
     # Hopefully this is Euclidean loss
-    loss = tf.sqrt(tf.reduce_sum(tf.pow(tf.sub(logits, tf_train_labels), 2)))
+    loss = tf.sqrt(tf.reduce_sum(tf.pow(tf.sub(hidden_output, tf_train_labels), 2)))
 
     # Optimizer - Gradient descent
     optimizer = tf.train.GradientDescentOptimizer(0.5).minimize(loss)
 
-    train_prediction = logits
+    train_prediction = hidden_output
     valid_prediction = tf.matmul(tf_valid_dataset, weights) + biases
     test_prediction = tf.matmul(tf_test_dataset, weights) + biases
+
+# Visualisation - TensorBoard
+w_hist = tf.histogram_summary("weights", weights)
+hid_summ = tf.scalar_summary('Hidden', hidden_output)
+merged = tf.merge_all_summaries()
+writer = tf.train.SummaryWriter('/home/Student/s4290365/thesis/tf_models/tensorBoard', graph)
 
 ################   ACTUAL TRAINING  ###################
 
