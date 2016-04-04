@@ -2,20 +2,20 @@
 load in and process some test data. 
 """
 # Try loading some useful libraries
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import numpy as np
 import os
 import tarfile
-import urllib
-from IPython.display import display, Image
+#import urllib
+#from IPython.display import display, Image
 from scipy import ndimage
-from sklearn.linear_model import LogisticRegression
+#from sklearn.linear_model import LogisticRegression
 import cPickle as pickle
 
 # CONSTANTS
 IMG_FOLDER = 'gt5/data'
-MAX_NUM_IMGS = 50000
-
+MAX_NUM_IMGS = 20000
+OUTPUT_PICKLE = 'gt5_20k.pickle'
 
 image_size = 128
 pixel_depth = 255.0  # TODO double check this is correct
@@ -36,6 +36,8 @@ def load(data_folder, max_num_images):
             continue;
 
         if image_index >= max_num_images:
+            print("Hit maximum number of images")
+            break
             raise Exception('More images than expected')
         #image_number = image[24:29] # TODO This is a hardcode to get number...
         
@@ -100,7 +102,7 @@ print "test labels:", test_labels.shape
 
 
 # Save as a pickle for easy reading later on
-pickle_file = 'relearn.pickle'
+pickle_file = OUTPUT_PICKLE
 
 try:
     f = open(pickle_file, 'wb')
