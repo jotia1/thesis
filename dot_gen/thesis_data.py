@@ -168,10 +168,10 @@ class Controller(object):
             if not self.last_file_write:
                 self.last_file_write = now
             cur_time = self.time_passed + (now - self.last_file_write)
+            timeus = int(cur_time * 1e6)
             self.time_passed = cur_time
             self.last_file_write = now
             x, y = self.box2pos(self.canvas.coords(self.dot))
-            timeus = int(cur_time * 1e6)
             self.outfile.write(self.OUTSTR.format(timeus, int(x/PIXEL_FACTOR),\
                      int(y/PIXEL_FACTOR)))
 
@@ -235,7 +235,11 @@ class Controller(object):
                                                 self.cheight, \
                                                 fill=mcolour,  \
                                                 width=lwidth))
-
+        if self.recording:
+            now = time.perf_counter()
+            cur_time = self.time_passed + (now - self.last_file_write)
+            timeus = int(cur_time * 1e6)
+            self.outfile.write("{}, {}, {}".format(timeus, -1, -1))
         self.root.after(self.DELAY_MS, self.delMarkers)
 
     def delMarkers(self):
