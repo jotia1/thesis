@@ -73,7 +73,6 @@ with graph.as_default():
 w_hist = tf.histogram_summary("weights", weights)
 hid_summ = tf.scalar_summary('Hidden', hidden_output)
 merged = tf.merge_all_summaries()
-writer = tf.train.SummaryWriter('/home/Student/s4290365/thesis/tf_models/tensorBoard', graph)
 
 ################   ACTUAL TRAINING  ###################
 
@@ -84,6 +83,9 @@ def accuracy(pred, labels):
 num_steps = 100
 
 with tf.Session(graph=graph) as session:
+    writer = tf.train.SummaryWriter('/home/Student/s4290365/thesis/tf_models/tensorBoard', session.graph_def)
+    writer.flush()
+    writer.close()
     tf.initialize_all_variables().run()
     print "Initialized"
 
@@ -99,7 +101,7 @@ with tf.Session(graph=graph) as session:
         _, l, predictions = session.run([optimizer, loss, train_prediction], 
             feed_dict=feed_dict)
         
-        if True: #step % 100 == 0:
+        if step % 100 == 0:
             print "loss at step", step, ":", l
             print type(valid_prediction.eval())
             print type(valid_labels)
