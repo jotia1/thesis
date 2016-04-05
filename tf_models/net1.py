@@ -2,7 +2,7 @@ import cPickle as pickle
 import numpy as np
 import tensorflow as tf
 
-pickle_file = 'relearn.pickle'
+pickle_file = 'gt5_20k.pickle'
 
 with open(pickle_file, 'rb') as f:
     save = pickle.load(f)
@@ -68,11 +68,6 @@ with graph.as_default():
     train_prediction = hidden_output
     valid_prediction = tf.matmul(tf_valid_dataset, weights) + biases
     test_prediction = tf.matmul(tf_test_dataset, weights) + biases
-
-# Visualisation - TensorBoard
-w_hist = tf.histogram_summary("weights", weights)
-hid_summ = tf.scalar_summary('Hidden', hidden_output)
-merged = tf.merge_all_summaries()
 
 ################   ACTUAL TRAINING  ###################
 
