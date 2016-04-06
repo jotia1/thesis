@@ -6,6 +6,7 @@ import tensorflow as tf
 def reformat(dataset, labels):
     """ Reformats a tensor to flatten the images
     """
+    image_size = 128
     dataset = dataset.reshape((-1, image_size * image_size)).astype(np.float32)
     labels = dataset.reshape((-1, image_size * image_size)).astype(np.float32)
     return dataset, labels
