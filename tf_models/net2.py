@@ -5,8 +5,10 @@ import time
 import math
 
 PICKLE_FILE = 'gt5_20k.pickle'
-TENSORBOARD_DIR = '/home/Student/s4290365/thesis/tf_models/tensorBoard'
-SAVE_DIR = '/home/Student/s4290365/thesis/tf_models/saveDir'
+#TENSORBOARD_DIR = '/home/Student/s4290365/thesis/tf_models/tensorBoard'
+TENSORBOARD_DIR = 'tensorBoard'
+#SAVE_DIR = '/home/Student/s4290365/thesis/tf_models/saveDir'
+SAVE_DIR = 'saveDir'
 
 # CONSTANTS
 TRAIN_INDEX = 0
@@ -16,9 +18,9 @@ IMAGE_SIZE = 128
 TOTAL_PIXELS = IMAGE_SIZE * IMAGE_SIZE
 
 BATCH_SIZE = 100
-TOTAL_STEPS = 4001
-HIDDEN_UNITS = 256
-LEARNING_RATE = 0.01
+TOTAL_STEPS = 501
+HIDDEN_UNITS = 64
+LEARNING_RATE = 0.5
 
 # Load and separate datasets
 data = netTools.load_pickle_dataset(PICKLE_FILE)
@@ -67,7 +69,7 @@ with tf.Graph().as_default():
     #loss = tf.reduce_sum(tf.square(label_placeholder - logits), name='loss')
 
     # Log data
-    tf.image_summary("prediction", logits)
+    tf.image_summary("prediction", netTools.tensor2img(logits, BATCH_SIZE))
     tf.scalar_summary(loss.op.name, loss)
 
     # Training operations

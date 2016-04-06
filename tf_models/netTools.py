@@ -2,14 +2,20 @@ import cPickle as pickle
 import numpy as np
 import tensorflow as tf
 
+IMAGE_SIZE = 128
 
 def reformat(dataset, labels):
     """ Reformats a tensor to flatten the images
     """
-    image_size = 128
-    dataset = dataset.reshape((-1, image_size * image_size)).astype(np.float32)
-    labels = dataset.reshape((-1, image_size * image_size)).astype(np.float32)
+    dataset = dataset.reshape((-1, IMAGE_SIZE * IMAGE_SIZE)).astype(np.float32)
+    labels = dataset.reshape((-1, IMAGE_SIZE * IMAGE_SIZE)).astype(np.float32)
     return dataset, labels
+
+def tensor2img(ten, batch_size):
+    """ Convert given tensor to a 4D tensor for an image_summary
+    """
+    return tf.reshape(ten, [batch_size, IMAGE_SIZE, IMAGE_SIZE, 1])
+
 
 def load_pickle_dataset(pickleName):
     """ Load the given pickle file
@@ -33,8 +39,7 @@ def load_pickle_dataset(pickleName):
         print('Validation set', valid_dataset.shape, valid_labels.shape)
         print('Test set', test_dataset.shape, test_labels.shape)
 
-    image_size = 128
-    num_outputs = image_size * image_size  # output size
+    num_outputs = IMAGE_SIZE * IMAGE_SIZE  # output size
 
     train_dataset, train_labels = reformat(train_dataset, train_labels)
     valid_dataset, valid_labels = reformat(valid_dataset, valid_labels)
