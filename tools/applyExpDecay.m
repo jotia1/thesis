@@ -25,7 +25,7 @@ function [ count ] = applyExpDecay( count, starti, endi, xs, ys, ts, filename, o
     cur_spike = starti;
     lastSave = starti;
     kin = k;
-    k = kin * 5e5;  % 1 second is 1e6 so just do half second (5e5)
+    %k = kin * 5e5;  % 1 second is 1e6 so just do half second (5e5)
     timesliceus = msin * 1e3;
     lastSpikeTimes = double(zeros(DVS_RESOLUTION, DVS_RESOLUTION));
     tmpcount = count;
@@ -48,11 +48,15 @@ function [ count ] = applyExpDecay( count, starti, endi, xs, ys, ts, filename, o
         lastSpikeTimes(x, y) = time;
         if time - ts(lastSave) > timesliceus
             sigspikes(end + 1) = cur_spike;
+            %no_spikes = find(lastSpikeTimes == 0);
             timeDif = time - lastSpikeTimes;
+            %timeDif(timeDif == time) = k;
             %zeroz = lastSpikeTimes == 0);
             % THIS IS EXP DECAY
-            res = 1./(1 + exp(-double(timeDif)./k));
-            res(lastSpikeTimes == 0) = 1;
+            res = exp(-double(timeDif) ./ k);
+            % hybrid
+            %res = 1./(1 + exp(-double(timeDif)./k));
+            res(lastSpikeTimes == 0) = 0;
             outfile = sprintf('%s/%s_%dms_k%0.2f_%05d_past.pgm', ...
                     outDir, filename, msin, kin, tmpcount);
             imwrite(flipud(res.'), outfile);%'InitialMagnification', 300); %
@@ -80,12 +84,14 @@ function [ count ] = applyExpDecay( count, starti, endi, xs, ys, ts, filename, o
         %if lastSave > size(ts,1) || ts(lastSave) - ts(cur_spike) > timesliceus
         if spikei > 0 && cur_spike == sigspikes(spikei)
             spikei = spikei - 1;
+            %no_spike = find(lastSpikeTimes == 0);
             timeDif = lastSpikeTimes - time;
-            timeDif(timeDif == -time) = time;
+            %timeDif(timeDif == -time) = k;
             %zeroz = find(lastSpikeTimes == 0);
             % THIS IS EXP DECAY
-            res = 1./(1 + exp(-double(timeDif)./k));
-            res(lastSpikeTimes == 0) = 1;
+            res = exp(-double(timeDif)./k);
+            %res = 1./(1 + exp(-double(timeDif)./k));
+            res(lastSpikeTimes == 0) = 0;
             outfile = sprintf('%s/%s_%dms_k%0.2f_%05d_futr.pgm', ...
                     outDir, filename, msin, kin, tmpcount);
             imwrite(flipud(res.'), outfile);%'InitialMagnification', 300); %

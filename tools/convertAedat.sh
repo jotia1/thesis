@@ -9,7 +9,8 @@
 AEDATFILE='data/dvs_gt5.aedat'
 OUTFOLDER='gt5'
 MSIN='30'
-K='0.5'
+K="240000" # MSIN * 1e3 * 8
+MATLAB_LINE="preprocess('$AEDATFILE', '$OUTFOLDER', 'exponential', 'msin', $MSIN, 'k', $K), exit"
 
 # Delete output folder if it already exists and recreate
 if [ -d $OUTFOLDER ]; then
@@ -19,7 +20,7 @@ fi
 mkdir $OUTFOLDER
 mkdir $OUTFOLDER/data
 
-matlab -nosplash -nodisplay -r "preprocess('$AEDATFILE', '$OUTFOLDER', 'exponential', 'msin', $MSIN, 'k', $K), exit" > $OUTFOLDER/matlab.log
+matlab -nosplash -nodisplay -r "$MATLAB_LINE" > $OUTFOLDER/matlab.log
 
 ## HACK TO FIX NUMBERING
 ls $OUTFOLDER/data | head -n 1 | xargs -I {} rm $OUTFOLDER/data/{}
