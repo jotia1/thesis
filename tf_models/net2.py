@@ -71,14 +71,14 @@ with tf.Graph().as_default():
     tf.histogram_summary("logits", logits)
 
     # loss function - Sum squared difference (well mean...)
+    """
     loss = tf.div(tf.reduce_sum(
         tf.square(label_placeholder - logits)), 
         TOTAL_PIXELS*BATCH_SIZE, name='loss')
     #loss = tf.reduce_sum(tf.square(label_placeholder - logits), name='loss')
-
+    """
 
     # Linear Loss - sum( (t - a)^2 * lamb(t) )
-    """
     with tf.name_scope('loss_layer'):
         with tf.name_scope('lamb'):
             # Computer L(actual) = actual * m + c
@@ -86,15 +86,14 @@ with tf.Graph().as_default():
             m = tf.constant( (TOTAL_PIXELS - (2.0 * g)) / TOTAL_PIXELS, dtype=tf.float32 )
             c = tf.constant( float(g) / TOTAL_PIXELS, dtype=tf.float32)
             lamb = tf.mul(m, logits) + c
-        
+
         squr = tf.square(label_placeholder - logits, name='squr')
-        tmp = tf.div(tf.mul(squr, lamb), TOTAL_PIXELS, name='tmp')
-        loss = tf.reduce_sum(tmp, name='loss')
+        tmp = tf.mul(squr, lamb, name='tmp')
+        loss = tf.reduce_sum(tf.div(tmp, TOTAL_PIXELS), name='loss')
 
     tf.histogram_summary('tmp', tmp)
     tf.histogram_summary('lamb', lamb)
     tf.histogram_summary('squr', squr)
-    """
     
     # Partwise loss - sum(relu(l - p) * ~1) + sum(relu(p - l) * ~0)
     # If it doesn't guess a white highenough its a big loss but if it mislabels
@@ -165,11 +164,11 @@ with tf.Graph().as_default():
         duration = time.time() - start_time
 
         if step % 250 == 0:
-            summary_str = sess.run(summary_op, feed_dict=feed_dict)
+            summary_str, _ = sess.run([summary_op, lamb], feed_dict=feed_dict)
             summary_writer.add_summary(summary_str, step)
             
             # Save a checkpoint and evaluate the model periodically.
-            if step % 1000 == 0:
+            if step % 10000 == 0:
                 #saver.save(sess, SAVE_DIR, global_step=step)
                 
                 # RUN Network with validation data
@@ -180,7 +179,7 @@ with tf.Graph().as_default():
                             label_placeholder : batch_labels 
                             }
 
-                preds, validation_value = sess.run([logits, loss], feed_dict=feed_dict)
+                preds, validation_value, = sess.run([logits, loss], feed_dict=feed_dict)
                 print("Step: %d: validation: %.5f" % (step, validation_value))
                 
                 if False: #$step % 100000 == 0:
