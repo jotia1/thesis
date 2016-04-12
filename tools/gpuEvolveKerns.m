@@ -17,7 +17,7 @@ if ~exist('msps', 'var')
 end
 emptyValue = -1/27;    % Empty space (zeros) in data to be replaced with
 
-filename = 'data/8ang1.aedat';sevent = 8200; nevents = 68200;
+filename = 'data/8ang1.aedat';%sevent = 8200; nevents = 68200;
 %filename = 'data/animal_farm.aedat'; sevent = 1; nevents = 1600000;
 
 evolutionsPerSave = ceil(max(nevolutions / 5, 1000));
@@ -48,21 +48,27 @@ prog_saves = 0;    % Save progress periodically while computing
 
 %% Code
 
-ffilename = filename(6:end-6);  % Strip data/ and .aedat
-ffilename(ffilename == '_') = ' ';  % Generate graph friendly name
 cjet = colormap;
 close gcf; %colormap opens a figure...
 
-%[ xs, ys, ts, ps ] = loadDVSclean( filename );
-[xs, ys, ps] = extractRetina128EventsFromAddr(allAddr);
-[allAddr, ts] = loadaerdat(filename);
+if exist('infile', 'var')
+    filename = infile;
+else 
+    %[ xs, ys, ts, ps ] = loadDVSclean( filename );
+    [allAddr, ts] = loadaerdat(filename);
+    [xs, ys, ps] = extractRetina128EventsFromAddr(allAddr);
+end
+
+
+ffilename = filename(6:end-6);  % Strip data/ and .aedat
+ffilename(ffilename == '_') = ' ';  % Generate graph friendly name
 sizex = 128;
 sizey = 128;
 
-xs = xs(sevent:nevents);
-ys = ys(sevent:nevents);
-ts = ts(sevent:nevents);
-ps = ps(sevent:nevents);
+% xs = xs(sevent:nevents);
+% ys = ys(sevent:nevents);
+% ts = ts(sevent:nevents);
+% ps = ps(sevent:nevents);
 
 aedatData = [xs, ys, ts, ps, [sizex; sizey; zeros(size(xs, 1)-2, 1)]];
 voxelSpatial = 1;
