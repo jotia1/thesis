@@ -8,9 +8,9 @@
 
 %% Settings
 if ~exist('nkernels', 'var')
-    nkernels = 9;
+    nkernels = 5;
 end
-nevolutions = 10000;
+nevolutions = 2500;
 kSize = 11; % Size of kernel
 if ~exist('msps', 'var')
     msps = 30/kSize;              % Milliseconds per time slice
@@ -75,22 +75,26 @@ voxelSpatial = 1;
 loaded = aedat2voxel(aedatData, voxelSpatial, voxelSpatial, msps);
 sizex = ceil(sizex / voxelSpatial);
 sizey = ceil(sizey / voxelSpatial);
-data = gpuArray(double(loaded(sizex*2 + 1: sizex*3, :, :)));
-clearvars loaded % Clean up a little
-zeroz = find(data == 0);
+data = gpuArray(single(loaded(sizex*2 + 1: sizex*3, :, :)));
+clearvars loaded aedatData % Clean up a little
+zeroz = gpuArray(uint32(find(data == 0)));
 data(zeroz) = emptyValue;
 
-res = gpuArray.zeros([nkernels + 1, size(data)]); % +1 for mutant
-oldChampScores = zeros(nkernels, 1);
-prevChampTmp = zeros(size(data));
-scores = gpuArray.zeros(nkernels + 1, 1);
+res = gpuArray.zeros([nkernels + 1, size(data)], 'single'); % +1 for mutant
+oldChampScores = zeros(nkernels, 1, 'single');
+prevChampTmp = zeros(size(data), 'single');
+scores = gpuArray.zeros(nkernels + 1, 1, 'single');
 
 % Statistics to keep
 mutant_wins = []; % When do mutants win
-platesWon = gpuArray.zeros(nevolutions, nkernels);
-rawCaloriesWon = gpuArray.zeros(nevolutions, nkernels);
+platesWon = gpuArray.zeros(nevolutions, nkernels, 'single');
+rawCaloriesWon = gpuArray.zeros(nevolutions, nkernels, 'single');
 khistory = cell(nevolutions, nkernels); % history of what each kernal was
 kvhistory = cell(nevolutions, nkernels); % history of each kernals value
+
+gpuDevice()
+whos
+whos data zeroz res oldChampScores prevChampScores prevChampTmp
 
 if vis_progress;
     prog = figure;
@@ -99,7 +103,7 @@ end
     
 % Initialise kernels
 for ikernel = 1 : nkernels
-    khistory{1, ikernel} = gpuArray(double(randKern( kSize )));
+    khistory{1, ikernel} = gpuArray(single(randKern( kSize )));
     kvhistory{1, ikernel} = -Inf;
     platesWon(1, ikernel) = -Inf;
     rawCaloriesWon(1, ikernel) = -Inf;
@@ -109,24 +113,6 @@ end
 for ievolution = 2 : nevolutions
     if mod(ievolution, 5) == 0
         disp(ievolution)
-    end
-    % If mod(x) save progress 
-    if prog_saves && mod(ievolution, evolutionsPerSave) == 0;
-        % TODO this may cause problems by removing memory from gpu
-        outname = sprintf('%d-%d-%dms-%s', nkernels, nevolutions, msps, ...                
-            char(datetime('now','Format','d-MM-y-HH-mm-ss'))); % TODO Update to refect bottom
-        data = gather(data);                                                        
-        mutant_wins = gather(mutant_wins);                                          
-        %sscore = gather(sscore);                                                    
-        for k = 1 : numel(khistory)
-            khistory{k} = gather(khistory{k});
-        end
-        for k = 1 : numel(kvhistory)
-            kvhistory{k} = gather(kvhistory{k});
-        end                                            
-        save(outname, 'nevolutions', 'nkernels', 'kvhistory', 'khistory', ...       
-            'mutant_wins', 'data');                                       
-        disp(outname)  
     end
 
     % prev champions convolutions

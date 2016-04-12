@@ -83,13 +83,13 @@ function [ res, ndata ] = aedat2voxel(indata, xdim, ydim, tdim )
     eo = eb;
     
     res = [ep; en; eb; eo];
-    firstts = ts(1);
-    lastts = ts(end);
-    lastxdim = xdim;
-    lastydim = ydim;
-    lasttdim = tdim;
-    ores = res;
-    ondata = ndata;
+    %firstts = ts(1);
+    %lastts = ts(end);
+    %lastxdim = xdim;
+    %lastydim = ydim;
+    %lasttdim = tdim;
+    %ores = res;
+    %ondata = ndata;
 
 end
 

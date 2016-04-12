@@ -17,13 +17,22 @@ xs = [];
 ys = [];
 ts = [];
 ps = [];
-
+cum_timelost = 0;
+lhidx = -1; % last half index
 for i = 1:size(idxs, 1);
-    disp(idxs(i, :))
-   xs = [ xs; txs( idxs(i, 1) : idxs(i, 2) ) ];
-   ys = [ ys; tys( idxs(i, 1) : idxs(i, 2) ) ];
-   ts = [ ts; tts( idxs(i, 1) : idxs(i, 2) ) ];
-   ps = [ ps; tps( idxs(i, 1) : idxs(i, 2) ) ];
+   sidx = idxs(i, 1);
+   eidx = idxs(i, 2);
+   hidx = int32((eidx - sidx) / 16) + sidx; % half way index
+   xs = [ xs; txs( sidx : hidx ) ];
+   ys = [ ys; tys( sidx : hidx ) ];
+   if i > 1
+       cum_timelost = cum_timelost + (tts(sidx) - tts(lhidx));
+   end
+   ts = [ ts; tts( sidx : hidx ) - cum_timelost ];
+   ps = [ ps; tps( sidx : hidx ) ];
+   fprintf('sidx: %d, eidx: %d, hidx: %d, lhidx: %d, cum_time: %d\n', ...
+   sidx, eidx, hidx, lhidx, cum_timelost);
+   lhidx = hidx
 end
 
 
