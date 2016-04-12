@@ -43,6 +43,11 @@ class Controller(object):
         self.outfile = None
         self.last_file_write = None
         self.time_passed = 0
+        self.cur_angle = 0
+        # TL TM TR RM
+        # BR BM BL LM
+        self.velocities = [ (1, 1), (0, 1), (-1, 1), (-1, 0),
+                        (-1, -1), (0, -1), (1, -1), (1, 0) ]
 
         # grey used was #A0A0A0
         self.canvas = tk.Canvas(root,bg='white', relief='sunken', bd=2)
@@ -269,6 +274,7 @@ class Controller(object):
 
         
         # set the new gradient and velocity
+        """
         self.vx = random.random() * 4  # range is [0,4]
         self.vy = random.random() * 4
         theta = math.atan(self.vy / self.vx) # unlikely to be zero here
@@ -295,12 +301,32 @@ class Controller(object):
             y = random.randint(int(self.boundy*0.25), int(self.boundy*0.75))
             self.vx = -self.vx
             self.vy = self.vy if bool(random.getrandbits(1)) else -self.vy
+        """
+        # 8 angles limit
+        x, y, self.vx, self.vy = self.next_xy()
 
         self.canvas.coords(self.dot, self.pos2box((x,y)))
         # wait for last samples flash to finish then flash
         self.root.after(self.DELAY_MS * 2, self.flashMarker)
         self.root.after(self.DELAY_MS * 4, self.flashMeta) 
         return True
+
+    def next_xy(self):
+        hwidth = self.cwidth//2
+        hheight = self.cheight//2
+        start_positions = [(0, 0),                          # Top left
+                            (hwidth, 0),                    # Top middle
+                            (self.cwidth, 0),               # Top right
+                            (self.cwidth, hheight),         # Right middle
+                            (self.cwidth, self.cheight),    # Bottom Right
+                            (hwidth, self.cheight),         # Bottom middle 
+                            (0, self.cheight),              # Bottom left 
+                            (0, hwidth) ]                   # Left middle
+        self.cur_angle = (self.cur_angle + 1) % len(self.velocities)
+        x, y = start_positions[self.cur_angle]
+        vx, vy = self.velocities[self.cur_angle]
+        print('next pos (', x, y, ') vel: (', vx, vy, ')')
+        return (x, y, vx*self.speed, vy*self.speed)
 
     def create_circle(self, x, y, canvas, **kwargs):
         """ Draw the circle on the canvas at the specified x and y position
