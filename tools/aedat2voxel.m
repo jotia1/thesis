@@ -49,8 +49,8 @@ function [ res, ndata ] = aedat2voxel(indata, xdim, ydim, tdim )
     % Assign 1 to any cell in which a pixel fires
     for i = 1:size(ts,1);
         %disp(i/size(ts,1));
-        x = ceil((xs(i) + 1) / xdim);  % Matlab indexs from 1
-        y = ceil((ys(i) + 1) / ydim);  % Matlab indexs from 1
+        x = ceil((xs(i)) / xdim);  
+        y = ceil((ys(i)) / ydim); 
         t = ceil((ts(i) - ts(1)) / tk) + 1;
         p = ps(i);
 
@@ -60,6 +60,12 @@ function [ res, ndata ] = aedat2voxel(indata, xdim, ydim, tdim )
 %         end
 
         % If voxel not yet seen, create struct for it
+        if x < 1
+            disp('hi')
+        end
+        if y < 1
+            disp('hi')
+        end
         if ~isstruct(ndata{x, y, t});
            ndata{x, y, t} = struct('hasPos', 0, 'hasNeg', 0, 'values', []);
         end

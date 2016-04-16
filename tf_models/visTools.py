@@ -31,7 +31,7 @@ def show_preds(filename):
         else:
             print("Unreccognised command:", usr)
 
-def preds2png(filename, outdir):
+def preds2png(filename, outdir, pred_size=128):
     """ Given a saved file convert in/prediction pairs to pngs and save to
         outdir
         Preconditon: Assumes outdir exists and is writeable
@@ -49,8 +49,8 @@ def preds2png(filename, outdir):
     batch_size = ins.shape[0]
     
     for i in xrange(batch_size):
-        in_img = ins[i, :].reshape(IMAGE_SIZE, IMAGE_SIZE)
-        pred_img = preds[i, :].reshape(IMAGE_SIZE, IMAGE_SIZE)
+        in_img = ins[i, :].reshape(pred_size, pred_size)
+        pred_img = preds[i, :].reshape(pred_size, pred_size)
 
         plt.imshow(in_img, cmap='gray')  # Save input img
         plt.savefig(outdir + str(i) + "in.png")
