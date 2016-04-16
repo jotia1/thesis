@@ -19,7 +19,7 @@ TEST_INDEX = 2
 #TOTAL_PIXELS = IMAGE_SIZE * IMAGE_SIZE
 
 BATCH_SIZE = 100
-TOTAL_STEPS = 501
+TOTAL_STEPS = 500001
 #HIDDEN_UNITS = 16
 LEARNING_RATE = 0.1
 
@@ -145,10 +145,10 @@ with tf.Graph().as_default():
 
         _, loss_value = sess.run([train_op, loss], feed_dict=feed_dict)
     
-        if step % 10 == 0:
-            print("loss:", loss_value)
+        if step % 1000 == 0:
+            print("step:", step, "loss:", loss_value)
 
-        if step % 100 == 0:
+        if step % 250 == 0:
             summary_str = sess.run(summary_op, feed_dict=feed_dict)
             summary_writer.add_summary(summary_str, step)
     """
