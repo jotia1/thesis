@@ -61,7 +61,7 @@ while cspikep <= endi;
 %       Add to dataset
         tmp = lastSpikeTimesPast( xmin : xmax, ...
                                     ymin : ymax );
-        zeroz = tmp == 0; zeroz(ceil(numel(zeroz)/2)) = 1; % also block middle
+        zeroz = tmp == 0; 
         tmp = exp( - abs(t - tmp ) ./ k );
         tmp(zeroz) = 0;
         %if sum(tmp(:)) ~= 1  % Isolated pixel
@@ -81,7 +81,7 @@ while cspikep <= endi;
 %       Add to labels
         tmp = lastSpikeTimesFutr( xmin : xmax, ...
                                     ymin : ymax );
-        zeroz = tmp == 0; zeroz(ceil(numel(zeroz)/2)) = 1;
+        zeroz = tmp == 0;
         tmp = exp( - abs(t - tmp ) ./ k );
         tmp(zeroz) = 0;
         %if sum(tmp(:)) ~= 1  % Isolated pixel
