@@ -1,11 +1,42 @@
 \chapter{Datacollection and pre-processing}
 
 \section{The need for a dataset}
+To fairly compare models it is necessary for the community to have standardised datasets (REF MNIST, CIFAR ETC.). % Reference MNIST, CIFAR etc.
+Many datasets exist for time-stepped models from well formatted and normalised datasets (such as MNIST) to large complex datasets (such as ***ImageNet dataset?***).
+In an attempt to compare event-based processing models to time-stepped models some have tried using DVS recordings of static MNIST digits (REF O'CONOR). % ref OConor
+However this seems to defeat the purpose of the DVS in its ability to capture spatio-temporal surfaces if the surfaces are inherintly 2D.
+Newer benchmark datasets have addressed this problem offering various stimuli, in particular complex real world self motion for a mobile robot (REF AMY PAPER). %% Ref Amy
+There is still a deficency of extremely simple datasets around which strong mathmatical foundations can be laid to allow a deep understanding of network dynamics. 
+As movement is a key advantage of the DVS over time-stepped models this should be emphasised in the dataset. 
+%This work offers such a dataset consisting of dots moving linearly with constant velocity. 
 
-\section{Requirements}
-Simple, ground truth, 
+\section{Requirements and details}
+The reason behind such a dataset must be carefully considered so when collected it forms a comprehensive set.
+Simple structure is required so that when experimenting with new appraoches to processing any dynamics in the system can be reasoned about with some accuracy.
+Additionally a dataset for complex real world (robotic self-motion) or interesting patterns already exists, it is simpler data that is necessary.
+To evaluate the accuracy of classification systems a ground truth is also required labelling events as signal or noise. 
+With the advent of deep learning the advantages of large bodies of training data have become apparent. 
+Thus the ability to collect a large number of samples is also deemed necessary and the system should be as autonomous as possible. 
+
+Considering the gap this dataset will fill and the requirements specified the simplest datum is a single dot moving linearly with a constant velocity. 
+The variables to be manipulated include the dot diameter, velocity, direction, the variations recorded are listed in *** REF TABLE ***.
+As a stepping stone from simple datasets to more complex real world datasets two further variations were considered; two dots intersecting at the center of the screen and multiple dots tracing arbitrary angles (occationally intersecting). 
+The prediction as two (or more) dots intersect will reveal insight into how the systems inner workings and is considered worth including. 
+
+
+%\begin{tabular}{ c | c | c }
+%  Dot size & 4 & 6 & 8 \\
+%  4 & 5 & 6 \\
+%  7 & 8 & 9 \\
+%\end{tabular}
 
 \section{Considerations}
+With clear requirements the practical generation of the dataset can be considered in detail.
+The requirement for constant velocity would prove difficult to control in any real world system with forces of friction and gravity.
+Such a real world system would also prove uneconomical in terms of time required to construct and unless well automated also in terms of ease of generating recording data. 
+Recording computer simulations becomes an attracive option but comes with its own negatives including screen refresh rates and non-continuous stimuli. 
+ 
+
 Flashes on screen -> noise
 Segmenting datasets
 Line angles (Close to edge, just a tiny segment in corner)
@@ -22,7 +53,7 @@ What did i actually end up doing
 
 \section{Comments}
 Looking back at the data what do i think?
-Flat timestamps?? -> experimental hardware
+%Flat timestamps?? -> experimental hardware
 Segmenting looses a lot on each side
 No metric for validating ground truth against actual dot accuracy
 Camera angles (parallel lines not so).
