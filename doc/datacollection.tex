@@ -67,8 +67,8 @@ The non-continuous stimuli issue can likewise be alliviated by restricting the d
 %Light invariance
 %Ground truth to actual recording consideration (mitigated through setup?)
 
-The DVS's temporal resolution of \SI{15}{\micro\second} mean it should be able to detect screen refresh rates (every \SI{33}{\milli\second}). 
-It would be expected that every \SI{33}{\milli\second} there should activity across the whole sensor for a short time period. 
+The DVS's temporal resolution of \SI{15}{\micro\second} mean it should be able to detect screen refresh rates (every \SI{16}{\milli\second} on a 60Hz screen). 
+It would be expected that every \SI{16}{\milli\second} there should activity across the whole sensor for a short time period. 
 This does not seem to be the case with the DVS though, the same experiement run with the newer DAVIS sensor (with temporal resolution of \SI{3}{\micro\second} occationally is able to capture the screen refresh rate but even this is not consistant as show in figure *** Include figure here ***.
 
 The DVS will only trigger and event if a pixels internal value has changed by 15\% meaning in low light situations the DVS will register an event more readily. 
@@ -123,27 +123,37 @@ This phenomena is not expected to reveal any significant insight related to this
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%          METHODOLOGY         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%TODO maybe this should just be a sub section since its so small, what else should go here?
 \section{Methodology}
-What did i actually end up doing
+%What did i actually end up doing
+The final system consisted of a program called dotGen written in python which would display the dot moving along a trajectory with meta-flashes.
+DotGen also had tools to start a DVS recording, adjust dot parameters (size and velocity) and help set up the DVS correctly. 
+DotGen would log the ground truth of the dots position to a CSV file in the format <x, y, time> every time the screen was updated.
+The screen recorded from was a Dell U2414H Monitor with a refresh rate of 60Hz.
+DotGen and jAER were started and the camera positioned to exactly capture the screen size then the recordings were taken. 
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%         FINAL SPECS          %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Final dataset specifications}
-Video lengths
+Video lengths \\
 
-Samples per video
+Samples per video \\
 
-Total samples
+Total samples \\
 
-key for each filename
+key for each filename \\
 
 
 \section{Comments}
-Looking back at the data what do i think?
-%Flat timestamps?? -> experimental hardware
-Segmenting looses a lot on each side
-No metric for validating ground truth against actual dot accuracy
+Looking back at the data what do i think? \\
+Flat timestamps?? -> experimental hardware , do we still get??\\
+% MOVE TO PROCESSING - Segmenting looses a lot on each side \\
+%No metric for validating ground truth against actual dot accuracy
 Camera angles (parallel lines not so).
 
-
+The final datasets proved to be useful and to satisfy the requirements of being simple, easy to collect and of movement. 
+A measure of success of the labels is harder to quantify without a metric, as the labels were not used in this work such a metric is left out of scope although this would be advantageous for the dataset. 
 
 

@@ -1,8 +1,16 @@
 \documentclass[12pt,openany,a4paper]{book}
-\usepackage{graphics}	% if you want encapsulated PS figures.
+\usepackage{graphicx}	% if you want encapsulated PS figures.
+\usepackage{wrapfig}
 \usepackage{verbatim}
 \usepackage{hyperref}
 \usepackage{siunitx}
+\usepackage{amsmath}
+
+% Rename bibliography to reference
+\usepackage[nottoc,notlof,notlot]{tocbibind} 
+\renewcommand\bibname{References}
+
+\graphicspath{{imgs/}}
 
 % If you use a macro file called macros.tex :
 % \input{macros}
@@ -270,11 +278,8 @@ your thesis, seek advice from your supervisor.
 \tableofcontents
 
 \listoffigures
-\addcontentsline{toc}{chapter}{List of Figures}
 
 \listoftables
-\addcontentsline{toc}{chapter}{List of Tables}
-
 
 \cleardoublepage
 
@@ -285,12 +290,12 @@ your thesis, seek advice from your supervisor.
 \include{litreview}     % 12
 \include{datacollection} % 5
 \include{preprocess} % 4 
-\include{pilot} % 5
-\include{convolutions} % 5
+\include{pilot} % 4
+\include{convolutions} % 4
 \include{attentional}  % 5
-%\include{networks}      % 
-%\include{discussion}       % 
-\include{conclusions}   % 5
+%\include{networks}       
+%\include{discussion}        
+\include{conclusions}   %4 
 
 
 
@@ -307,9 +312,7 @@ System}, 2nd ed. (Addison-Wesley, 1994).
 %%%%%%%%%%%%%%%%%    APPENDIX    %%%%%%%%%%%%
 \appendix
 % Chapters after the \appendix command are lettered, not numbered.
-% Setting apart the appendices in the table of contents is awkward:
 \newpage
-\addcontentsline{toc}{part}{Appendices}
 \mbox{}
 \newpage
 
