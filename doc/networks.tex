@@ -1,24 +1,125 @@
 \chapter{Neural Networks}
 
+To process the data several different network architectures were examimed. 
+Unless otherwise specified networks were run with a mini-batch size of 100, trained using Stochastic Gradient Descent (S.G.D.) with backpropogation and run for 1 million epochs. 
+Stochastic Gradient Descent (S.G.D.) was used to facilitate quick learning as more complex methods were deemed unnecesary in such a simple task. 
+Weights and biases were initialised using a truncated normal distribution with a standard deviation of 0.1 unless otherwise specified.
+Detailed Tensorboard representations of each network can be found in Appendix \ref{ch:tbnets}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%      NET 1     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Net1}
-Define the network, what was it, what was it meant to learn
+The first network created was simple by design to act as a benchmark against which other models could be compared. 
+It was defined as outlined in table \ref{table:net1def}.
+The weights for Net1 were initialised with a truncated normal distribution with a standard deviation of $1 / ( number\_inputs * batch\_size )$ and the biases initialised to zero.
 
+\begin{table}[h]
+\centering
+\begin{tabular}{ | l | l | }
+    \hline
+    Num. Inputs & 16384 \\
+    Num. Outputs & 16384 \\
+    Connectivity & Fully connected \\
+    Num. Hidden Layers & 1 \\
+    Size Hidden Layer & 1, 2, 100, 16384  \\
+    Activation function & Linear, ReLU, Sigmoid \\
+    Loss & Sum Squared Error \\
+    Learning rule & S.G.D. (back propogation) \\
+    Learning rate & 0.1, 0.5 \\
+    \hline
+\end{tabular}
+\caption{Features of net1}
+\label{table:net1def}
+\end{table}
+
+Where each input/output corresponds to a single pixel in the decayed past/future. 
+Motivation to use one or two units in the hidden layer was derived from the linear nature of the dataset and the thought that the network may be able to model the data with just the gradient of the input.
+The network was tested with both linear and non-linear activations to see if a non-linear layer was necesary. 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%      NET 2     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Net2}
-Define it, why was it an improvement on net1?
+After Net1 some refinements were made although many of the features outlined in table \ref{table:net1def} are kept constant with Net2. 
+Some changes include:
+% TODO Tidy up this list, the gaps are too large...
+\begin{itemize}
+    \item Weights initialised with standard deviation of 0.1
+    \item Biases now initialised with truncated normal distribution, standard deviation of 0.1. 
+    \item Added linear weighting to Loss function.
+\end{itemize}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%      EVO Kernels    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Evolutionary kernels}
-Tried to use evol kerns but sparse nature of data means no good
+%Tried to use evol kerns but sparse nature of data means no good
+After the results from Net1 and Net2 (discussed in sections \ref{sec:net1discuss} and \ref{sec:net2discuss}) it was clear the task needed to be reframed. 
+Previous work using convolution and kernels as feature detectors suggusted they might be able to provide the feature maps necessary for a network to learn. 
+First kenels specialised to the datasets would be developed, these could then be used to preprocess the input/output decayed images to produce informative feature maps which could then be used to train the network as per normal. 
 
+%TODO Need a clear definition of what the kernels are 
+% Things like:
+%   - Size
+%   - Limits (27) why...
+
+As no standard set of kernels to use with event-based data exists these would need to be created.
+Previous work developing kernels using an evolutionary algorithm made this a sensible place to start.
+Kernels start randomly initialised and are iteratively updated by permuting kernel weights, improvements as measured by a fitness function are kept.
+Finer details of the evolutionary algorithm are discussed in Appendix \ref{ch:evolution}.
+
+% TODO This part of the research...
+A set of nine and a set of five kernels were created using this technique.
+Motivation for using nine kernels was inspired by the simple 8 angle dataset with the hope each kernel would specialise for one of the angles plus one kernel to detect the noise. 
+
+Five was chosen to see if similar behaviour could be modelled as a combination of less kernels. 
+Convolving the 9, 11x11 kernels with the 128x128 images gives 9, 128x128 features maps.
+Rather than using pooling as is standard in convolutional neural networks a single 128x128 map was created in which each position was the index of the feature map with the highest output at that pixel. 
+% TODO comment on how ties were broken. or just remove this whole section..........
+
+
+MORE TO DO HERE...
+Discuss how kernels are only applied around event
+meaning 11x11x1
+What exactly is that 1...
+
+The network used then looked much like Net1 and Net2. 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%      CONVOLUTIONAL NN    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{convNet}
-Define it what did it learn and what happened.
-Alternative approach of using evol kerns on full image
+%Define it what did it learn and what happened.
+%Alternative approach of using evol kerns on full image
 
+Following on from evolving kernels manually are convolutional neural networks.
+The network used in this work consisted of an input layer, an 9, 11x11 convolutions followed by a 2x2 max pooling layer feeding into a 1024 unit sigmoid layer which fed into a 16384 linear output layer. 
+
+
+
+
+
+\pagebreak
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%      ATTENTIONAL NN    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Attentional Networks}
-Zooming in around the most current event
 
+In an attempt to provide a better signal to noise ratio to the network an attentional 
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%      AUTO ENCODE     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Auto Encoder}
 How much could be cleaned up
 Retry other networks with cleaned up data. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

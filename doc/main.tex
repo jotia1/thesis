@@ -1,6 +1,8 @@
 \documentclass[12pt,openany,a4paper]{book}
 \usepackage{graphics}	% if you want encapsulated PS figures.
 \usepackage{verbatim}
+\usepackage{hyperref}
+\usepackage{siunitx}
 
 % If you use a macro file called macros.tex :
 % \input{macros}
@@ -282,50 +284,41 @@ your thesis, seek advice from your supervisor.
 \include{intro}         % 3
 \include{litreview}     % 12
 \include{datacollection} % 5
-\include{networks}      % 4
-\include{discussion}       % 10
+\include{preprocess} % 4 
+\include{pilot} % 5
+\include{convolutions} % 5
+\include{attentional}  % 5
+%\include{networks}      % 
+%\include{discussion}       % 
 \include{conclusions}   % 5
 
 
-\appendix
 
-% Chapters after the \appendix command are lettered, not numbered.
-% Setting apart the appendices in the table of contents is awkward:
-
-\newpage
-\addcontentsline{toc}{part}{Appendices}
-\mbox{}
-\newpage
-
-% The \mbox{} command between two \newpage commands gives a blank page.
-% In the contents, the ``Appendices'' heading is shown as being on this
-% blank page, which is the page before the first appendix.  This stops the
-% first appendix from be listed ABOVE the word ``Appendices'' in the
-% table of contents.
-
-% \include appendix chapters here.
-
-\chapter{Dummy appendix}
-
-Appendices are useful for supplying necessary details or explanations
-which do not seem to fit into the main text, perhaps because they are
-too long and would distract the reader from the central argument.
-Appendices are also used for program listings.
-
-Notice that appendices are ``numbered'' with capital letters, not
-numerals.  When the \verb+\appendix+ command in
-\LaTeX~\cite[p.\,175]{lamport} is used with the \texttt{book} document
-class, it causes subsequent chapters to be treated as appendices.
-
-
-\cleardoublepage
-
+%%%%%%%%%%%%%%%     REFERENCES    %%%%%%%%%%%%%%%%%
 \begin{thebibliography}{99}
-\addcontentsline{toc}{chapter}{Bibliography}
+\addcontentsline{toc}{chapter}{References}
 \bibitem{lamport} L.~Lamport, \emph{\LaTeX: A Document Preparation
 System}, 2nd ed. (Addison-Wesley, 1994).
 \bibitem{LABEL2} REFERENCE 2
 \bibitem{ETC.} Etc.
 \end{thebibliography}
+
+
+%%%%%%%%%%%%%%%%%    APPENDIX    %%%%%%%%%%%%
+\appendix
+% Chapters after the \appendix command are lettered, not numbered.
+% Setting apart the appendices in the table of contents is awkward:
+\newpage
+\addcontentsline{toc}{part}{Appendices}
+\mbox{}
+\newpage
+
+% \include appendix chapters here.
+
+\include{evolution}
+\include{tbnets}
+
+\cleardoublepage
+
 
 \end{document}

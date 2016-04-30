@@ -1,0 +1,99 @@
+\chapter{Convolutional architectures}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%      EVO Kernels    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Evolutionary kernels}
+%Tried to use evol kerns but sparse nature of data means no good
+After the results from Net1 and Net2 it was clear the task needed to be reframed.
+Previous work using convolutions and kernels as feature detectors suggusted they might be able to provide feature maps necessary for a network to learn.
+Additonally using convolutions would have the advantage that they are able to ignore much of the image and focus on areas of activity.  
+Kenels specialised to the datasets would be developed, these could then be used to preprocess the input/output decayed images to produce feature maps which could then be used to train the network as per normal.
+
+%TODO Need a clear definition of what the kernels are 
+% Things like:
+%   - Size
+%   - Limits (27) why...
+
+In this work a kernel is considered as a two dimentional matrix with each value in the matrix being a weight.
+As no standard set of feature kernels to use with event-based data exists these would need to be created.
+Previous work developing kernels using an evolutionary algorithm made this a sensible place to start.
+Kernels start randomly initialised and are iteratively updated by permuting kernel weights, improvements in kernel performance as measured by a fitness function are kept.
+Finer details of the evolutionary algorithm are discussed in Appendix \ref{ch:evolution}.
+
+% TODO This part of the research...
+A set of nine and a set of five kernels were created using this technique.
+Motivation for using nine kernels was inspired by the simple 8 angle dataset with anticipation that each kernel would specialise for one of the angles plus one kernel to detect the noise.
+Five was chosen to see if similar behaviour could be modelled as weighted combinations of less kernels.
+A kernel size of 11x11 pixels was chosen as this would capture most of the decayed path of a dot decayed over a 30ms timeslice.
+Convolving the 9, 11x11 kernels with the 128x128 images gave 9, 128x128 features maps.
+Rather than using pooling within a feature map as is standard in convolutional neural networks max-pooling was applied between the maps. 
+That is a single 128x128 map was created in which each position was the index of the feature map with the highest output at that pixel.
+% TODO How were ties broken?!
+% TODO add a picture of what this process looks like, event-data -> decayed image -> kernels -> back on decayed image -> network input and output
+
+The final system requires several processing steps as show in figure *** Create and reference figure ***. 
+Starting with event-based data a decay is applied to produce the decayed images, these 
+
+%MORE TO DO HERE...
+% TODO move this to the appendix
+% Discuss how kernels are only applied around event
+
+The network used then looked much like Net1 and Net2.
+
+% TODO RESULTS SECTION
+\subsection{Results}
+ - Slow to train, could only use small amount of data \\
+ - Kernels were not representative  \\
+ - results terrible \\
+ - Visualisations of kenerls \\
+ - Table of training times and graphs of exp increase in time.. \\
+ - Reflections back onto input of how kernels went \\
+ - Prediction results visualisations (maybe in appendix?) \\
+
+% TODO DISCUSSION SECTION
+\subsection{Discussion}
+ - Algorithm is to blame, needs redesigning but out of scope of thesis
+\\ - Also there is an additional problem of a disparity between training and test data
+\\ - SHould be okay though because its just the shape we need but still issues because of magnitude of
+\\ - white pixels near center vs binary 1's everywhere
+\\ - Using the index of the feature map is not informative to the poor network...Maybe should have been converted to a hot vector
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%      CONVOLUTIONAL NN    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{convNet}
+%Define it what did it learn and what happened.
+%Alternative approach of using evol kerns on full image
+
+Rather than using an evolutionary algorithm to evolve kernels with which to later apply convolutions to the data this can all be done within a Convolutional Neural Network. 
+This network should be able to produce much of the behaviour of the evolved kernels (because it will be designing its own during training) but shouldn't suffer from the slow training time and possible inconsitancys between training and test data.
+The network used in this work consisted of an input layer followed by a convolution layer with 9, 11x11 convolutions followed by a 2x2 max pooling layer feeding into a fully connected 1024 unit sigmoid layer which fed into a linear output layer. Details are outlined in table \ref{tb:convNetdef}.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ | l | l | }
+    \hline
+    Num. Inputs & 16384 \\
+    Num. Outputs & 16384 \\
+    Num. Hidden Layers & 3 \\
+    Layers & Convolutions -\textgreater pooling -\textgreater Sigmoid \\
+    Loss & Sum Squared Difference (and weighted S.S.D.) \\
+    Learning rule & S.G.D. (back propogation) \\
+    Learning rate & 0.01 \\
+    Convolution stride & 1 \\
+    \hline
+\end{tabular}
+\caption{Features of convNet}
+\label{tb:convNetdef}
+\end{table}
+
+
+\subsection{Results}
+- Network had poor prediction performance
+\\ - What did the kernels do? Any specialisation
+
+\subsection{Discussion}
+ - Why did it perform so badly?
+\\ - Was 1024 Units too many / not enough?
+\\ - Were kernels comparable to evolved kernels?
+\\ - How could this be improved?
+\\ - Was the spacial max-pooling an influence
+
