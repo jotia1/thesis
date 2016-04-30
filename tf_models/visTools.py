@@ -75,41 +75,25 @@ def write_preds(batch_data, batch_labels, preds, outdir, img_dim):
     
     """
     num = batch_data.shape[0]
-    
-    for i in xrange(num):
-        print("Saving image:", i)
-        iimg = batch_data[i, :].reshape(img_dim, img_dim)
-        limg = batch_labels[i, :].reshape(img_dim, img_dim)
-        pimg = preds[i, :].reshape(img_dim, img_dim)
-        
-        fig = plt.figure()
-        a = fig.add_subplot(2,2,1)
-        imgplot = plt.imshow(iimg, cmap='gray')
-        imgplot.set_clim(0.0, 1.0)
-        a.set_title('Input')
-        plt.colorbar(ticks=[0.0, 0.2, 0.4, 0.6, 0.8, 1.0], orientation='horizontal')
-        a = fig.add_subplot(2,2,2)
-        imgplot = plt.imshow(limg, cmap='gray')
-        imgplot.set_clim(0.0, 1.0)
-        a.set_title('Label')
-        plt.colorbar(ticks=[0.0, 0.2, 0.4, 0.6, 0.8, 1.0], orientation='horizontal')
-        a = fig.add_subplot(2,2,3)
-        imgplot = plt.imshow(pimg, cmap='gray')
-        imgplot.set_clim(0.0, 1.0)
-        a.set_title('Predicted')
-        plt.colorbar(ticks=[0.0, 0.2, 0.4, 0.6, 0.8, 1.0], orientation='horizontal')
-        
-        plt.savefig(outdir + str(i) + ".png")
 
+    for cur_img in xrange(num):
+        print("Saving image:", cur_img)
+        iimg = batch_data[cur_img, :].reshape(img_dim, img_dim)
+        limg = batch_labels[cur_img, :].reshape(img_dim, img_dim)
+        pimg = preds[cur_img, :].reshape(img_dim, img_dim)
 
+        fig, ax = plt.subplots(1, 3, figsize=(6,2),)
+        fig.subplots_adjust(hspace=0.3, wspace=0.05)
 
+        titles = ['Input', 'Ground Truth', 'Prediction']
+        imgs = [iimg, limg, pimg]
+        for i in range(3):
+            title = titles[i]
+            img = imgs[i]
+            iplt = ax.flat[i].imshow(img, cmap='gray', interpolation='none')  
+            iplt.set_clim(0.0, 1.0)
+            ax.flat[i].axis('off')
+            ax.flat[i].set_title(title)
 
-
-
-
-
-
-
-
-
+        plt.savefig(outdir + str(cur_img) + ".png")
 
