@@ -10,7 +10,7 @@ There is still a deficency of extremely simple datasets around which strong math
 As capturing movement is a key advantage of the DVS over time-stepped models this should be emphasised in the dataset. 
 %This work offers such a dataset consisting of dots moving linearly with constant velocity. 
 
-\section{Requirements and details}
+\section{Requirements and details for 8AD and AAD}
 The motivations behind such a dataset must be carefully considered so when collected it forms a comprehensive set.
 Simple structure is required so that when experimenting with new appraoches to processing dynamics in the system can be reasoned about with some accuracy.
 Additionally a dataset for complex real world (robotic self-motion) or interesting patterns already exists, it is simpler data that is necessary.
@@ -46,8 +46,8 @@ As a stepping stone from simple datasets to more complex real world datasets two
 \label{tb:datasetspecs}
 \end{table}
 
-The above specification details what is from here on called the Arbitrary Angle Dataset (AAD), that is, in this dataset the starting position of the dot does not restrict its direction.
-An even simpler dataset from here called the 8 Angle Dataset (8AD) is also presented in which the dot can only start from a corner of the screen or the middle of the one the edges.
+The above specification details what is from here on called the Arbitrary Angle Dataset (for berevity it will be referred to as AAD), that is, in this dataset the starting position of the dot does not restrict its direction.
+An even simpler dataset from here on called the 8 Angle Dataset (for berevity, 8AD) is also presented in which the dot can only start from a corner of the screen or the middle of the one the edges.
 The starting position of the dot also then dictates the direction the dot will move e.g. if it starts in the top left of the screen it must go to the bottom right or if it starts in the center of the top edge it must go to the center of the bottom edge.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%       CONSIDERATIONS    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
