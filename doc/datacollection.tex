@@ -50,6 +50,10 @@ The above specification details what is from here on called the Arbitrary Angle 
 An even simpler dataset from here on called the 8 Angle Dataset (for berevity, 8AD) is also presented in which the dot can only start from a corner of the screen or the middle of the one the edges.
 The starting position of the dot also then dictates the direction the dot will move e.g. if it starts in the top left of the screen it must go to the bottom right or if it starts in the center of the top edge it must go to the center of the bottom edge.
 
+% Okayyyy for 8AD lets run 250 of each angle 
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%       CONSIDERATIONS    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Considerations}
 \subsection{Stimulus generators}
@@ -69,7 +73,14 @@ The non-continuous stimuli issue can likewise be alliviated by restricting the d
 
 The DVS's temporal resolution of \SI{15}{\micro\second} mean it should be able to detect screen refresh rates (every \SI{16}{\milli\second} on a 60Hz screen). 
 It would be expected that every \SI{16}{\milli\second} there should activity across the whole sensor for a short time period. 
-This does not seem to be the case with the DVS though, the same experiement run with the newer DAVIS sensor (with temporal resolution of \SI{3}{\micro\second} occationally is able to capture the screen refresh rate but even this is not consistant as show in figure *** Include figure here ***.
+This does not seem to be the case with the DVS though, the same experiement run with the newer DAVIS sensor (with temporal resolution of \SI{3}{\micro\second} occationally is able to capture the screen refresh rate but even this is not consistant as show in figure \ref{fig:refreshFlashes}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{screenFlashes.eps}
+    \caption{Refresh rate flashes captured by DAVIS sensor}
+    \label{fig:refreshFlashes}
+\end{figure}
 
 The DVS will only trigger and event if a pixels internal value has changed by 15\% meaning in low light situations the DVS will register an event more readily. 
 Not all recording will be done in one session and changes to ambient light due to environmental conditions may have an impact on recording quality by triggering more or less events for the same stimuli.
@@ -92,18 +103,20 @@ The full protocol for an experiment will thus be:
 
 \begin{itemize}
     \itemsep-0.5em
-    \item Flash dot trajectory (\SI{30}{\milli\second})
+    \item Flash dot trajectory (30\ms)
     \item Actual sample (dot following trajectory)
-    \item Flash dot trajectory (\SI{30}{\milli\second})
-    \item Flash cross (\SI{30}{\milli\second})
+    \item Flash dot trajectory (30\ms)
+    \item Flash cross (30\ms)
     \item Repeat for next dot and trajectory.
 \end{itemize}
 
 The process of flashing the dot trajectory, the cross and then the next dots trajectory will be referred to as a meta-flash. 
-Using these meta-flashes means the data can be independently verified by other researchers and will produce a histogram of total number of spikes similar to figure *** Create and insert figure ***.
+Using these meta-flashes means the data can be independently verified by other researchers and will produce a histogram of total number of spikes similar to figure *** Create and insert figure ****.
 This makes segmenting samples a matter of extracting the regions in which the total number of events is below some threshold (which various proportially to the size of the dot, and hence the number of events it produces). 
 
 %TODO figure as per figure 4 from proposal (showing use of meta-flashs).
+
+
 
 In the arbitrary angle samples it will be possible for a dot to start close to a corner and to move to the adjacent edge resulting in a sample with a path of only a few (\textless 5) DVS pixels and lasting less than a second.
 This case was considered troublesome for later processing steps and thus the starting points in the arbitrary angle dataset were restricted to the middle 80\% of each edge. 
@@ -137,16 +150,16 @@ DotGen and jAER were started and the camera positioned to exactly capture the sc
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%         FINAL SPECS          %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Final dataset specifications}
-Video lengths \\
-Samples per video \\
-Total samples \\
-key for each filename \\
+Video lengths \hfill
+Samples per video \hfill
+Total samples \hfill
+key for each filename \hfill
 
 
 \section{Comments}
-Looking back at the data what do i think? \\
-Flat timestamps?? -> experimental hardware , do we still get??\\
-% MOVE TO PROCESSING - Segmenting looses a lot on each side \\
+Looking back at the data what do i think? \hfill
+Flat timestamps?? -> experimental hardware , do we still get??\hfill
+% MOVE TO PROCESSING - Segmenting looses a lot on each side \hfill
 %No metric for validating ground truth against actual dot accuracy
 Camera angles (parallel lines not so).
 
