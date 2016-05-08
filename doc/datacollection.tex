@@ -1,4 +1,4 @@
-\chapter{Datacollection}
+\chapter{Data collection}
 
 \section{The need for a dataset}
 To fairly compare models it is necessary for the community to have standardised datasets (REF MNIST, CIFAR ETC.). % Reference MNIST, CIFAR etc.
@@ -114,7 +114,12 @@ The process of flashing the dot trajectory, the cross and then the next dots tra
 Using these meta-flashes means the data can be independently verified by other researchers and will produce a histogram of total number of spikes similar to figure *** Create and insert figure ****.
 This makes segmenting samples a matter of extracting the regions in which the total number of events is below some threshold (which various proportially to the size of the dot, and hence the number of events it produces). 
 
-%TODO figure as per figure 4 from proposal (showing use of meta-flashs).
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{metaflash.png}
+    \caption{Histogram of the number of spikes during a recording}
+    \label{fig:spikehistogram}
+\end{figure}
 
 
 
