@@ -1,3 +1,4 @@
+#! /usr/bin/python3
 """ This program will create a window in which a dot will move. Parameters of
 the dots movement can be set in code, or by using the control panel displayed.
 This program will be used to create simple movement to be recorded by the
@@ -6,10 +7,7 @@ neuromorphic event-based dynmaic vision sesnor (DVS).
 Created by Joshua Arnold
 5/09/2015
 """
-try:
-    import tkinter as tk
-except ImportError:
-    import Tkinter as tk
+import tkinter as tk
 import sys
 import random
 import time
@@ -43,11 +41,14 @@ class Controller(object):
         self.outfile = None
         self.last_file_write = None
         self.time_passed = 0
-        self.cur_angle = 0
+        self.cur_angle = 7
+        self._startxy = (0,0)
+        self._150count = -1
         # TL TM TR RM
         # BR BM BL LM
-        self.velocities = [ (1, 1), (0, 1), (-1, 1), (-1, 0),
-                        (-1, -1), (0, -1), (1, -1), (1, 0) ]
+        epsil = 1e-9
+        self.velocities = [ (1, 1), (epsil, 1), (-1, 1), (-1, epsil),
+                        (-1, -1), (epsil, -1), (1, -1), (1, epsil) ]
 
         # grey used was #A0A0A0
         self.canvas = tk.Canvas(root,bg='white', relief='sunken', bd=2)
@@ -73,6 +74,8 @@ class Controller(object):
         s.bind(('', 0))
         addr = 'localhost', 8997
         BUFSIZE = 1024
+        self._150count = -1
+        self.cur_angle = 7  # to make it wrap to the start 
 
         if self.recording:
             line = 'stoplogging' 
@@ -244,7 +247,7 @@ class Controller(object):
             now = time.perf_counter()
             cur_time = self.time_passed + (now - self.last_file_write)
             timeus = int(cur_time * 1e6)
-            self.outfile.write("{}, {}, {}".format(timeus, -1, -1))
+            self.outfile.write("{}, {}, {}\n".format(timeus, -1, -1))
         self.root.after(self.DELAY_MS, self.delMarkers)
 
     def delMarkers(self):
@@ -266,10 +269,10 @@ class Controller(object):
         # this is a hack so flash meta works
         # flash is based on self.vx and vy (at end of run draw go backwards)
         bef = self.box2pos(self.canvas.coords(self.dot))
-        bvx = self.vx
-        bvy = self.vy
-        self.vx = -self.vx
-        self.vy = -self.vy
+        #bvx = self.vx
+        #bvy = self.vy
+        #self.vx = -self.vx
+        #self.vy = -self.vy
         self.flashMeta()
 
         
@@ -302,8 +305,28 @@ class Controller(object):
             self.vx = -self.vx
             self.vy = self.vy if bool(random.getrandbits(1)) else -self.vy
         """
+        self._150count += 1
         # 8 angles limit
-        x, y, self.vx, self.vy = self.next_xy()
+        if self._150count % 150 == 0:
+            x, y, self.vx, self.vy = self.next_xy()
+            #theta = math.atan(self.vy / self.vx) # unlikely to be zero here
+            #self.vx = self.speed * math.cos(theta)
+            #self.vy = self.speed * math.sin(theta)
+
+            self._startxy = (x, y)
+            self._150count = 0
+            print("CHANKED XY:", x, y, self.vx, self.vy)
+        else: # just move back to start
+            x, y = self._startxy
+
+        #theta = math.atan(self.vy / self.vx) # unlikely to be zero here
+        #self.vx = self.speed * math.cos(theta)
+        #self.vy = self.speed * math.sin(theta)
+        
+        if self._150count > 145:
+            print("at:", self._150count)
+        elif self._150count % 35 == 0:
+            print("at:", self._150count)
 
         self.canvas.coords(self.dot, self.pos2box((x,y)))
         # wait for last samples flash to finish then flash
