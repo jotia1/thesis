@@ -17,6 +17,10 @@ import socket  #To send UDP to DAVIS
 # Ratio between screen pixels to DVS pixels
 PIXEL_FACTOR = 4
 
+if (sys.version_info < (3, 0)):
+    print("Python versions < 3 not supported")
+    exit()
+
 class Controller(object):
     """ This class will act as the controller of the display window.
     Interactions with the display canvas should be done using this class.
@@ -44,6 +48,13 @@ class Controller(object):
         self.cur_angle = 7
         self._startxy = (0,0)
         self._150count = -1
+        # Trail state
+        self.samples_per_trial = 2
+        self._exp_count = -1
+        self.angles_per_exp = 8
+        self.trial_params = [(size, speed) for size in (4, 6, 8) for speed in (8, 6, 4, 2)]
+        self.cur_trial = -1
+        self._do_quit = False
         # TL TM TR RM
         # BR BM BL LM
         epsil = 1e-9
@@ -202,11 +213,12 @@ class Controller(object):
             screen after DELAY_MS ms.
         """
         x0, y0 = self.box2pos(self.canvas.coords(self.dot))
-        x1 = x0 + self.diagonal * self.vx
-        y1 = y0 + self.diagonal * self.vy
+        x1 = x0 + (self.diagonal * self.vx)
+        y1 = y0 + (self.diagonal * self.vy)
         self.cur_line = self.canvas.create_line(x0, y0, x1, y1, \
                                                 fill='black',  \
                                                 width=self.dot_size)
+        print("line between: {0}".format(((x0,y0), (x1, y1))))
         self.root.after(self.DELAY_MS, self.clear)
         
 
@@ -261,19 +273,24 @@ class Controller(object):
         """ Keep the dot from leaving the screen and update the gradient if 
             off screen
         """
+
         x, y = self.box2pos(self.canvas.coords(self.dot))
         if not (-self.dot_rad > x or x > self.boundx or -self.dot_rad > y or y > self.boundy): #Not out
             return False  #still on screen
 
+        if self._do_quit: # if done, exit before flashing
+            self.recording_pressed() # finish this recording
+            exit()
+
         #self.root.after_cancel(self.callback)
+        bef = self.box2pos(self.canvas.coords(self.dot))
+        bvx = self.vx
+        bvy = self.vy
         # this is a hack so flash meta works
         # flash is based on self.vx and vy (at end of run draw go backwards)
-        bef = self.box2pos(self.canvas.coords(self.dot))
-        #bvx = self.vx
-        #bvy = self.vy
-        #self.vx = -self.vx
-        #self.vy = -self.vy
+        self.vx, self.vy = -bvx, -bvy   # NOTE This is a hack see above comment
         self.flashMeta()
+        self.vx, self.vy = bvx, bvy
 
         
         # set the new gradient and velocity
@@ -305,9 +322,24 @@ class Controller(object):
             self.vx = -self.vx
             self.vy = self.vy if bool(random.getrandbits(1)) else -self.vy
         """
+
+        ## EXP STATE ##
+        if self.recording:
+            self._exp_count += 1
+            if self._exp_count % (self.samples_per_trial * self.angles_per_exp + 1) == 0:
+                # Finished this trial
+                if self.cur_trial == len(self.trial_params) - 1: # Totally finished
+                    self._do_quit = True  # exit next time off screen
+                else: ## Stil more trials to do, start in 1.5 seconds
+                    print("Starting next, cur_trial: {0}, 150count: {1}, exp_count: {2}".format(self.cur_trial, self._150count, self._exp_count))
+                    self.root.after(2500, lambda : self.start_next_trial())
+                    self._exp_count = 0
+                
+
+
         self._150count += 1
         # 8 angles limit
-        if self._150count % 150 == 0:
+        if self._150count % self.samples_per_trial == 0:
             x, y, self.vx, self.vy = self.next_xy()
             #theta = math.atan(self.vy / self.vx) # unlikely to be zero here
             #self.vx = self.speed * math.cos(theta)
@@ -333,6 +365,29 @@ class Controller(object):
         self.root.after(self.DELAY_MS * 2, self.flashMarker)
         self.root.after(self.DELAY_MS * 4, self.flashMeta) 
         return True
+
+
+    def start_next_trial(self):
+        # STOP LAST RECORDING
+        self.recording_pressed()
+
+        self.cur_trial += 1
+        size, speed = self.trial_params[self.cur_trial] 
+        # Set values in boxes
+        self._speedE.delete(0, tk.END)
+        self._speedE.insert(0, str(speed))
+        self._sizeE.delete(0, tk.END)
+        self._sizeE.insert(0, str(size))
+        self._fnameE.delete(0, tk.END)
+        self._fnameE.insert(0, "onight_{0}_{1}".format(size, speed))
+        # simulate button presses
+        self.change_speed()
+        self.change_size()
+        # simulate start stop recording pressed
+        self.recording_pressed()
+        
+
+
 
     def next_xy(self):
         hwidth = self.cwidth//2
