@@ -1,4 +1,4 @@
-function [ idx ] = getSampleIndexs( filename );
+function [ idx ] = getSampleIndexs( filename )
 % GETSAMPLEINDEXS Given a file with standard metaflashes extract the
 % indexes of each segments start and stop
 
@@ -20,12 +20,12 @@ function [ idx ] = getSampleIndexs( filename );
     [xs, ys, ps] = extractRetina128EventsFromAddr(allAddr);
     ts = double(ts);
     
-    sspike = 8200;
-    espike = 68200;
-    xs = xs(sspike:espike);
-    ys = ys(sspike:espike);
-    ts = ts(sspike:espike);
-    ps = ps(sspike:espike);
+%     sspike = 2000;
+%     espike = 672474;
+%     xs = xs(sspike:espike);
+%     ys = ys(sspike:espike);
+%     ts = ts(sspike:espike);
+%     ps = ps(sspike:espike);
     
     % Constants
     ETHRES = 100; % Number of events to be considered a spike
