@@ -18,10 +18,10 @@ for size_i = 1 : numel(size_values);
 
                 %fprintf('k: %d, speed: %d, size: %d\n', k, speed, size );
                 infilename = sprintf('../data/8AD_samp/onight_%d_%d.aedat', speed, size);
-                outfilename = sprintf('%d_%d_%d_%s', speed, size, k, decay);
+                outfilename = sprintf('%d_%d_%dk_%s', speed, size, k/1000, decay);
                 
-                fprintf('%s, K: %d, decay: %s, \n', infilename, k, decay);
-                aedat2NetIn(infilename, '8_8_exp', 128, 128, 1, 30, false, decay, k)
+                fprintf('infile: %s, outfile: %s, K: %d, decay: %s, \n', infilename, outfilename, k, decay);
+                %aedat2NetIn(infilename, outfilename, 128, 128, 1, 30, false, decay, k)
             end
         end
     end
