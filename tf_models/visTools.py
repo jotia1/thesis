@@ -82,12 +82,12 @@ def write_preds(batch_data, batch_labels, preds, outdir, img_dim):
         limg = batch_labels[cur_img, :].reshape(img_dim, img_dim)
         pimg = preds[cur_img, :].reshape(img_dim, img_dim)
 
-        fig, ax = plt.subplots(1, 3, figsize=(6,2),)
+        fig, ax = plt.subplots(1, 2, figsize=(4,2),)
         fig.subplots_adjust(hspace=0.3, wspace=0.05)
 
         titles = ['Input', 'Ground Truth', 'Prediction']
         imgs = [iimg, limg, pimg]
-        for i in range(3):
+        for i in range(2):
             title = titles[i]
             img = imgs[i]
             iplt = ax.flat[i].imshow(img, cmap='gray', interpolation='none')  
