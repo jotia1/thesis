@@ -18,7 +18,8 @@ function [ idx ] = getSampleIndexs( filename )
 
     [allAddr, ts] = loadaerdat(filename);
     [xs, ys, ps] = extractRetina128EventsFromAddr(allAddr);
-    ts = double(ts);
+    ts = fixWrapping(double(ts));
+    
     
 %     sspike = 2000;
 %     espike = 672474;
@@ -52,7 +53,7 @@ function [ idx ] = getSampleIndexs( filename )
             
             bucki = bucki + FRAMESPERSPIKE; 
             
-            while buckets(bucki) > ETHRES;  % Skip remaining
+            while bucki < numel(buckets) && buckets(bucki) > ETHRES;  % Skip remaining
                 bucki = bucki + 1;
             end
             lastSpikeBuck = bucki;
@@ -62,7 +63,9 @@ function [ idx ] = getSampleIndexs( filename )
         bucki = bucki + 1;
     end
     % Plus the last segment
-    startTime = sum(buckets(1 : lastSpikeBuck + EDGEBUFFER));
-    endTime = sum(buckets(1 : bucki - EDGEBUFFER));
-    idx = [idx; startTime, endTime];
+    if lastSpikeBuck < numel(buckets);   % Only if haven't already passed end
+        startTime = sum(buckets(1 : lastSpikeBuck + EDGEBUFFER));
+        endTime = sum(buckets(1 : bucki - EDGEBUFFER));
+        idx = [idx; startTime, endTime];
+    end
 end

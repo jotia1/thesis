@@ -6,6 +6,7 @@ idxs = getSampleIndexs(infile);
 
 [allAddr, tts] = loadaerdat(infile);
 [txs, tys, tps] = extractRetina128EventsFromAddr(allAddr);
+tts = fixWrapping(tts);
 
 sspike = idxs(2, 1) - 1;
 espike = idxs(end - 1, 2);
@@ -26,7 +27,7 @@ for i = 2:size(idxs, 1) - 1;  % Skip first and last section
    sidx = idxs(i, 1) - sspike;
    eidx = idxs(i, 2) - sspike;
    hidx = int32((eidx - sidx)) + sidx; % used to be used to reduce data
-   [i, sidx, hidx, eidx, numel(txs)]
+   %[i, sidx, hidx, eidx, numel(txs)];
    xs = [ xs; txs( sidx : hidx ) ];
    ys = [ ys; tys( sidx : hidx ) ];
    if i > 2
@@ -34,8 +35,8 @@ for i = 2:size(idxs, 1) - 1;  % Skip first and last section
    end
    ts = [ ts; tts( sidx : hidx ) - cum_timelost ];
    ps = [ ps; tps( sidx : hidx ) ];
-   fprintf('sidx: %d, eidx: %d, hidx: %d, lhidx: %d, cum_time: %d\n', ...
-   sidx, eidx, hidx, lhidx, cum_timelost);
+   %fprintf('sidx: %d, eidx: %d, hidx: %d, lhidx: %d, cum_time: %d\n', ...
+   %sidx, eidx, hidx, lhidx, cum_timelost);
    lhidx = hidx;
    seps(i, :) = [lastStart, numel(xs)];
    lastStart = numel(xs);

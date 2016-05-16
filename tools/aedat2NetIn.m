@@ -32,7 +32,7 @@ function [  ] = aedat2NetIn( filename, outfile, kx, ky, kz, msps, attentional, d
 
     assert(kx == ky, 'Varying size kernels not supported yet');
     
-    events_per_img = 100;
+    events_per_img = 150;
     
 %   Init result matrix
     nevents = numel(xs);
@@ -42,7 +42,11 @@ function [  ] = aedat2NetIn( filename, outfile, kx, ky, kz, msps, attentional, d
     
 %   For each pair in sep
     cur_sample = 1;
+    fprintf('Starting Samples');
     for sep = 1:size(seps, 1);
+        if mod(sep, 10) == 0  % Give some feedback on progress
+            fprintf('.');
+        end
         starti = seps(sep, 1);
         endi = seps(sep, 2);
         
@@ -67,6 +71,8 @@ function [  ] = aedat2NetIn( filename, outfile, kx, ky, kz, msps, attentional, d
         cur_sample = cur_sample + size(labs, 1);
 
     end
+    
+    fprintf('\nPreparing to save %s\n', outfile);
 
 %   Shuffle data
     perm = randperm(nsamples);
@@ -87,7 +93,7 @@ function [  ] = aedat2NetIn( filename, outfile, kx, ky, kz, msps, attentional, d
         disp('disp')
         for i = 500:50:100000
             waitforbuttonpress
-            imshow(mat2gray(reshape(train_inputs(i, :), 128, 128)))
+            imshow(mat2gray([reshape(train_inputs(i, :), 128, 128), ones(128, 7), reshape(train_labels(i, :), 128, 128)]))
         end
     end
     
@@ -99,7 +105,7 @@ function [  ] = aedat2NetIn( filename, outfile, kx, ky, kz, msps, attentional, d
                     'filename', 'kx', 'ky', 'kz', ...
                     'msps', 'k', 'timestamp' ...
                 );
-    
+    fprintf('\nFinished saving %s\n', outfile);
     
     
     
