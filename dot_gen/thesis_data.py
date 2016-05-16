@@ -332,7 +332,7 @@ class Controller(object):
                     self._do_quit = True  # exit next time off screen
                 else: ## Stil more trials to do, start in 1.5 seconds
                     print("Starting next, cur_trial: {0}, 150count: {1}, exp_count: {2}".format(self.cur_trial, self._150count, self._exp_count))
-                    self.root.after(2500, lambda : self.start_next_trial())
+                    self.root.after(1200, lambda : self.start_next_trial())
                     self._exp_count = 0
                 
 
