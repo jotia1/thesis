@@ -1,7 +1,7 @@
-\chapter{Processing - Decaying the past and future}
+\chapter{Processing - Accumulating the past and future}
 \label{ch:preprocess}
 
-\section{Motivations and methods}
+\section{Aims}
 For a system to predict motion it necessarily must encode some representation of time. 
 %TODO reference some RNN and SNN papers...
 Traditional approaches to this have been to design Recurrent Neural Networks (RNNs) or to use Spiking Neural Networks (SNNs). 
@@ -10,10 +10,12 @@ To leverage the existing literature and use these state-of-the-art models the ev
 
 \begin{wrapfigure}{r}{0.3\textwidth}
     \centering
-    \label{fig:puppyBall}
     \includegraphics[width=0.3\textwidth]{puppyBall.png}
     \caption{A decayed image of a puppy with a ball}
+    \label{fig:puppyBall}
 \end{wrapfigure}
+
+\section{Method}
 The simplest solution is to accumulate all the events in a given time slice into a 2D frame to recover images from the event-based data.
 This is somewhat counter intuitive though as this forfeits all the temporal information which seperates the DVS from traditional cameras and results in a blury low resolution image. 
 A method of preserving as much of the temporal information as possible is required. 

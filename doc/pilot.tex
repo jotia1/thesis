@@ -1,15 +1,16 @@
-\chapter{Pilot study}
+\chapter{Pilot studies}
 \label{ch:pilot}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%      NET 1     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{pilotNet1}
 
-%\subsection{Aims}
 
-%\subsection{Method}
-
+\subsection{Aims}
 The first network created is intended to act as an exploration of the problem space to see what can be learnt and act as a benchmark for later models. 
 It was designed to be simple to facilitate reasoning about it's internal dynamics with design decisions specified in table \ref{table:net1def}.
+
+
+\subsection{Method}
 The weights for pilotNet1 were initialised with a truncated normal distribution with a standard deviation of $1 / ( number\_inputs * batch\_size )$ and the biases initialised to zero.
 These weight values were chosen to be proportional to the network size and mini-batch sizes. 
 Starting the biases at zero was chosen so each unit would consider it's inputs based solely on input weights initially and adjust the biases accordingly in training. 
@@ -74,10 +75,14 @@ The computation graph could be seperated onto multiple G.P.U.s to achieve result
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%      NET 2     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{pilotNet2}
+
+\subsection{Aims}
+% TODO section...
+
 After pilotNet1 some refinements were made although many of the features outlined in table \ref{table:net1def} were kept constant. 
 
+\subsection{Method}
 Changes include:
-% TODO Tidy up this list, the gaps are too large...
 \begin{itemize}
     \itemsep-0.5em
     \item Weights initialised with standard deviation of 0.1
@@ -91,7 +96,7 @@ If the network mispredicts an \textit{on} pixel (that is a pixel which should be
 To minimise this issue a penalty could be applied to each type of mistake weighing incorrect active pixels (i.e. predicting one instead of zero) as only a small error while mispredicting an inactive pixel is considered a serious error.
 Essentially penalising the network heavily for failing to predict the path of decayed pixels. 
 
-\subsection{Weighted prediction penalty}
+\subsubsection{Weighted prediction penalty}
 The weighting of penalty should be proportional to the activity in the input, such that if the signal is sparse then any mispredictions should be penalised heavily. 
 % TODO Tidy up this maths and maybe take it out of line
 If the activity is given by some variable $g$ then the penalty weighting for mispredicting a pixel as \textit{off} when it should be \textit{on} should be $(16384 - g) / 16384$, similarly a misprediction of a pixel as \textit{on} when it should be \textit{off} should only be $g / 16384$. 

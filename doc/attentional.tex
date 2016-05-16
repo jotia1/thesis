@@ -1,4 +1,4 @@
-\chapter{Attentional Networks}
+\chapter{Study 2 - Attentional Networks}
 \label{ch:attentional}
 To help simplify the learning problem the task was again reframed to improve the signal to noise ratio.
 The preprocessing was adjusted such that decay was applied around every event but instead of using the full image only an 11x11 decayed area was kept.
@@ -23,8 +23,13 @@ As will be shown the network is able to learn even in the midst of such noise so
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%      ATTENTIONAL NN    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Attentional Directly Connected (ADC) Network}
+
+\subsection{Aims}
+% TODO Need to actually set some aims here
 This network, as the name suggests, is a direct connection between the input and output units.
 The prediction problem had been broken down into a seemingly simple task so it was expected that results could be achieved with a simple network. 
+
+\subsection{Method}
 The network details are outlined in table \ref{tb:attnet1def}, with key points being the loss function has returned to the standard S.S.D. instead of the linearly weighted S.S.D. and the number of inputs has drastically decreased. 
 
 \begin{table}[h]
@@ -52,7 +57,7 @@ This proved to be enough for the network to learn to make coherent predictions.
 The two datasets (8 Angle and Arbitrary Angle) were considered, a network was trained on each and then made predictions on a set of validation data from it's own dataset and other dataset to see how it could generalise.
 For clarity the network trained on the 8AD will be called 8AngNet and the network trained on the AAD will be called ArbAngNet. 
 
-\subsubsection{8AngNet results}
+\subsubsection{Linearly activated 8AngNet results}
 
 \begin{figure}
     \centering
@@ -114,7 +119,7 @@ Instead this clear prediction of two paths suggests the network is simply learni
 \end{figure}
 
 
-\subsubsection{ArbAngNet results}
+\subsubsection{Linearly activated ArbAngNet results}
 It follows that a network trained on only 8 angles might have trouble generalising to arbitrary angles so a second network was trained on the Arbitrary Angles Dataset. 
 In general the network trained on Arbitrary Angle data was less confident in its predictions (magnitude of predictions were lower) but in each guess it would cover a boarder area. 
 % TODO rewrite this sentence
@@ -149,11 +154,34 @@ ArbAngNet does not predict any given angle strongly but instead has a very faint
 The significance of these prediction is questionable given small the predictions are but it does give some insight into the networks dynamics.
 It should be noticed that this does not exclude the possibility that ArbAngNet is also just mapping between regions of the input and output, rather this is still a promising theory.
 
+\subsection{Non-linear acitivation}
+Compare Sigmoidal with relu?
+
+\subsubsection{Sigmoid activation}
+Talk about both 8AD and AAD here
+
+\subsubsection{ReLU activiation}
+Talk about both 8AD and AAD here 
+
+\subsection{Attentional Directly Connected network discussion}
+How did they go generally?
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%      ATTENTIONAL NN    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Attentional Hidden Layer (AHL) Network}
 
-Discuss results of using a hidden layer when done...
+\subsection{Aims}
+ using a hidden layer, what can learn? maybe line params, 1, 2, more hiddens
+
+\subsection{Method}
+
+\subsection{Results}
+\subsubsection{1 hidden unit}
+
+\subsubsection{2 hidden units}
+
+\subsubsection{Many hidden units}
+
+\subsection{Discussion}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%      AUTO ENCODE     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

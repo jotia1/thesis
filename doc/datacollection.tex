@@ -1,6 +1,7 @@
 \chapter{Data collection}
 
-\section{The need for a dataset}
+%\section{The need for a dataset}
+\section{Aims of a dataset}
 To fairly compare models it is necessary for the community to have standardised datasets (REF MNIST, CIFAR ETC.). % Reference MNIST, CIFAR etc.
 Many datasets exist for time-stepped models from well formatted and normalised datasets (such as MNIST) to large complex datasets (such as ***ImageNet dataset?***).
 In an attempt to compare event-based processing models to time-stepped models some have tried using DVS recordings of static MNIST digits (REF O'CONOR). % ref OConor
@@ -10,7 +11,7 @@ There is still a deficency of extremely simple datasets around which strong math
 As capturing movement is a key advantage of the DVS over time-stepped models this should be emphasised in the dataset. 
 %This work offers such a dataset consisting of dots moving linearly with constant velocity. 
 
-\section{Requirements and details for 8AD and AAD}
+\section{Requirements and details}
 The motivations behind such a dataset must be carefully considered so when collected it forms a comprehensive set.
 Simple structure is required so that when experimenting with new appraoches to processing dynamics in the system can be reasoned about with some accuracy.
 Additionally a dataset for complex real world (robotic self-motion) or interesting patterns already exists, it is simpler data that is necessary.
@@ -126,7 +127,7 @@ This makes segmenting samples a matter of extracting the regions in which the to
 In the arbitrary angle samples it will be possible for a dot to start close to a corner and to move to the adjacent edge resulting in a sample with a path of only a few (\textless 5) DVS pixels and lasting less than a second.
 This case was considered troublesome for later processing steps and thus the starting points in the arbitrary angle dataset were restricted to the middle 80\% of each edge. 
 
-\subsection{DVS curiosities}
+\subsection{DVS characteristics}
 %Black on white and white on black, grey
 %Hot pixels
 
@@ -142,33 +143,53 @@ This phenomena is not expected to reveal any significant insight related to this
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%          METHODOLOGY         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %TODO maybe this should just be a sub section since its so small, what else should go here?
-\section{Methodology}
-%What did i actually end up doing
-The final system consisted of a program called dotGen written in python which would display the dot moving along a trajectory with meta-flashes.
-DotGen also had tools to start a DVS recording, adjust dot parameters (size and velocity) and help set up the DVS correctly. 
-DotGen would log the ground truth of the dots position to a CSV file in the format <x, y, time> every time the screen was updated.
-The screen recorded from was a Dell U2414H Monitor with a refresh rate of 60Hz.
-DotGen and jAER were started and the camera positioned to exactly capture the screen size then the recordings were taken. 
+\section{Method}
+The datasets were collected automatically overnight by the python program dot\_gen. 
+The dot\_gen software was custom made to present the stimulus on screen while logging the ground truth and interfacing with the jAER software package over UDP to start and stop recordings. 
+Experiments were run overnight to avoid any disturbances of general laboratory use during work hours as well as to mitigate ambient light changes for different times of day. 
+On a given night either the 8AD or AAD were collected, that is a single recording of each parameter combination was recorded on a given night. 
+By recording all parameters on all nights the noise between parameter combinations (due to computer screens in the lab or other ambient light changes) should remain somewhat uniform.
+
+
+
+
+
+% TODO this section mentions meta-flashes, should check they are explained above
+%The final system consisted of a program called dot\_gen written in python which would display the dot moving along a trajectory with meta-flashes.
+%The dot\_gen software also had tools to automatically start and stop DVS recordings, adjust dot parameters (size and velocity) and help set up the DVS correctly. 
+%It would log the ground truth of the dots position to a CSV file in the format <x, y, time> every time the screen was updated.
+%The screen recorded from was a Dell U2414H Monitor with a refresh rate of 60Hz.
+% TODO Talk about the need for automation and overnight recordings
+%Experiements were specified in the dot\_gen source code and were then run automatically overnight to avoid changes in ambient light.
 
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%         FINAL SPECS          %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Final dataset specifications}
-Video lengths \hfill
-Samples per video \hfill
-Total samples \hfill
-key for each filename \hfill
+\section{Discussion}
+% TODO Fill in placeholders below
+The final dataset submitted consists of ***EVENTS*** events from ***HOURS*** of recording split into ***NUMBER*** different files.
+The final 
+key for each filename ***TODO***
 
+Ground truths for each recording are supplied with the data files however these only label where the dot was when the stimulus was updated and do not yet directly label the events.
+Unification of the ground truth with the events recorded was not necessary for this work and due to time constraints has been excluded from the scope.
+In this unification it may be important to consider small time differences between time zero in the ground truth log and the DVS recording.
+This difference will be the time from when the dot\_gen software sets its time to zero, sends a UDP message to jAER and when jAER then sets it's timestamp to zero. 
+This communication all happened on a single machine and should be insignificant but may need to be considered. 
+Further the unifcation process will require interpolation between the ground truths points which are sampled at the frequency of dot movement (~16\ms) and the event-data which is sample roughtly 10x more frequently.
+The screen pixel to DVS pixel alignment may have an affect on the performance of such an algorithm and and is not well quantified in the current experimental design. 
+While care was taken to ensure the DVS captured just the stimulus screen no metric to measure this mapping is defined. 
 
-\section{Comments}
-Looking back at the data what do i think? \hfill
-Flat timestamps?? -> experimental hardware , do we still get??\hfill
+%This work offers a new datset consisting of simple linear motion for training and comparing models.
+This work helps fill the gap in current literature for a simple lablled motion-based dataset. 
+Further work is required to unify the ground truth logs with the recordings to generate labelled events but is considered out of scope for this work which will process the data differently. 
+While this work did not investigate the effectiveness of deep learning techniques, this dataset may allow such investigations in the future.
+
+% TODO this section feels a little disjoint -> need to clarify the sections/points I am trying to make
+% Problems with SCREen PIXEL TO DVS PIXEL line up
+%   Which ties into general DVS position -> edges not perfect
+% Further processing of ground truth events labels required and not considered here
+
 % MOVE TO PROCESSING - Segmenting looses a lot on each side \hfill
 %No metric for validating ground truth against actual dot accuracy
-Camera angles (parallel lines not so).
-
-The final datasets proved to be useful and to satisfy the requirements of being simple, easy to collect and of movement. 
-A measure of success of the labels is harder to quantify without a metric, as the labels were not used in this work such a metric is left out of scope although this would be advantageous for the dataset. 
-
-

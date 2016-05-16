@@ -1,8 +1,10 @@
-\chapter{Convolutional architectures}
+\chapter{Study 1 - Convolutional architectures}
 \label{ch:convolutions}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%      EVO Kernels    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Evolutionary kernels}
+
+\subsection{Aims}
 %Tried to use evol kerns but sparse nature of data means no good
 After the results from Net1 and Net2 it was clear the task needed to be reframed.
 Previous work using convolutions and kernels as feature detectors suggusted they might be able to provide feature maps necessary for a network to learn.
@@ -14,6 +16,7 @@ Kenels specialised to the datasets would be developed, these could then be used 
 %   - Size
 %   - Limits (27) why...
 
+\subsection{Method}
 In this work a kernel is considered as a two dimentional matrix with each value in the matrix being a weight.
 As no standard set of feature kernels to use with event-based data exists these would need to be created.
 Previous work developing kernels using an evolutionary algorithm made this a sensible place to start.
@@ -64,8 +67,11 @@ The network used then looked much like Net1 and Net2.
 %Define it what did it learn and what happened.
 %Alternative approach of using evol kerns on full image
 
+\subsection{Aims}
 Rather than using an evolutionary algorithm to evolve kernels with which to later apply convolutions to the data this can all be done within a Convolutional Neural Network. 
 This network should be able to produce much of the behaviour of the evolved kernels (because it will be designing its own during training) but shouldn't suffer from the slow training time and possible inconsitancys between training and test data.
+
+\subsection{Method}
 The network used in this work consisted of an input layer followed by a convolution layer with 9, 11x11 convolutions followed by a 2x2 max pooling layer feeding into a fully connected 1024 unit sigmoid layer which fed into a linear output layer. Details are outlined in table \ref{tb:convNetdef}.
 
 \begin{table}[h]
