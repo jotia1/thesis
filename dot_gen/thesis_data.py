@@ -55,6 +55,7 @@ class Controller(object):
         self.trial_params = [(size, speed) for size in (4, 6, 8) for speed in (8, 6, 4, 2)]
         self.cur_trial = -1
         self._do_quit = False
+        self._AAD = True
         # TL TM TR RM
         # BR BM BL LM
         epsil = 1e-9
@@ -294,34 +295,33 @@ class Controller(object):
 
         
         # set the new gradient and velocity
-        """
-        self.vx = random.random() * 4  # range is [0,4]
-        self.vy = random.random() * 4
-        theta = math.atan(self.vy / self.vx) # unlikely to be zero here
-        self.vx = self.speed * math.cos(theta)
-        self.vy = self.speed * math.sin(theta)
+        if self._AAD:
+            self.vx = random.random() * 4  # range is [0,4]
+            self.vy = random.random() * 4
+            theta = math.atan(self.vy / self.vx) # unlikely to be zero here
+            self.vx = self.speed * math.cos(theta)
+            self.vy = self.speed * math.sin(theta)
 
-        # Generate new (x, y) and velocities
-        edge = random.choice(["top", "bottom", "left", "right"])
-        if edge == "top":
-            y = 0
-            x = random.randint(int(self.boundx*0.25), int(self.boundx*0.75))
-            self.vx = self.vx if bool(random.getrandbits(1)) else -self.vx
-        elif edge == "bottom":
-            y = self.boundy
-            x = random.randint(int(self.boundx*0.25), int(self.boundx*0.75))
-            self.vy = -self.vy
-            self.vx = self.vx if bool(random.getrandbits(1)) else -self.vx
-        elif edge == "left":
-            x = 0
-            y = random.randint(int(self.boundy*0.25), int(self.boundy*0.75))
-            self.vy = self.vy if bool(random.getrandbits(1)) else -self.vy
-        else:
-            x = self.boundx
-            y = random.randint(int(self.boundy*0.25), int(self.boundy*0.75))
-            self.vx = -self.vx
-            self.vy = self.vy if bool(random.getrandbits(1)) else -self.vy
-        """
+            # Generate new (x, y) and velocities
+            edge = random.choice(["top", "bottom", "left", "right"])
+            if edge == "top":
+                y = 0
+                x = random.randint(int(self.boundx*0.25), int(self.boundx*0.75))
+                self.vx = self.vx if bool(random.getrandbits(1)) else -self.vx
+            elif edge == "bottom":
+                y = self.boundy
+                x = random.randint(int(self.boundx*0.25), int(self.boundx*0.75))
+                self.vy = -self.vy
+                self.vx = self.vx if bool(random.getrandbits(1)) else -self.vx
+            elif edge == "left":
+                x = 0
+                y = random.randint(int(self.boundy*0.25), int(self.boundy*0.75))
+                self.vy = self.vy if bool(random.getrandbits(1)) else -self.vy
+            else:
+                x = self.boundx
+                y = random.randint(int(self.boundy*0.25), int(self.boundy*0.75))
+                self.vx = -self.vx
+                self.vy = self.vy if bool(random.getrandbits(1)) else -self.vy
 
         ## EXP STATE ##
         if self.recording:
@@ -339,17 +339,21 @@ class Controller(object):
 
         self._150count += 1
         # 8 angles limit
-        if self._150count % self.samples_per_trial == 0:
-            x, y, self.vx, self.vy = self.next_xy()
-            #theta = math.atan(self.vy / self.vx) # unlikely to be zero here
-            #self.vx = self.speed * math.cos(theta)
-            #self.vy = self.speed * math.sin(theta)
+        if not self._AAD:
+            if self._150count % self.samples_per_trial == 0:
+                x, y, self.vx, self.vy = self.next_xy()
+                #theta = math.atan(self.vy / self.vx) # unlikely to be zero here
+                #self.vx = self.speed * math.cos(theta)
+                #self.vy = self.speed * math.sin(theta)
 
-            self._startxy = (x, y)
-            self._150count = 0
-            print("CHANKED XY:", x, y, self.vx, self.vy)
-        else: # just move back to start
-            x, y = self._startxy
+                self._startxy = (x, y)
+                self._150count = 0
+                print("CHANKED XY:", x, y, self.vx, self.vy)
+            else: # just move back to start
+                x, y = self._startxy
+
+        # AAD trial resets
+        
 
         #theta = math.atan(self.vy / self.vx) # unlikely to be zero here
         #self.vx = self.speed * math.cos(theta)
@@ -379,7 +383,7 @@ class Controller(object):
         self._sizeE.delete(0, tk.END)
         self._sizeE.insert(0, str(size))
         self._fnameE.delete(0, tk.END)
-        self._fnameE.insert(0, "onight_{0}_{1}".format(size, speed))
+        self._fnameE.insert(0, "AAD_{0}_{1}".format(size, speed))
         # simulate button presses
         self.change_speed()
         self.change_size()
