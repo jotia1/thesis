@@ -3,14 +3,20 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%    ASYNC SENSORS     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Asynchronous Vision Sensors}  % 1 page
+Lots of different types of dynamic vision sensors \cite{delbruck2010activity}
+Why would we want a DVS? microparticle tracking \cite{ni2012asynchronous}
+
 \subsection{Dynamic Vision Sensor (DVS)}
-Tobi made a camera \cite{tobidvs}
-\begin{itemize}
-    \item Discuss the Dynamic vision sensors, what they are capable of
-\end{itemize}
+Tobi made a camera \cite{delbruck2008}
+Discuss the Dynamic vision sensors, what they are capable of
+Used in stuff like \cite{delbruck2007fast}
+They also have a new camera called the DAVIS \cite{DAVIS}
 
 \subsection{Asynchronous Time-based Image Sensor (ATIS)}
-what is it what does it do
+what is it what does it do \cite{posch2010high}
+Example usages Saeed (UWS) \cite{afshar2016investigation}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%    EVENT-BASED PROCESSING     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \pagebreak
@@ -20,22 +26,38 @@ Standard videos and frame based approaches
 \pagebreak
 \section{Event-based processing}     % 2 page
 Where does the idea come from, what is it, 
-What other processing has already been done with them (things like Motion cones).
+What other processing has already been done with them (things like Motion cones). 
+Example usage of DVS is fast motor control by \cite{delbruck2007fast}
 Discuss frame accumulation by other groups
 Check out more papers in Amy's paper
+Example of event-based visial flow calculation \cite{benosman2014event} (what else is this lab doing?)
+Neuromorphic systems are becoming more wide spread \cite{delbruck2014research}
+Calculating odometry using event based information (application) \cite{censi2014low}
+Event-based plane detection \cite{afshar2016investigation}
+Event-based IMU use and the problems with it and what different representations can do to help\cite{fida2015pre}
+Real time event-based (IMU) processing \cite{fida2015real}
+
 
 \subsection{Biologically realistic representations}
-Disucss how this is more like the eye and the advantages of this model of processing
+Rumelhart's back prop might not actually be biologically realistic but effective in learning regardless \cite{Rumelhart1986}. \\
+Disucss how this is more like the eye and the advantages of this model of processing \cite{mahowald1992vlsi}
+Converts 2D images to more realistic spike trains \cite{afshar2013ripple}
+Discusses the biological realism of using spikes \cite{akolkar2015can}
+What does this paper say about representations maybe bio isn't always an answer \cite{fida2015pre}
 
 \pagebreak
-\subsection{Decayed representations}  % 1 page
+\subsection{Temporally accumulated representations}  % 1 page
 What other work has been done with decayed representations and how does it affect/influence this project
+Temporal surfaces \cite{afshar2016investigation}
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  NEURAL NETWORKS   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \pagebreak
 \section{Neural Networks}     % 1 page
 Use in image processing recently
+Made popular by advents in learning agorithms **cite lecun**, learning rules  \cite{Rumelhart1986} and datasets ** cite datasets**
 
 \subsection{Neuron types}
 Different neurons have different properties ...
@@ -55,11 +77,12 @@ Improvements over Sigmoid
 
 \pagebreak
 \subsection{Learning rules}
+Learning representations by back--propagating errors\cite{Rumelhart1986}
 
 \subsubsection{Stochastic Gradient Descent (S.G.D.)}
 
 \subsubsection{Adam Optimiser}
-Adam: A Method for Stochastic Optimization (Diederik Kingma, Jimmy Ba)
+Adam: A Method for Stochastic Optimization \cite{kingma2014adam}
 
 \subsubsection{Backpropagation}
 
@@ -74,24 +97,49 @@ Who made these?
 
 \pagebreak
 \subsection{Deeper networks}   % 1 page
-ResNet etc.
+ResNet etc. % TODO find resnet reference
+This was some deep network work \cite{pedroni2013neuromorphic}
+Oconor used deep networks \cite{OConnor2013}
 
 \pagebreak
 \subsection{Recurrent networks}  % 1 page
 Elman and his work\cite{elman1990}
+Also some work done by Sutskever and Hinton with recurrent boltzmann machines (might be the motion data? if not should quote that too)\cite{sutskever2009recurrent}
 
 \pagebreak
 \subsection{Spiking networks}    % 1 page
-O'Connor
+O'Connors work on spiking deep belief networks \cite{OConnor2013}
+Used a spiking network to train feature detectors \cite{afshar2016investigation}
+Move to spiking networks accompanied by converstions from 2D to 1D temporal trains \cite{afshar2013ripple}
+Discussion on 2D images and converting to spikes vs just using spiking sensor and the information preserved \cite{akolkar2015can}
+Paper on spiking networks for vision tasks, usese the DVS and compares to convNets \cite{martin2015spiking}
 
 \pagebreak
 \subsection{Software frameworks}   % 1 page
-Caffe Theano Torch7 Tensorflow CNTK
+Caffe\cite{jia2014caffe} Theano Torch7 Tensorflow CNTK
+
+\section{Neural Networks with event-based data}
+What is the standard approach, what have people tried and what is lacking. \cite{OConnor2013}  ** TOBI CAR WITH CONVOLUTIONS ** ** UWS temporal surfaces paper if published now ** ** AMYs work ** (who does amy reference?)
+Using event-based data and feeding it into a network (Saeed) \cite{afshar2016investigation}
+
+\subsection{Benchmark datasets}
+Some benchmark datasets have been given \cite{Gibson2014} and **OTTHER** but represent complex strucutre in the real world.
+Creates own plane dataset \cite{afshar2016investigation}
+Creates own letter (on rolling board) and DMD projector dataset \cite{akolkar2015can}
+Newest dataset of motion and visual navigation, emphasises the need for dataset \cite{barranco2016dataset}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    SUMMARY    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Literature summary}      % 1 page
 Revisit each section in a sentance or two and link them all together.
 
+\subsubsection{What are these references and why did I grab them?}
+Evolving probabilistic spiking neural networks for spatio-temporal pattern recognition: A preliminary study on moving object recognition \cite{kasabov2011evolving}
 
+Neuromorphic adaptations of restricted boltzmann machines and deep belief networks, These guys (in particular Pedroni) had something cool, should find out what it was again \cite{pedroni2013neuromorphic}
 
+Probably full of good info for referencing \cite{delbruck2014research}
+
+Double check the use of this paper \cite{gil2014active}
+
+How does this paper fit? applications? what are they doing? temporal surfaces maybe? \cite{davide2014high} another from the same author, seems to have the trend of very fast motor control \cite{mueggler2014event} again high speed object tracking (diff authors) \cite{saner2014high} More somewhat unrelated, must just be about the methods of processing \cite{mueggler2015continuous}, \cite{barranco2016dataset}, This one sounds like cool processing (similar to UWS i think) \cite{Bichler}
