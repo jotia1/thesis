@@ -122,3 +122,4 @@ if nargout==0,
    fprintf('min addr=%d, max addr=%d, Ts0=%d, deltaT=%d=%.2f s assuming 1 us timestamps\n',...
        min(allAddr), max(allAddr), allTs(1), dt,double(dt)/1e6);
 end
+allTs = fixWrapping(double(allTs));  % Clean up wrapping problems of camera

@@ -28,8 +28,8 @@ function [  ] = aedat2NetIn( filename, outfile, kx, ky, kz, msps, attentional, d
 
 %% Code
     %   load file
-    [ xs, ys, ts, ps, seps ] = trimEvents(filename);
-
+    [ xs, ys, ts, ~, seps ] = trimEvents(filename);
+    
     assert(kx == ky, 'Varying size kernels not supported yet');
     
     events_per_img = 150;
@@ -61,10 +61,6 @@ function [  ] = aedat2NetIn( filename, outfile, kx, ky, kz, msps, attentional, d
         end
             
 %       add to result matrix 
-        %stride = events_per_img;
-       % samples4section = floor((endi - starti - ...
-        %    mod(endi, stride) + (stride - mod(starti, stride))) ...
-        %    / events_per_img);
         assert(size(ins, 1) == size(labs, 1), 'dataset and labels not conistant');
         inputs(cur_sample : cur_sample + size(ins, 1) - 1, :) = ins;
         labels(cur_sample : cur_sample + size(labs, 1) - 1, :) = labs;
@@ -103,8 +99,8 @@ function [  ] = aedat2NetIn( filename, outfile, kx, ky, kz, msps, attentional, d
                     'test_inputs', 'test_labels', ...
                     'valid_inputs', 'valid_labels', ...
                     'filename', 'kx', 'ky', 'kz', ...
-                    'msps', 'k', 'timestamp' ...
-                );
+                    'msps', 'k', 'timestamp', ...
+                    '-v7.3');
     fprintf('\nFinished saving %s\n', outfile);
     
     

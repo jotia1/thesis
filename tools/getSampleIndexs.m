@@ -1,5 +1,5 @@
-function [ idx ] = getSampleIndexs( filename )
-% GETSAMPLEINDEXS Given a file with standard metaflashes extract the
+function [ idx ] = getSampleIndexs( ts )
+% GETSAMPLEINDEXS Given some timestamps with standard metaflashes extract the
 % indexes of each segments start and stop
 
 %% Algorithm
@@ -16,17 +16,9 @@ function [ idx ] = getSampleIndexs( filename )
 
 %% Implementation
 
-    [allAddr, ts] = loadaerdat(filename);
-    [xs, ys, ps] = extractRetina128EventsFromAddr(allAddr);
-    ts = fixWrapping(double(ts));
-    
-    
-%     sspike = 2000;
-%     espike = 672474;
-%     xs = xs(sspike:espike);
-%     ys = ys(sspike:espike);
-%     ts = ts(sspike:espike);
-%     ps = ps(sspike:espike);
+    %[allAddr, ts] = loadaerdat(filename);
+    %[xs, ys, ps] = extractRetina128EventsFromAddr(allAddr);
+    %ts = fixWrapping(ts);
     
     % Constants
     ETHRES = 100; % Number of events to be considered a spike
