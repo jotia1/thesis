@@ -25,8 +25,8 @@ for size_i = 1 : numel(size_values);
 
                 %fprintf('k: %d, speed: %d, size: %d\n', k, speed, size );
                 infilename = sprintf('../data/8AD/recordings/onight_%d_%d.aedat', size, speed);
-                outfilename = sprintf('sec_%d_%d_%dk_%s', size, speed, k_values(k_i), decay);
-                
+                outfilename = sprintf('processed/8AD_%d_%d_%dk_%s', size, speed, k_values(k_i), decay);
+
                 fprintf('infile: %s, outfile: %s, K: %d, decay: %s, \n', infilename, outfilename, k, decay);
                 aedat2NetIn(infilename, outfilename, 128, 128, 1, 30, false, decay, k)
             end
