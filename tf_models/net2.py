@@ -56,7 +56,7 @@ TEST_INDEX = 2
 N2_BATCH_SIZE = 100
 N2_TOTAL_STEPS = 1
 N2_LEARNING_RATE = 0.5
-num_hidden = 16
+num_hidden = 2
 
 
 def runNet(datafile=N2_DATA_FILE, tensorboard_dir=N2_TENSORBOARD_DIR, save_dir=N2_SAVE_DIR,
@@ -97,11 +97,11 @@ def runNet(datafile=N2_DATA_FILE, tensorboard_dir=N2_TENSORBOARD_DIR, save_dir=N
         with tf.name_scope('hidden'):
             weights = tf.Variable(tf.truncated_normal([num_inputs, num_hidden], 
                                     stddev=1.0 / num_hidden),
-                                    name='weights')
+                                    name='hid_weights')
         
             biases = tf.Variable(tf.truncated_normal([num_hidden], 
                                     stddev=1.0 / num_hidden),
-                                    name='biases')
+                                    name='hid_biases')
             hidden = tf.nn.relu(tf.matmul(input_placeholder, weights) + biases)
 
         #tf.image_summary("hid_weights", weights.reshape([1, TOTAL_PIXELS, HIDDEN_UNITS, 1]))
@@ -114,11 +114,11 @@ def runNet(datafile=N2_DATA_FILE, tensorboard_dir=N2_TENSORBOARD_DIR, save_dir=N
             weights = tf.Variable(
                 tf.truncated_normal([num_hidden, num_outputs],
                                     stddev=1.0 / num_hidden),
-                name='weights')
+                name='out_weights')
 
             biases = tf.Variable(tf.truncated_normal([num_outputs], 
                                     stddev=1.0 / num_hidden),
-                                    name='biases')
+                                    name='out_biases')
             logits = tf.matmul(hidden, weights) + biases
 
         tf.histogram_summary("out_biases", biases)
@@ -126,10 +126,9 @@ def runNet(datafile=N2_DATA_FILE, tensorboard_dir=N2_TENSORBOARD_DIR, save_dir=N
         tf.histogram_summary("logits", logits)
 
         # loss function - Sum squared difference (well mean...)
-        """
         loss = tf.div(tf.reduce_sum(
             tf.square(label_placeholder - logits)), 
-            TOTAL_PIXELS*BATCH_SIZE, name='loss')
+            num_outputs*batch_size, name='loss')
         #loss = tf.reduce_sum(tf.square(label_placeholder - logits), name='loss')
         """
 
@@ -144,11 +143,12 @@ def runNet(datafile=N2_DATA_FILE, tensorboard_dir=N2_TENSORBOARD_DIR, save_dir=N
 
             squr = tf.square(label_placeholder - logits, name='squr')
             tmp = tf.mul(squr, lamb, name='tmp')
-            loss = tf.reduce_sum(tf.div(tmp + 1e-9, num_outputs), name='loss')
+            loss = tf.reduce_mean(tf.div(tmp + 1e-9, num_outputs), name='loss')
 
         tf.histogram_summary('tmp', tmp)
         tf.histogram_summary('lamb', lamb)
         tf.histogram_summary('squr', squr)
+        """
         
         # Partwise loss - sum(relu(l - p) * ~1) + sum(relu(p - l) * ~0)
         # If it doesn't guess a white highenough its a big loss but if it mislabels
@@ -189,7 +189,7 @@ def runNet(datafile=N2_DATA_FILE, tensorboard_dir=N2_TENSORBOARD_DIR, save_dir=N
         sess.run(init)
 
         summary_writer = tf.train.SummaryWriter(tensorboard_dir,
-                                                graph_def=sess.graph_def)
+                                                graph=sess.graph)
         
         for step in range(total_steps):
             start_time = time.time()
@@ -219,11 +219,11 @@ def runNet(datafile=N2_DATA_FILE, tensorboard_dir=N2_TENSORBOARD_DIR, save_dir=N
             duration = time.time() - start_time
 
             if step % 250 == 0:
-                summary_str, _ = sess.run([summary_op, lamb], feed_dict=feed_dict)
+                summary_str = sess.run(summary_op, feed_dict=feed_dict)
                 summary_writer.add_summary(summary_str, step)
                 
                 # Save a checkpoint and evaluate the model periodically.
-                if step % 10000 == 0:
+                if step % 50000 == 0:
                     #saver.save(sess, SAVE_DIR, global_step=step)
                     
                     # RUN Network with validation data
@@ -237,10 +237,17 @@ def runNet(datafile=N2_DATA_FILE, tensorboard_dir=N2_TENSORBOARD_DIR, save_dir=N
                     preds, validation_value, = sess.run([logits, loss], feed_dict=feed_dict)
                     print("Step: %d: validation: %.5f" % (step, validation_value))
                     
-                    if False: #$step % 100000 == 0:
-                        # Save predictions for viewing later
-                        pic_name = "g3_" + str(step) 
-                        netTools.save_preds(batch_data, preds, pic_name, batch_size=batch_size)
+    if save_model:
+        save_path = saver.save(sess, save_dir + model_id)
+        print("Model saved in file: %s" % save_path)
+
+
+    ## If on my laptop then just write straight to images
+    if write_image:
+        print("Attempting to write images now...")
+        import visTools
+
+        visTools.write_preds(batch_data, batch_labels, preds, image_dir, kx)
 
 
 

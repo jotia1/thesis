@@ -30,7 +30,7 @@ N4_BATCH_SIZE = 100
 N4_TOTAL_STEPS = 1
 N4_LEARNING_RATE = 0.1
 
-def runNet4(datafile=N4_DATA_FILE, tensorboard_dir=N4_TENSORBOARD_DIR, save_dir=N4_SAVE_DIR, 
+def runNet(datafile=N4_DATA_FILE, tensorboard_dir=N4_TENSORBOARD_DIR, save_dir=N4_SAVE_DIR, 
             model_id=N4_MODEL_ID, image_dir=N4_IMG_DIR, load_model=N4_LOAD_MODEL, 
             save_model=N4_SAVE_MODEL, write_image=N4_WRITE_IMAGES, batch_size=N4_BATCH_SIZE, 
             total_steps=N4_TOTAL_STEPS, learning_rate=N4_LEARNING_RATE):
@@ -155,7 +155,7 @@ def runNet4(datafile=N4_DATA_FILE, tensorboard_dir=N4_TENSORBOARD_DIR, save_dir=
 
 
 if __name__ == '__main__':
-    runNet4():
+    runNet():
 
 
 

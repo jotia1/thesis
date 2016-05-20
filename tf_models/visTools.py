@@ -48,7 +48,7 @@ def preds2png(filename, outdir, pred_size=128):
     
     batch_size = ins.shape[0]
     
-    for i in xrange(batch_size):
+    for i in range(batch_size):
         in_img = ins[i, :].reshape(pred_size, pred_size)
         pred_img = preds[i, :].reshape(pred_size, pred_size)
 
@@ -76,18 +76,23 @@ def write_preds(batch_data, batch_labels, preds, outdir, img_dim):
     """
     num = batch_data.shape[0]
 
-    for cur_img in xrange(num):
+    for cur_img in range(num):
         print("Saving image:", cur_img)
         iimg = batch_data[cur_img, :].reshape(img_dim, img_dim)
         limg = batch_labels[cur_img, :].reshape(img_dim, img_dim)
         pimg = preds[cur_img, :].reshape(img_dim, img_dim)
 
-        fig, ax = plt.subplots(1, 2, figsize=(4,2),)
+        num_images = 3
+        if num_images == 3:
+            fig, ax = plt.subplots(1, num_images, figsize=(6,2),)        
+        else:
+            fig, ax = plt.subplots(1, num_images, figsize=(4,2),)
+
         fig.subplots_adjust(hspace=0.3, wspace=0.05)
 
         titles = ['Input', 'Ground Truth', 'Prediction']
         imgs = [iimg, limg, pimg]
-        for i in range(2):
+        for i in range(3):
             title = titles[i]
             img = imgs[i]
             iplt = ax.flat[i].imshow(img, cmap='gray', interpolation='none')  
@@ -95,5 +100,5 @@ def write_preds(batch_data, batch_labels, preds, outdir, img_dim):
             ax.flat[i].axis('off')
             ax.flat[i].set_title(title)
 
-        plt.savefig(outdir + str(cur_img) + ".png")
+        plt.savefig(outdir + str(cur_img) + ".eps")
 
