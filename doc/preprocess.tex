@@ -112,20 +112,96 @@ Which when combine result in table \ref{table:kvalues} outlining the choices of 
 It is worth noting these values are in \ms while the DVS recordings are in \us so the actual \textit{k} values used are 1000 times larger. 
 
 
+
+\section{Sample results}
+
 \begin{itemize}
-    \item TODO for this section
-    \item Decay data as per THOSE k values
-    \item Include graphics and comments about those k Values here
-    \item Do discussion on them
+    \item \textbf{TODO for this section}
+    \item Resize images and remove white space
+    \item Perhaps move most of these to appendix and just grab a few here
+    \item Or just condense them all together into one big figure
 \end{itemize}
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{8AD_6_6_1ms_linear.eps}
+    \caption{A sample from 8AD of linear decay with $k=1\ms$}
+    \label{fig:decay1mslinear}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{8AD_6_6_16ms_linear.eps}
+    \caption{A sample from 8AD of linear decay with $k=16\ms$}
+    \label{fig:decay16mslinear}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{8AD_6_6_33ms_linear.eps}
+    \caption{A sample from 8AD of linear decay with $k=33\ms$}
+    \label{fig:decay33mslinear}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{8AD_6_6_100ms_linear.eps}
+    \caption{A sample from 8AD of linear decay with $k=100\ms$}
+    \label{fig:decay100mslinear}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{8AD_6_6_1ms_exp.eps}
+    \caption{A sample from 8AD of exponential decay with $k=1\ms$}
+    \label{fig:decay1msexp}
+\end{figure}
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{8AD_6_6_16ms_exp.eps}
+    \caption{A sample from 8AD of exponential decay with $k=16\ms$}
+    \label{fig:decay16msexp}
+\end{figure}
+
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{8AD_6_6_33ms_exp.eps}
+    \caption{A sample from 8AD of exponential decay with $k=33\ms$}
+    \label{fig:decay33msexp}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{8AD_6_6_100ms_exp.eps}
+    \caption{A sample from 8AD of exponential decay with $k=100\ms$}
+    \label{fig:decay100msexp}
+\end{figure}
+
+It is hard to believe the network will be able to learn any structure from the inputs accumulated over 1 and 16\ms time windows (figures \ref{fig:decay1mslinear}, \ref{fig:decay1msexp}, \ref{fig:decay16mslinear} and \ref{fig:decay16msexp}) in the full 128x128 images.
+In particular, in the 1\ms accumulation window inputs the signal is represented by only 1 or two pixels making it indistinguishable from noise in the image. 
+In the case of 16\ms the signal from the dot is several pixels but the temporal paths are still much less clear than in the 33 and 100\ms cases.
+The 33 and 100\ms accumulation windows allow enough signal to be collected that a clear temporal path can be decerned by a human visual system to derive directional information from just the input image.
+This gives some confidence that the frame-based networks will also be able to extract and use this information.
+
+Overall the exponentially accumulated temporal paths are much more clearly visible in these examples due to the functions aysymptotic nature compared to the linear accumulations hard cut off after a certain temporal difference. 
+This also comes at a cost though as the exponentially accumulated images also retain noise events for longer so whilst the stimulus is present for longer this also allows noise to accumulate. 
+
+These resulting images are blurs through time representing the past and future positions of the dot.
+This is in some ways analogous to presenting several sequential frames to a recurrent neural network, in that for each training example it considers not just the current position of the dot (brightest pixels) but also previous positions of the dot (faded pixels).
+% Maybe make a comment about how this memory is the fundamental concept around which this work is based
+ 
+
 \section{Discussion}
+The representation of time will have a profound affect on the performance of a network when dealing with data that is rich in temporal information. 
+Accumulating events into frames sacrifices some of that temporal information but will allow the use of state-of-the-art learning techniques which are typically frame-based. 
+Two different functions (exponential and linear) have been used to accumulate events around a distinguished point to generate training examples for model training. 
+Several parameter values were decided upon to give some resemblence to standard frame-based camera recordings rates (being 30 and 60 frames-per-second).
+Some values for k result in training examples which are informative to a human visual system and some which are not, which work for the networks examined may likely be a different set. 
+The final accumulations were seperated into a 70/20/10\% split of training/validation/test datasets for use in training networks later. 
 
- discuss the selections of k \\
- End up with a blur through time \\
- seems informative to humans at least? \\
- A little bit like a recurrent network (memory of past) \\
- Mention how training, validation and test datasets were generated.\\
-
-
+ 
 
