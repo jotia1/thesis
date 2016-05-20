@@ -122,9 +122,6 @@ while cspikep <= endi || cspikef >= starti;
 
             tmp(zeroz) = 0;
             %if sum(tmp(:)) ~= 1  % Isolated pixel
-            if labeli == 0;
-                disp('');
-            end
             labels(labeli, :, :) = tmp;
             labeli = labeli + 1;
             %end

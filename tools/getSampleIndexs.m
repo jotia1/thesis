@@ -21,7 +21,7 @@ function [ idx ] = getSampleIndexs( ts )
     %ts = fixWrapping(ts);
     
     % Constants
-    ETHRES = 100; % Number of events to be considered a spike
+    ETHRES = 120; % Number of events to be considered a spike
     FRAMESPERSPIKE = 6; % Number of frames to skip per spike
     EDGEBUFFER = 3; % How many frames to drop from sample edges
     

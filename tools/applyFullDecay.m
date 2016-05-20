@@ -32,7 +32,7 @@ end
 
 % Number of events
 if starti > endi;
-    disp('Starti cannot be less than endi');
+    fprintf('Starti (%d) cannot be less than endi(%d)', starti, endi);
     return
 end
 nevents = endi  - starti;
