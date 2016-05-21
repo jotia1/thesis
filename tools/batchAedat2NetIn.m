@@ -22,19 +22,15 @@ for size_i = 1 : numel(size_values);
                 
                 speed = speed_values(speed_i);
                 dotSize = size_values(size_i);
-                 decay = decay_values{decay_i};
+                decay = decay_values{decay_i};
 
-                %fprintf('k: %d, speed: %d, size: %d\n', k, speed, size );
                 infilename = sprintf('../data/8AD/recordings/onight_%d_%d.aedat', dotSize, speed);
                 outfilename = sprintf('sec_%d_%d_%dk_%s', dotSize, speed, k_values(k_i), decay);
-                %[ xs, ys, ts, ~, seps ] = trimEvents(infilename);
-                %fprintf('infile: %s, size_seps: %d\n', infilename, size(seps,1));
                 
                 fprintf('infile: %s, outfile: %s, K: %d, decay: %s, \n', infilename, outfilename, k, decay);
                 aedat2NetIn(infilename, outfilename, 128, 128, 1, 30, false, decay, k)
+                %aedat2NetIn(infilename, outfilename, 11, 11, 1, 30, true, decay, k)
              end
-         end
-        sep_sizes(end + 1) = size(seps, 1);
+        end
     end
 end
-sep_sizes;   % Left in incase i want to explore this later
