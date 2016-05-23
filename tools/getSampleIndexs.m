@@ -36,7 +36,7 @@ function [ idx ] = getSampleIndexs( ts )
     while bucki < numel(buckets);
         buck = buckets(bucki);
         
-        if buck > ETHRES; % Just hit a spike
+        if buck > ETHRES && bucki - lastSpikeBuck >= 6; % Just hit a spike
             startTime = sum(buckets(1 : lastSpikeBuck + EDGEBUFFER));
             endTime = sum(buckets(1 : bucki - EDGEBUFFER));
             idx = [idx; startTime, endTime];
