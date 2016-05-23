@@ -1,9 +1,9 @@
 %% Batch aedat2NetIn
 % Process many aedat files to network input files sequentially
 l5 = log(0.5);
-k_values = [1, 16, 33, 100];
-lk_values = [2*1e3, 32*1e3, 66*1e3, 100*1e3];
-ek_values = [(-1/l5)*1e3, (-16/l5)*1e3, (-33/l5)*1e3, (-100/l5)*1e3];
+k_values = [1, 16, 33, 100, 165];
+lk_values = (ones(size(k_values)) * 1e3) .* k_values; %[2*1e3, 32*1e3, 66*1e3, 100*1e3];
+ek_values = (ones(size(k_values)) .* -k_values /l5) * 1e3;  %[(-1/l5)*1e3, (-16/l5)*1e3, (-33/l5)*1e3, (-100/l5)*1e3];
 speed_values = [2, 4, 6, 8];
 size_values = [4, 6, 8];
 decay_values = {'linear', 'exp'};
@@ -24,12 +24,13 @@ for size_i = 1 : numel(size_values);
                 dotSize = size_values(size_i);
                 decay = decay_values{decay_i};
 
-                infilename = sprintf('../data/8AD/recordings/onight_%d_%d.aedat', dotSize, speed);
-                outfilename = sprintf('processed/8AD_%d_%d_%dk_%s', dotSize, speed, k_values(k_i), decay);
+                infilename = sprintf('../data/AAD/recordings/AAD_%d_%d.aedat', dotSize, speed);
+                outfilename = sprintf('processed/AAD_attn_%d_%d_%dk_%s', dotSize, speed, k_values(k_i), decay);
                 
                 fprintf('infile: %s, outfile: %s, K: %d, decay: %s, \n', infilename, outfilename, k, decay);
-                aedat2NetIn(infilename, outfilename, 128, 128, 1, 30, false, decay, k)
-                %aedat2NetIn(infilename, outfilename, 11, 11, 1, 30, true, decay, k)
+                %aedat2NetIn(infilename, outfilename, 128, 128, 1, 30, false, decay, k)
+
+                aedat2NetIn(infilename, outfilename, 11, 11, 1, 30, true, decay, k)
              end
         end
     end

@@ -115,7 +115,7 @@ with tf.Graph().as_default():
     tf.scalar_summary(loss.op.name, loss)
 
     # Training operations
-    optimiser = tf.train.GradientDescentOptimizer(LEARNING_RATE)
+    optimiser = tf.train.GradientDescentOptimizer(learning_rate)
     global_step = tf.Variable(0, name='global_step', trainable=False)
     train_op = optimiser.minimize(loss, global_step=global_step)
     

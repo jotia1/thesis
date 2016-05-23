@@ -64,7 +64,7 @@ N1_LEARNING_RATE = 0.5
 def runNet(datafile=N1_DATA_FILE, tensorboard_dir=N1_TENSORBOARD_DIR, save_dir=N1_SAVE_DIR,
             model_id=N1_MODEL_ID, image_dir=N1_IMG_DIR, load_model=N1_LOAD_MODEL,
             save_model=N1_SAVE_MODEL, write_image=N1_WRITE_IMAGES, batch_size=N1_BATCH_SIZE,
-            total_steps=N1_TOTAL_STEPS, learning_rate=N1_LEARNING_RATE):
+            total_steps=N1_TOTAL_STEPS, learning_rate=N1_LEARNING_RATE, other_params={}):
 
     # Load and separate datasets
     data = scipy.io.loadmat(datafile)

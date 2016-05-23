@@ -101,4 +101,6 @@ def write_preds(batch_data, batch_labels, preds, outdir, img_dim):
             ax.flat[i].set_title(title)
 
         plt.savefig(outdir + str(cur_img) + ".eps")
+        plt.clf()
+        plt.close(fig)
 
