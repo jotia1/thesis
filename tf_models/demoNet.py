@@ -3,7 +3,7 @@ import tensorflow as tf
 import netTools
 import time
 import math
-#import scipy.io
+import scipy.io
 import h5py
 
 #ND_DATA_FILE = 'arbAng_gt5.mat'
@@ -12,7 +12,7 @@ ND_DATA_FILE = 'testDemo.mat'
 #TENSORBOARD_DIR = 'net4_arbang25m/'
 ND_TENSORBOARD_DIR = 'testDemo/'
 #SAVE_DIR = '/home/Student/s4290365/thesis/tf_models/saveDir'
-ND_SAVE_DIR = 'attn2_batch_results/6/6/165/'
+ND_SAVE_DIR = 'attn_batch_results/6/6/165/'
 ND_MODEL_ID = 'exp8AD_attn_6_6_165k_exp'
 ND_IMG_DIR = ND_TENSORBOARD_DIR + ''
 ND_LOAD_MODEL = True
@@ -39,6 +39,7 @@ def runNet(datafile=ND_DATA_FILE, tensorboard_dir=ND_TENSORBOARD_DIR, save_dir=N
     data = h5py.File(datafile)  
     inputs = np.transpose(data.get('inputs'))
     labels = np.transpose(data.get('labels'))
+    print(inputs.shape)
     num_samples = inputs.shape[0]
 
 
@@ -128,15 +129,19 @@ def runNet(datafile=ND_DATA_FILE, tensorboard_dir=ND_TENSORBOARD_DIR, save_dir=N
 
         # Then only do the last few
         offset = batch_num * batch_size
-        offset_end = offset + num_samples % batch_size
-        batch_data[offset : offset_end] = inputs[offset : offset_end]
+        offset_end = offset + (num_samples % batch_size)
+        print(offset, offset_end, inputs.shape, batch_data.shape)
+        print(inputs[offset : offset_end].shape)
+        print(batch_data[offset : offset_end].shape)
+        batch_data[0 : num_samples % batch_size] = inputs[offset : offset_end]
         feed_dict = { input_placeholder : batch_data
                     }
 
         preds = sess.run(logits, feed_dict=feed_dict)
-        result[offset : offset_end] = preds[offset : offset_end]
+        result[offset : offset_end] = preds[0 : num_samples % batch_size]
 
-        np.savez(datafile.strip('.mat'), preds=preds)
+        scipy.io.savemat('preds.mat', dict(result=result))
+        #np.savez(datafile.strip('.mat'), preds=preds)
 
         """
         for step in xrange(total_steps):
