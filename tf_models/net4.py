@@ -3,7 +3,8 @@ import tensorflow as tf
 import netTools
 import time
 import math
-import scipy.io
+#import scipy.io
+import h5py
 
 #DATA_FILE = 'arbAng_gt5.mat'
 N4_DATA_FILE = '8ang1_30ms_midActv.mat'
@@ -33,17 +34,19 @@ N4_LEARNING_RATE = 0.1
 def runNet(datafile=N4_DATA_FILE, tensorboard_dir=N4_TENSORBOARD_DIR, save_dir=N4_SAVE_DIR, 
             model_id=N4_MODEL_ID, image_dir=N4_IMG_DIR, load_model=N4_LOAD_MODEL, 
             save_model=N4_SAVE_MODEL, write_image=N4_WRITE_IMAGES, batch_size=N4_BATCH_SIZE, 
-            total_steps=N4_TOTAL_STEPS, learning_rate=N4_LEARNING_RATE):
+            total_steps=N4_TOTAL_STEPS, learning_rate=N4_LEARNING_RATE, other_params={}):
     # Load and separate datasets
-    data = scipy.io.loadmat(data_file)
-    train_dataset = data.get('train_inputs')
-    train_labels = data.get('train_labels')
-    valid_dataset = data.get('valid_inputs')
-    valid_labels = data.get('valid_labels')
+    data = h5py.File(datafile)                                                  
+    train_dataset = np.transpose(data.get('train_inputs'))                      
+    train_labels = np.transpose(data.get('train_labels'))                       
+    valid_dataset = np.transpose(data.get('valid_inputs'))                      
+    valid_labels = np.transpose(data.get('valid_labels'))                       
+    test_dataset = np.transpose(data.get('test_inputs'))                        
+    test_labels = np.transpose(data.get('test_labels'))  
 
     #Get input size
-    kx = int(data.get('kx'))
-    ky = int(data.get('ky'))
+    kx = int(data.get('kx')[0])
+    ky = int(data.get('ky')[0])
 
     # NETWORK PARAMS
     num_input_units = kx * ky
@@ -107,11 +110,12 @@ def runNet(datafile=N4_DATA_FILE, tensorboard_dir=N4_TENSORBOARD_DIR, save_dir=N
             init = tf.initialize_all_variables()
             sess.run(init)
         else:
-            saver.restore(sess, SAVE_DIR + model_id)
-            print("Restored network from file: %s" % SAVE_DIR + model_id)
+            saver.restore(sess, save_dir + model_id)
+            print("Restored network from file: %s" % save_dir + model_id)
 
         summary_writer = tf.train.SummaryWriter(tensorboard_dir,
                                                 graph_def=sess.graph_def)
+
         
         for step in xrange(total_steps):
             # Create feed dictionary
@@ -124,11 +128,16 @@ def runNet(datafile=N4_DATA_FILE, tensorboard_dir=N4_TENSORBOARD_DIR, save_dir=N
 
             _, loss_value = sess.run([train_op, loss], feed_dict=feed_dict)
 
-            if True: #step % 100 == 0:
+            if step % 250 == 0:
                 summary_str = sess.run(summary_op, feed_dict=feed_dict)
                 summary_writer.add_summary(summary_str, step)
                 
-                if True: #step % 10000 == 0:
+# Save a checkpoint and evaluate the model periodically.            
+            if step % total_steps - 1 == 0:                                     
+                eval_model(step, batch_size, valid_labels,                       
+                        valid_dataset, sess, logits, loss, input_placeholder, label_placeholder)  
+            """
+                if step % total_steps - 1 == 0:
                     # RUN Network with validation data
                     offset = (step * batch_size) % (valid_labels.shape[0] - batch_size)
                     batch_data = valid_dataset[offset : (offset + batch_size), :]
@@ -139,23 +148,38 @@ def runNet(datafile=N4_DATA_FILE, tensorboard_dir=N4_TENSORBOARD_DIR, save_dir=N
 
                     preds, validation_value, = sess.run([logits, loss], feed_dict=feed_dict)
                     print("Step: %d: validation: %.5f" % (step, validation_value))
-                    
+            """     
 
     if save_model:
-        save_path = saver.save(sess, SAVE_DIR + model_id)
+        save_path = saver.save(sess, save_dir + model_id)
         print("Model saved in file: %s" % save_path)
 
 
     ## If on my laptop then just write straight to images
-    if write_images:
+    if write_image:
         print("Attempting to write images now...")
         import visTools
-
+        batch_data, batch_labels, preds = eval_model(step, batch_size, valid_labels, 
+                        valid_dataset, sess, logits, loss, input_placeholder, label_placeholder)
         visTools.write_preds(batch_data, batch_labels, preds, image_dir, kx)
 
 
+def eval_model(step, batch_size, valid_labels, valid_dataset, sess, logits, loss, input_placeholder, label_placeholder):
+    # RUN Network with validation data                                          
+    offset = (step * batch_size) % (valid_labels.shape[0] - batch_size)         
+    batch_data = valid_dataset[offset : (offset + batch_size), :]               
+    batch_labels = valid_labels[offset : (offset + batch_size), :]              
+    feed_dict = { input_placeholder : batch_data,                               
+              label_placeholder : batch_labels                                  
+              }                                                                 
+                                                                                
+    preds, validation_value, = sess.run([logits, loss], feed_dict=feed_dict)    
+    print("Step: %d: validation: %.5f" % (step, validation_value))              
+    return batch_data, batch_labels, preds                                                                
+                  
+
 if __name__ == '__main__':
-    runNet():
+    runNet()
 
 
 
