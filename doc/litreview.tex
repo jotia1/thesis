@@ -3,44 +3,123 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%    ASYNC SENSORS     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Asynchronous Vision Sensors}  % 1 page
-Lots of different types of dynamic vision sensors \cite{delbruck2010activity}
-Why would we want a DVS? microparticle tracking \cite{ni2012asynchronous}
+%Lots of different types of dynamic vision sensors \cite{delbruck2010activity}
+%Why would we want a DVS? microparticle tracking \cite{ni2012asynchronous}
+%Neuromorphic systems are becoming more wide spread \cite{delbruck2014research}
+% Introduction to AVS 
+%Introduce different kind of sesnsors which asynchronously fr
+Asynchronous Vision Sesnors (AVS) offer a frame--free, event--driven approach to capturing vision information\cite{delbruck2010activity}. 
+These sensors continuously output light intensity changes from a scene in the form of precisely timed (sub \ms) events. 
+Each pixel in the sensor array acts indpendently based the light in it's receptive field resulting in a sparse, stimulus--based output. 
+A recent spike in technology facilitated the development of many alternative asynchronous vision sensors with varying properties and speeds\cite{delbruck2014research}.
+These systems are united in an attempt at emulating the efficient, high--speed, event--based spiking behaviour in biological vision systems\cite{delbruck2010activity}.
+%Environments requiring low-power, low-latacy and dynamic range are well suited 
+Asynchronous vision sensors are well suited to environments requiring dynamic range, low-power and low--latency sensing, such as microparticle tracking\cite{ni2012asynchronous}, robotics\cite{roboGoalie2013} or motion tracking and classification\cite{Lee2014, reverter2015neuromorphic}.
 
-\subsection{Dynamic Vision Sensor (DVS)}
-Tobi made a camera \cite{delbruck2008}
-Discuss the Dynamic vision sensors, what they are capable of
-Used in stuff like \cite{delbruck2007fast}
-They also have a new camera called the DAVIS \cite{DAVIS}
+% How do they work
+In contrast to tradition vision systems which densely sample the world at discrete time intervals, AVSs follow a stimulus driven paradigm only recording changes in the environment meaning redudant information in the scene (e.g. stationary items or backgrounds) are not captured.  
+The resulting data format, Address-Event Representation (AER)\cite{boahen2000point}, is in the form $\textless (x, y), t, p \textgreater$, where $(x, y)$ is the pixel location of a change, $t$ is the precise time of the change and $p$ is the polarity indicating if the light intensity change was brighter (positive event) or dimmer (negative event)i\cite{delbruck2010activity}. 
+% TODO really should find a AER specific paper for this
+This dramatically different data representation means new approaches to vision processing will be required to extract meaningful information from AER sensors\cite{akolkar2015can}. 
 
-\subsection{Asynchronous Time-based Image Sensor (ATIS)}
-what is it what does it do \cite{posch2010high}
-Example usages Saeed (UWS) \cite{afshar2016investigation}
+% They why. What are the advantages and disadvantages
+Asynchronous vision sensors offer a new paradigm in which to appraoch capturing vision information bringing with it many new opportunities and challenges. 
+The low--redundancy asynchronous nature of these sensors allows low--power, low--computation processing in a more biologically realistic setting.
+
+
+
+\subsection{Example sensors}
+%Tobi made a camera \cite{delbruck2008}
+%Discuss the Dynamic vision sensors, what they are capable of
+%Used in stuff like \cite{delbruck2007fast}
+%They also have a new camera called the DAVIS \cite{DAVIS}
+The Dynamic Vision Sesnor (DVS) is an AVS capable of registering events to temporal precision of 15\us\cite{delbruck2008}. 
+It has a 128x128 pixel array with \textgreater 120\textit{dB} dynamic range.
+The Dynamic and Active Pixel Vision Sensor (DAVIS) is the newer model of the DVS with a 240x180 pixel array, 3\us temporal precision and 130\textit{dB} dynamic range\cite{DAVIS}. 
+Additionally the DAVIS has circuitry (the active pixel sensor) enabling it to capture static scene illumination values like a standard camera.
+Further an inbuilt inertial measurement unit (IMU) means movement information can be simultaneously recorded and used in processing. 
+An alternative sensor is the asynchronous time-based image sensor (ATIS) with a temporal resolution of 10\us (at \textgreater100Lx)\cite{posch2011qvga}.
+Like the DAVIS the ATIS is also capable of capturing scene illumination as well as events.  
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%    STANDARD VISION     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Frame-based vision processing}   % 1 page
+%Standard videos and frame based approaches
+
+% Introduction to standard vision processing 
+Standard vision processing has long been based on processing full 2D frames using well understood techniques such as Canny Edge detection\cite{canny1986computational}. 
+Many techniques exist for various tasks such as face detection\cite{viola2004robust}, object tracking using kernels\cite{comaniciu2003kernel} or object classification\cite{krizhevsky2012imagenet}.
+The method of these appraoches varies significantly from gradient based computation in Canny Edge detection to kernel based object tracking to deep neural networks.
+These approaches make the same implicit assumption that vision information is temporally discretised into the frame-rate of the vision sensor used in recording. 
+
+Frame-based techniques and associated applications are thus bound by the limitations of the recording device with respect to data speed and quality. 
+In particular if a standard 30 fps camera is used a realtime system must wait 33\ms between frames (excluding any processing time required). 
+Using a higher frame--rate recording device has a bound on performance as this necessarily means there will be more data (much of which is redundant) to process such that the processing time of the system becomes the bottle neck. 
+Further image quality in frame-based systems is proportional the amount of processing required to extract features.
+Despite limitations from recording devices, many impressive results have come from these techniques, in particular deep neural networks\cite{krizhevsky2012imagenet}.
+However the computation required for these state-of-the-art systems makes their use on low--power, low--computation devices impractical. 
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%    EVENT-BASED PROCESSING     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\pagebreak
-\section{Vision processing}   % 1 page
-Standard videos and frame based approaches
-
 \pagebreak
 \section{Event-based processing}     % 2 page
-Where does the idea come from, what is it, 
+% Intro to what event based processing is (using events)
+Event-based data brings with it the need for radically different processing paradigms compared to frame-based approaches\cite{perez2013mapping, martin2015spiking, tan2015benchmarking}.
+Conventional sensors generate large amounts of redundant data which is computationally expensive to process making efficient event-based data an attractive option\cite{vanarse2016review}. 
+Event-based processing is not limited to vision sensors however, as discussed in \cite{vanarse2016review} neuromorphic auditory and olfactory sensors also exist using the AER format. 
+Challenges facing event-based vision sesnors are shared among these other neuromorphic sensors as well as more common (and low cost) sensors (like IMUs for gait cycle measurments\cite{fida2015pre}).
+
+Many standard machine learning techniques have implicit assumptions that data is discretised into uniform time samples or that temporal information is not present/important.
+There have been attempts to integrate temporally rich data with standard frame-based appraoches such as the recurrent Temporal Restricted Boltzmann Machine (TRBM)\cite{sutskever2009recurrent} to model motion capture data or using deep-belief networks with spiking systems\cite{Neftci2014, pedroni2013neuromorphic, OConnor2013}.
+More suited to dealing with event-based data are the family of Spiking Neural Networks (SNN)\cite{henderson2015spike, perez2013mapping}.
+SNNs are harder to train than the frame-based counterparts leading many to train frame-based networks and convert the trained model into an equivilant spiking network at some small performance drop\cite{perez2013mapping, pedroni2013neuromorphic, OConnor2013}.
+
+Event-based processing is not limited to neural networks and other techniques are being adapted or created to take advantage of these new highspeed sesnors\cite{ni2015visual}.
+A '\textit{RoboGoalie}' was created as an example application leveraging the low-latency sensor to stop fast moving ping-pong balls entering a goal\cite{delbruck2007fast}. 
+A simple event clustering algorithm is sufficient in this scenario to allow the RobotGoalie to track incoming balls and respond within 
+%TODO up to here.
+The low-power and low-computation nature of event-based sensors make them particularly attractive for applications in mobile robotics and navigation\cite{weikersdorfer2013simultaneous, milford2015place}.
+
+% More on applications here then next para will support why they make sense
+
+The systems described have shown that through careful datastructures and representations learning models are able to leverage temporal information from the precise spike timings of event-based data. 
+It is well known the eye does not act as a tradition vision sensor capturing and transfering full frames to the brain but rather sends only relevent visual information in the form of spikes\cite{delbruck2010activity}.
+In an attempt to mimic this spiking behaviour some have attempted convert frame-based benchmark datasets into spiking equivilants using grayscale values to produce rate-coded spiking outputs, while others have suggested why this may be problematic \cite{akolkar2015can} and suggest guidelines to ensure dataset quality\cite{tan2015benchmarking}.
+Studies have found that coding schemes using the precise timing of events may be more biologically realistic and account for situations where processing happens too quickly to be explained by rate-coded information transfer\cite{thorpe2001spike}. 
+It was similarly found that the precise spike timings of events in event-based data has a significant contribution to the amount of information contained in the recording\cite{akolkar2015can}.
+% NOTE: Thus precise spike timings are important so maybe using a screen is bad. 
+
+
+% Advantages disadvantages and other
+
+
+
+
+
+% Intro to event-based processing, what is it, comes from brain etc. idea of processing with spikes
+Neuromorphic systems are becoming more wide spread \cite{delbruck2014research}
+
+% Applications and examples of it working
 What other processing has already been done with them (things like Motion cones). 
 Example usage of DVS is fast motor control by \cite{delbruck2007fast}
 Discuss frame accumulation by other groups
-Check out more papers in Amy's paper
 Example of event-based visial flow calculation by fitting local plans on incoming events\cite{benosman2014event} (what else is this lab doing?)
-Neuromorphic systems are becoming more wide spread \cite{delbruck2014research}
 Calculating odometry using event based information (application) \cite{censi2014low}
 Event-based plane detection \cite{afshar2016investigation}
 Event-based IMU use and the problems with it and what different representations can do to help\cite{fida2015pre}
 Real time event-based (IMU) processing \cite{fida2015real}
+event-based corner detection\cite{clady2015asynchronous}
 
 
 \subsection{Biologically realistic representations}
-Rumelhart's back prop might not actually be biologically realistic but effective in learning regardless \cite{Rumelhart1986}. \\
+% 
 Disucss how this is more like the eye and the advantages of this model of processing \cite{mahowald1992vlsi}
+
+Rumelhart's back prop might not actually be biologically realistic but effective in learning regardless \cite{Rumelhart1986}. \\
 Converts 2D images to more realistic spike trains \cite{afshar2013ripple}
 Discusses the biological realism of using spikes \cite{akolkar2015can}
 What does this paper say about representations maybe bio isn't always an answer \cite{fida2015pre}
