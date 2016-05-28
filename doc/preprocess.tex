@@ -16,15 +16,15 @@ This section will explore a method of representing event-based data in a frame-b
 The simplest solution is to accumulate all the events in a given time slice into a 2D frame to recover images from the event-based data.
 This is somewhat counter intuitive though as this forfeits all the temporal information which seperates the DVS from traditional cameras and results in a blury low resolution image. 
 
-\begin{wrapfigure}{r}{0.3\textwidth}
+\begin{wrapfigure}{r}{0.6\textwidth}
     \centering
-    \includegraphics[width=0.3\textwidth]{puppyBall.png}
-    \caption{TODO REMOVE THIS IMAGE AND PUT SIMPLE EXAMPLE}
+    \includegraphics[width=0.6\textwidth]{stimulus_and_accumulated.png}
+    \caption{Example stimulus and a possible representation of the faded history}
     \label{fig:fadedhistory}
 \end{wrapfigure}
 
 An approach to this problem is to choose a distinguished point in time, then construct a 2D image in which each pixels value is a function of its temporal distance to that distinguished point.
-If only events that occured prior to the distiguished point in time are considered the resulting image would represent a faded history of what has just happened, this can be seen in figure \ref{fig:fadedhistory} in which a recent history of the scene can be observed. 
+If only events that occured prior to the distiguished point in time are considered the resulting image would represent a faded history of what has just happened, this can be seen in figure \ref{fig:fadedhistory} in which a recent history of the scene (the moving dot from left to right) can be observed. 
 Such images can be considered as a faded past, but are also known by many other equivilent names such as; temporal surface, decayed surface, time fields or time surface and these terms can be used interchangeably. 
 There is no restriction as to why accumulation can only occur into the past, a similarly interesting image can be produced by accumulating into the future from a distinguished point in time.
 These accumulated futures show where objects are moving. 
@@ -98,14 +98,14 @@ Which when combine result in table \ref{table:kvalues} outlining the choices of 
 
 \begin{table}[h]
 \centering
-\begin{tabular}{ | c | c | c | c | c | }
+\begin{tabular}{ | c | c | c | c | c | c |}
     \hline
-    t (\ms) &         1 &     16 &    33 &    100 \\
-    Linear &    2 &     32 &    66&     200 \\
-    Exp (aprox.)&   1.44 & 23.08 & 47.61 & 144.27 \\
+    t (\ms) &         1 &     16 &    33 &    100  & 165 \\
+    Linear &    2 &     32 &    66&     200 & 330\\
+    Exp (aprox.)&   1.44 & 23.08 & 47.61 & 144.27 & 238.04\\
     \hline
 \end{tabular}
-\caption{Values for k to be test (in milliseconds)}
+\caption{Values for \textit{k} to be test (in milliseconds)}
 \label{table:kvalues}
 \end{table}
 
@@ -115,73 +115,17 @@ It is worth noting these values are in \ms while the DVS recordings are in \us s
 
 \section{Sample results}
 
-\begin{itemize}
-    \item \textbf{TODO for this section}
-    \item Resize images and remove white space
-    \item Perhaps move most of these to appendix and just grab a few here
-    \item Or just condense them all together into one big figure
-\end{itemize}
-
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.8\textwidth]{8AD_6_6_1ms_linear.eps}
-    \caption{A sample from 8AD of linear decay with $k=1\ms$}
-    \label{fig:decay1mslinear}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{8AD_6_6_16ms_linear.eps}
-    \caption{A sample from 8AD of linear decay with $k=16\ms$}
-    \label{fig:decay16mslinear}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{8AD_6_6_33ms_linear.eps}
-    \caption{A sample from 8AD of linear decay with $k=33\ms$}
-    \label{fig:decay33mslinear}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{8AD_6_6_100ms_linear.eps}
-    \caption{A sample from 8AD of linear decay with $k=100\ms$}
-    \label{fig:decay100mslinear}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{8AD_6_6_1ms_exp.eps}
-    \caption{A sample from 8AD of exponential decay with $k=1\ms$}
-    \label{fig:decay1msexp}
-\end{figure}
-
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{8AD_6_6_16ms_exp.eps}
-    \caption{A sample from 8AD of exponential decay with $k=16\ms$}
-    \label{fig:decay16msexp}
+    \includegraphics[width=1\textwidth]{varying_accumulation.png}
+    \caption{Varying accumulation}
+    \label{fig:varyingaccum}
 \end{figure}
 
 
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{8AD_6_6_33ms_exp.eps}
-    \caption{A sample from 8AD of exponential decay with $k=33\ms$}
-    \label{fig:decay33msexp}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{8AD_6_6_100ms_exp.eps}
-    \caption{A sample from 8AD of exponential decay with $k=100\ms$}
-    \label{fig:decay100msexp}
-\end{figure}
-
-It is hard to believe the network will be able to learn any structure from the inputs accumulated over 1 and 16\ms time windows (figures \ref{fig:decay1mslinear}, \ref{fig:decay1msexp}, \ref{fig:decay16mslinear} and \ref{fig:decay16msexp}) in the full 128x128 images.
+%It is hard to believe the network will be able to learn any structure from the inputs accumulated over 1 and 16\ms time windows (figures \ref{fig:decay1mslinear}, \ref{fig:decay1msexp}, \ref{fig:decay16mslinear} and \ref{fig:decay16msexp}) in the full 128x128 images.
+Using a small time window like 1 or 16\ms may prove a challenging task for the network to learn structure as these are smaller than the refresh rate of the screen and may be too fine resolution to contain any motion structure. 
 In particular, in the 1\ms accumulation window inputs the signal is represented by only 1 or two pixels making it indistinguishable from noise in the image. 
 In the case of 16\ms the signal from the dot is several pixels but the temporal paths are still much less clear than in the 33 and 100\ms cases.
 The 33 and 100\ms accumulation windows allow enough signal to be collected that a clear temporal path can be decerned by a human visual system to derive directional information from just the input image.
