@@ -6,10 +6,16 @@
 
 \subsection{Aims}
 %Tried to use evol kerns but sparse nature of data means no good
-After the results from Net1 and Net2 it was clear the task needed to be reframed.
+After the results from the Pilot study it was clear the task needed to be reframed.
 Previous work using convolutions and kernels as feature detectors suggusted they might be able to provide feature maps necessary for a network to learn.
-Additonally using convolutions would have the advantage that they are able to ignore much of the image and focus on areas of activity.  
-Kenels specialised to the datasets would be developed, these could then be used to preprocess the input/output decayed images to produce feature maps which could then be used to train the network as per normal.
+%Additonally using convolutions would have the advantage that they are able to ignore much of the image and focus on areas of activity.  
+Convolutions may be well suited to this problem as they naturally focus on only small segments of the image meaning the signal-to-noise ratio affecting the PilotNets may be less problematic. 
+Kernels capable of detecting dot motion were developed using an evolutionary algorithm. 
+These dataset sepecific kernels were then used to transform the DVS recordings into feature maps in which each pixel represented the kernel for which it most highly responded. 
+The feature maps were then used as training examples in a fully connected network with the aim being to analyse the performance of the network in predicting an output feature map. 
+%Kenels specialised to the datasets were developed, these were then used to preprocess the input/output decayed images to produce feature maps which could then be used to train the network as per normal.
+%Kernels  to the datsets were developed and then used to process recordings into training examples.
+
 
 %TODO Need a clear definition of what the kernels are 
 % Things like:
@@ -17,42 +23,62 @@ Kenels specialised to the datasets would be developed, these could then be used 
 %   - Limits (27) why...
 
 \subsection{Method}
-In this work a kernel is considered as a two dimentional matrix with each value in the matrix being a weight.
+Three major steps were required to move from a DVS recording to a prediction in this study, the final system is illustrated in figure \ref{fig:evoNetStructure}.
+First kernels for convolutions were evolved to be specialised to the 8AD dataset using a 1 + 1 hillclimbing algorithm (described in Appendix \ref{ch:evolution}). 
+After sufficient evolution they were convolved with the DVS recording to produce feature map training examples.
+Finally the feature maps specifying which kernel had responded most strongly for that pixel were fed into a fully connected network which was predicted feature maps at the output.  
+
+\subsubsection{Evolving kernels}
 As no standard set of feature kernels to use with event-based data exists these would need to be created.
 Previous work developing kernels using an evolutionary algorithm made this a sensible place to start.
-Kernels start randomly initialised and are iteratively updated by permuting kernel weights, improvements in kernel performance as measured by a fitness function are kept.
-Finer details of the evolutionary algorithm are discussed in Appendix \ref{ch:evolution}.
-
-% TODO This part of the research...
+In this work a kernel is considered as a matrix with each value being a weight describing how important an event at that position is.
+Kernels start randomly initialised and are iteratively updated by permuting kernel weights and convolving the new kernel with some sample data, improvements in kernel performance as measured by a fitness function are kept.
+Finer details of the evolutionary algorithm are discussed in Appendix\ref{ch:evolution}.
 A set of nine and a set of five kernels were created using this technique.
-Motivation for using nine kernels was inspired by the simple 8 angle dataset with anticipation that each kernel would specialise for one of the angles plus one kernel to detect the noise.
+Motivation for using nine kernels was inspired by the 8AD dataset with anticipation that each kernel would specialise for one of the angles plus one kernel to detect noise.
 Five was chosen to see if similar behaviour could be modelled as weighted combinations of less kernels.
-A kernel size of 11x11 pixels was chosen as this would capture most of the decayed path of a dot decayed over a 30ms timeslice.
-Convolving the 9, 11x11 kernels with the 128x128 images gave 9, 128x128 features maps.
-Rather than using pooling within a feature map as is standard in convolutional neural networks max-pooling was applied between the maps. 
-That is a single 128x128 map was created in which each position was the index of the feature map with the highest output at that pixel.
+A kernel size of 11x11 pixels was chosen as this would capture much of the temporal past (and future) for an accumulation over 33\ms.
+
+
+
+\subsubsection{Processing training examples}
+Convolving the 9, 11x11 kernels with the 128x128 images gave 9, 128x128 features maps (likewise for the 5 kernels).
+Rather than using pooling \textit{within} a feature map as is standard in convolutional neural networks max-pooling was applied \textit{between} the maps. 
+That is the result was a single 128x128 map created in which each position was the index of the feature map with the highest output at that pixel.
+
+
 % TODO How were ties broken?!
 % TODO add a picture of what this process looks like, event-data -> decayed image -> kernels -> back on decayed image -> network input and output
 
-The final system requires several processing steps as show in figure *** Create and reference figure ***. 
-Starting with event-based data a decay is applied to produce the decayed images, these 
 
-%MORE TO DO HERE...
-% TODO move this to the appendix
-% Discuss how kernels are only applied around event
+\subsubsection{Network design} 
+The networks used then resembled those of PilotNet2.
+Representing each pixel as the kernel which most strongly responds to it should make predicting future motion simple task for a shallow network to learn.
 
-The network used then looked much like Net1 and Net2.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{evoNetStructure.png}
+    \caption{Structure of the Evolutionary Kernels processing pipeline}
+    \label{fig:evoNetStructure}
+\end{figure}
 
-% TODO RESULTS SECTION
+
+\subsubsection{Analytic kernels}
+Additionally an alternative set of kernels was developed based on the probabilities of event patterns in the training data.
+For all samples of a given angle an 11x11 matrix was cropped around each event, the probabilities of events in each position of the matrix was then calculated for that angle giving an analytic kernel.
+The process of cropping an 11x11 matrix around events is the same process as discussed in Chapter \ref{ch:attentional}.
+These kernels were significantly quicker to compute compared to the evolutionary kernels which required many convolutions of the full dataset for each evolution. 
+
 \subsection{Results}
- - Slow to train, could only use small amount of data \\
- - Kernels were not representative  \\
- - results terrible \\
- - Visualisations of kenerls \\
- - Table of training times and graphs of exp increase in time.. \\
- - Reflections back onto input of how kernels went \\
- - Prediction results visualisations (maybe in appendix?) \\
+Using the available evolutionary algorithm proved to be too slow to develop meaningful 11x11 kernels on the large 8AD dataset.
+The kernels were not able to converge to a stable point after 14 days of training, example kernels are shown in \ref{fig:unstableKernel}. \textbf{[TODO: add images of kernel state]}
+The kernel states after 14 days were applied to the data regardless to see if meaningful results could be achieved. 
+Figure \ref{fig:exampleFeatureMap} \textbf{[TODO: example input/feature map pair]} shows an example feature map resulting from the prematurely stopped kernel. 
+\textbf{[TODO: Depending on figure used, comment on the performance of the kernel and how clearly the input stimulus is represented]}.
 
+Applying the analytic kernels to the input produced feature maps as shown in figure \ref{fig:analyticFeatureMap}\textbf{[TODO: choose and include an analytic map, discuss image]}.
+
+Figure \ref{fig:evoNetOut} \textbf{[TODO: collect output images into one figure and include]} illustrates that  
 % TODO DISCUSSION SECTION
 \subsection{Discussion}
  - Algorithm is to blame, needs redesigning but out of scope of thesis
@@ -68,11 +94,17 @@ The network used then looked much like Net1 and Net2.
 %Alternative approach of using evol kerns on full image
 
 \subsection{Aims}
-Rather than using an evolutionary algorithm to evolve kernels with which to later apply convolutions to the data this can all be done within a Convolutional Neural Network. 
-This network should be able to produce much of the behaviour of the evolved kernels (because it will be designing its own during training) but shouldn't suffer from the slow training time and possible inconsitancys between training and test data.
+The amount of time required to evolve kernels using the available algorithm meant an alternative approach was necessary. 
+Directly using a conventional convolutional network represents the logical progression after evolving kernels. 
+The experimental design remained similar to the evolutionary kernels except now the 128x128 temporally accumulated images were directly used as inputs to the network which must learn convolution weights itself. 
+This study should be able to leverage the advantages of convolution networks (e.g. focused feature detectors on smaller parts of the image) whilst still being trainable in reasonable time. 
+
+%Rather than using an evolutionary algorithm to evolve kernels with which to later apply convolutions to the data this can all be done within a Convolutional Neural Network. 
+%This network should be able to produce much of the behaviour of the evolved kernels (because it will be designing its own during training) but shouldn't suffer from the slow training time and possible inconsitancys between training and test data.
 
 \subsection{Method}
-The network used in this work consisted of an input layer followed by a convolution layer with 9, 11x11 convolutions followed by a 2x2 max pooling layer feeding into a fully connected 1024 unit sigmoid layer which fed into a linear output layer. Details are outlined in table \ref{tb:convNetdef}.
+\label{sec:convMethod}
+The network used in this work consisted of an input layer followed by a convolution layer with 9, 11x11 convolutions followed by a 2x2 max pooling layer feeding into a fully connected layer. The output layer of the network was differently activated to compare performance. Details are outlined in table \ref{tb:convNetdef}.
 
 \begin{table}[h]
 \centering
@@ -81,10 +113,12 @@ The network used in this work consisted of an input layer followed by a convolut
     Num. Inputs & 16384 \\
     Num. Outputs & 16384 \\
     Num. Hidden Layers & 3 \\
-    Layers & Convolutions -\textgreater pooling -\textgreater Sigmoid \\
-    Loss & Sum Squared Difference (and weighted S.S.D.) \\
+    Fully connected & 64, 1024 units \\
+    Layers & Convolutions -\textgreater pooling -\textgreater output \\
+    Output Activations & Linear, Sigmoid, ReLU \\
+    Loss & Sum Squared Difference, weighted S.S.D. \\
     Learning rule & S.G.D. (back propogation) \\
-    Learning rate & 0.01 \\
+    Learning rate & 0.5 \\
     Convolution stride & 1 \\
     \hline
 \end{tabular}
@@ -94,13 +128,20 @@ The network used in this work consisted of an input layer followed by a convolut
 
 
 \subsection{Results}
-- Network had poor prediction performance
-\\ - What did the kernels do? Any specialisation
+The convolution networks quickly (\textless 250 epochs) become input invariant.
+
+[TODO: Include image of convolution kernel weights and discuss] 
+
+
 
 \subsection{Discussion}
- - Why did it perform so badly?
-\\ - Was 1024 Units too many / not enough?
-\\ - Were kernels comparable to evolved kernels?
-\\ - How could this be improved?
-\\ - Was the spacial max-pooling an influence
+ - Why did it perform so badly?? -> signal to noise, but even attentional convolutional fail later... Something inherent to convolutions?
+
+ - Was 1024 Units too many / not enough?
+
+ - Were kernels comparable to evolved kernels / Analytic kernels?
+
+ - How could this be improved?
+
+ - Was the spacial max-pooling an influence
 
