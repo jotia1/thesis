@@ -156,13 +156,8 @@ It should be noticed that this does not exclude the possibility that ArbAngNet i
 Finally, figure \cite{fig:ADC_aaaa_fork} shows ArbAngNets performance on the slightly off angle example that 8AngNet failed to predict in figure \ref{fig:ADC_8aNoaa_fork}.
 
 \subsection{Non-linear acitivation}
-Compare Sigmoidal with relu?
-
-\subsubsection{Sigmoid activation}
-Talk about both 8AD and AAD here
-
-\subsubsection{ReLU activiation}
-Talk about both 8AD and AAD here 
+Changing between a Linear, Sigmoid or ReLU activation layer had a minimal affect on the quality of the predicitons.
+Significantly more influential was the number of hidden units used, which itself plateaued as can be seen in figure \ref{fig:AHLrelu}.
 
 \subsection{Attentional Directly Connected network discussion}
 The ADC networks were successfully able to make meaningful predictions on both the 8AD and AAD datasets even with only a linear activation.
@@ -175,23 +170,59 @@ If the network had learnt to represent the training examples as angles then this
 \section{Attentional Hidden Layer (AHL) Network}
 
 \subsection{Aims}
-Following in the 
+The aim of the Attentional Hidden Layer (AHL) networks is to analyse how network depth affects what the network is able to learn. 
+Recent work in deep learning\cite{krizhevsky2012imagenet} has shown using multiple layers allows networks to represent increasing abstract features from the input. 
+In the ADC networks the output layer had full access to the activation of all the input layers, by forcing the dataflow through a hidden layer the network must learn to represent the input with the units in the hidden layer.  
+The datasets used could be efficiently encoded as a single angle (passing through the centre of the image) representing the gradient of the line.
+Alternatively the network could also use a more distributed representation where each hidden unit conributes partially to predicting the angle. 
 
- using a hidden layer, what can learn? maybe line params, 1, 2, more hiddens
 
 \subsection{Method}
+The methodology for the AHL networks remains constant from the ADC networks with the only difference being the addition of a hidden layer.
+The number of units in the hidden layer was varied being 1, 2, 4, 8, 16, 32, 64, 128.
+In keeping with the ADC networks the activations were varied being linear, sigmoid and ReLU. 
+
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{AHLrelu.png}
     \caption{ReLU activated AHL network performance with varying hidden units}
-    \label{fig:attnConvInvariant}
+    \label{fig:AHLrelu}
 \end{figure}
 
 \subsection{Results}
+Figure \ref{fig:AHLrelu} shows that forcing a network to represent the input with a single hidden unit severaly degrades prediction performance compared to having a fully connected network with no hidden layers (e.g. an ADC network). 
+The single hidden unit networks (linear, sigmoid and ReLU activated) all respond more actively when input is highly active (i.e. a strong signal or lots of noise) than if the input is quiet. 
+In general the number of hidden units is proportional to the prediction performance of the network.
+Noise still remains unpredictable which is to be expected. 
+Activation function has minimal effect on the final prediction. 
 
 
 \subsection{Discussion}
+Activity predicted by a single hidden unit network seems to be proportional to the activity in the input.
+This suggests the networks internal representation is a measure of activity rather than something more abstract such as the angle of the line.
+Near the centre of the image has the greatest probability of having some ground truth activity so the network predicts accordingly.
+The network predictions near the centre resembles a gaussian distribution although a more careful analysis would need to performed to determine how similar they are. 
+The network predicting activity when there is activity in the input might be a local minima the network gets stuck in rather than learning to represent the more abstract angle of movement. 
+Analysis of the ADC networks suggested they were mapping input regions to output regions, this may still be what the AHL networks are doing. 
+If the AHL networks are just mapping between regions than 1 hidden unit predicting near the centre based on activity in the input is a simple way to minimise loss. 
+
+\begin{wrapfigure}[27]{l}{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.4\textwidth]{AHLSectors.png}
+    \caption{Two AHL inputs/prediction pairs for different numbers of hidden units.}
+    \label{fig:AHLSectors}
+\end{wrapfigure}
+
+Prediction performance of the AHL networks improved as the number of hidden units increased as shown in \ref{fig:AHLSectors}.
+Two inputs representing the dot moving in two different directions are shown with the associated output from a network with a given number of hidden units.  
+When there is only 1 hidden unit the prediction is based solely on the activity of the input and resembles a gaussian blur around the centre.
+When there are two hidden units the network is better able to identify which quadrants the input is coming from and where the ground truth will be.
+Once 8 hidden units are used the network can reasonably predict which quadrant the ground truth will be in but still has a wide prediction arc.
+Using 128 hidden units (more hidden units than inputs) increases the prediction performance further. 
+
+Discrepencies between the different activation functions could be attributed to general network variability and do not seem to reveal any significant insight into the differences between the functions.
+Lack of any significant variation highlights that this problem is solvable without the need for non-linear units. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%      CONV NET    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Attentional convolutional networks}
@@ -206,7 +237,7 @@ The input/output layer size change was necessary given the smaller size of the t
 As the attentional accumulation trims the training examples to 11x11 then in theory each temporal past/future should only take up a 6x6 grid. 
 
 \subsection{Results}
-Despite the attentional data and the reduced size the convolutional networks still become input invarient as shown in figure \ref{fig:attnConvInvariant}.
+Despite the attentional data and the reduced size the convolutional networks still become input invarient as shown in figure \ref{fig:CAInvariant}.
 The activity pattern shown is from the network using a size 8 dot moving with speed 4 accumulated with an exponential function and k value corresponding to a 33 ms period.
 This invariance was consistant (although the given activity pattern would change) regardless the number/size of feature maps, the fully connect layer depth and fully connected layer activation.
 
@@ -214,7 +245,7 @@ This invariance was consistant (although the given activity pattern would change
     \centering
     \includegraphics[width=0.7\textwidth]{attConvInvariance64.png}
     \caption{Attentional Convolutional Net showing input invariance.}
-    \label{fig:AHLrelu}
+    \label{fig:CAInvariant}
 \end{figure}
 
 \subsection{Discussion}
@@ -232,7 +263,7 @@ Such a threshold would be dataset specific (with larger/faster dots creating mor
 Instead noise could be filtered out using an Autoencoder.
 This possibility is explored with autoencoders of various size.
 
-\subsection{Methodology}
+\subsection{Method}
 Simple Autoencoders consisting of a single fully connected hidden layer were used. 
 
 \subsection{Results}
