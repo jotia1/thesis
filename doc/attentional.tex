@@ -259,14 +259,20 @@ This explaination has trouble explaining why the convolutional networks would be
 \subsection{Aims}
 Noise has been accepted as a fact of neuromorphic sensors so far in this work and models have been expected to be able to deal with this.
 A simple thresholding could have efficiently filter out many of the noise based training examples before use in training. 
-Such a threshold would be dataset specific (with larger/faster dots creating more events) though and creates an unnecessary hyperparameter to the model. 
+Such a threshold would be dataset specific (with larger/faster dots creating more events) and creates an unnecessary hyperparameter to the model. 
 Instead noise could be filtered out using an Autoencoder.
-This possibility is explored with autoencoders of various size.
+%This possibility is explored with autoencoders of various size.
+The aim of this study is to determine to what degree autoencoders are able to clean up noise as a potential preprocessing of the temporal surfaces.
 
 \subsection{Method}
-Simple Autoencoders consisting of a single fully connected hidden layer were used. 
+Simple Autoencoders consisting of a single fully connected hidden layer were used.
+Hidden layer sizes used were 1, 2, 4, 8, 16, 32, 64, 128. 
+Three activation functions (linear, Sigmoid, ReLU) were used in the hidden layer.   
 
 \subsection{Results}
+Figure \ref{fig:AEUnits} shows how the number of hidden units affects the autoencoders ability to represent the data. 
+In general autoencoder predictions resembled what the input might look like if a blur had been applied. 
+%A standard prediction from the autoencoder had the appearance of if a blur to the original input. 
 
 \begin{figure}[h]
     \centering
@@ -277,4 +283,11 @@ Simple Autoencoders consisting of a single fully connected hidden layer were use
 
 
 \subsection{Discussion}
- 
+%As with the AHL Networks which forced the network to represent the input with a restricted number of uni 
+Autoencoders are made to represent the input with a restricted number of hidden units.
+Just as the AHL networks learnt to map between sections of the input and output the autoencoders also appear to define a similar mapping. 
+Figure \ref{fig:AEUnits} demonstrates as the number of hidden units increases so to does the networks ability to isolate a sector containing the input signal.
+The example in Figure \ref{fig:AEUnits} is further interesting because of the strong noise pixel in the bottom right of the image. 
+With only two or four hidden units the network gives the noise pixel region a large amount of weight.
+The network learns to better discriminate between noise and signal with 16, 32 and 64 hidden units, however it cannot completely remove the noise.
+Despite not remove the noise the network has significantly reduced its contribution to the input which is reasonable and may help future processing. 

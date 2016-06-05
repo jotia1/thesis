@@ -1,39 +1,26 @@
-\chapter{Discussion}
-\label{ch:discussion}
+\chapter{General discussion and conclusions}
 
-%\ldots\ or perhaps the discussion should be a separate chapter.
+\subsubsection{\textbf{TOTT: Event-based data accumulated into temporal surfaces implicitly encodes temporal information which can be leveraged by frame-based neural networks to make meaningful predictions.}}
 
-%In any case, you will probably need to include tabulated results.
-%illustrates the use of various \LaTeX\ environments to
-%include a computer printout (plain text file) in a document.  The
-%\texttt{verbatim} environment, which encloses the formatted text, is
-%also useful for program listings.
+\section{Major findings}
+Chapter \ref{ch:attentional} demonstrates that frame-based shallow neural networks are able to leverage implicitly encoded temporal information to make meaningful predictions of future temporal surfaces. 
+A network with direct linear connections between input and output units is capable of making predictions when the input 
 
-\section{Net1}
-\label{sec:net1discuss}
+- Shallow networks struggle with full scene temporal surfaces
+
+- With attentional data a simple network can make meaningful predictions
+
+- The used concolution networks could not learn the pattern but may just be a problem with the structure not the idea of conv nets
+
+- Autoencoders can be used to help smooth data
+
+- No need to run so many permutations of the networks, they did not reveal much insight and just wanted space, time and compute power. 
 
 
-\section{Net2}
-\label{sec:net2discuss}
-
-\pagebreak
-\section{Evolutionary kernels}
-
-% TODO Actually need to apply the kernels and see what happens 
-When merging all the feature maps the value in the resulting map should be a one-hot vector rather than just the index of the maximum feature map... This doesn't make a lot of sense but neither did using the index as an input... 
-
-\section{ConvNet}
-
-\pagebreak
-\section{Attentional Network}
-
-\section{Auto Encoders}
+%% Significance of results
 
 
 
-\pagebreak
-\pagebreak
-\pagebreak
-\pagebreak
-
+\section{Possible future work}
+Should only be 2 or 3 points that are as big as honours/masters or PhD level problems. 
 

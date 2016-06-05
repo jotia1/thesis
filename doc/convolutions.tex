@@ -57,7 +57,7 @@ Representing each pixel as the kernel which most strongly responds to it should 
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.9\textwidth]{evoNetStructure.png}
+    \includegraphics[width=0.8\textwidth]{evoNetStructure.png}
     \caption{Structure of the Evolutionary Kernels processing pipeline}
     \label{fig:evoNetStructure}
 \end{figure}
@@ -94,9 +94,10 @@ Figure \ref{fig:evoNetOut} \textbf{[TODO: collect output images into one figure 
 %Alternative approach of using evol kerns on full image
 
 \subsection{Aims}
-The amount of time required to evolve kernels using the available algorithm meant an alternative approach was necessary. 
-Directly using a conventional convolutional network represents the logical progression after evolving kernels. 
-The experimental design remained similar to the evolutionary kernels except now the 128x128 temporally accumulated images were directly used as inputs to the network which must learn convolution weights itself. 
+The amount of time required to evolve kernels using the available evolutionary algorithm meant an alternative approach was necessary. 
+Directly using a conventional convolutional network represented the logical progression after evolving kernels manually. 
+The experimental design remained similar to the evolutionary kernels as described in figure \ref{fig:evoNetStructure}.
+The difference being for this study the 128x128 temporally accumulated images were directly used as inputs to the network which was responsible for developing the kernels and feature maps and pooling was done spatially within a feature map rather than between feature maps.
 This study should be able to leverage the advantages of convolution networks (e.g. focused feature detectors on smaller parts of the image) whilst still being trainable in reasonable time. 
 
 %Rather than using an evolutionary algorithm to evolve kernels with which to later apply convolutions to the data this can all be done within a Convolutional Neural Network. 
@@ -104,7 +105,9 @@ This study should be able to leverage the advantages of convolution networks (e.
 
 \subsection{Method}
 \label{sec:convMethod}
-The network used in this work consisted of an input layer followed by a convolution layer with 9, 11x11 convolutions followed by a 2x2 max pooling layer feeding into a fully connected layer. The output layer of the network was differently activated to compare performance. Details are outlined in table \ref{tb:convNetdef}.
+The network used in this work consisted of an input layer followed by a convolution layer with 9, 11x11 convolutions followed by a 2x2 max pooling layer feeding into a fully connected layer. 
+The output layer of the network was differently activated to compare performance. 
+Details are outlined in table \ref{tb:convNetdef}.
 
 \begin{table}[h]
 \centering
@@ -126,22 +129,69 @@ The network used in this work consisted of an input layer followed by a convolut
 \label{tb:convNetdef}
 \end{table}
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{convNetInvariance.png}
+    \caption{An example of a convolutional network input invariance and the corresponding fully connected layer features}
+    \label{fig:convInputInvariance}
+\end{figure}
+
 
 \subsection{Results}
 The convolution networks quickly (\textless 250 epochs) become input invariant.
-
-[TODO: Include image of convolution kernel weights and discuss] 
-
+This is shown in figure \ref{fig:convInputInvariance} in which despite a strong relatively clean signal the network is not able to make a meaningful prediction. 
+The mechanism for this invariance can be seen in the weights and biases of the network over the first 5000 epochs.
+The weights shift between 3 and -3 while the biases quickly shift towards -3, this example network (ReLU activated) then outputs just zeros.
+This trend was consistant across the other convolutional architectures and parameters outlined in table \ref{tb:convNetdef}.
 
 
 \subsection{Discussion}
- - Why did it perform so badly?? -> signal to noise, but even attentional convolutional fail later... Something inherent to convolutions?
+Convolutional architectures should have been well suited to solving this sparse signal problem.
+The architectures used in this study were able to make any meaningful predictions and quickly learnt to just output a constant zero pattern much like like the PilotNets.
+Several factors could have contributed to the poor performance of these networks including signal-to-noise ratio, number of epochs, learning rate or the training data. 
 
- - Was 1024 Units too many / not enough?
+The convolutional networks were believed to have been better able to deal with the signal-to-noise ratio however the ratio may have proved still too high for the networks.
+Convolution sizes were chosen to consider this with an 11x11 convolution resonably converying an accumulated past/future over a 33 ms window. 
+An 11x11 area may have been too large yet the 6x6 kernels were not able to learn either suggesting there may still be other problems.
+The noise in the training data may have proved problematic for learning. 
+Each kernel may have specialised to pick up different kinds of noise and as noise is inherently unpredictable the kernels learn to predict zero. 
 
- - Were kernels comparable to evolved kernels / Analytic kernels?
+Networks were trained with 50,000 epochs which when compared with how quickly the network became input invariant was considered sufficient.
+This number of epochs may not have been enough, perhaps the network needed more time to fine-tune the weights, this would be unlikely though given the lack of improvement in the first 50,000 epochs. 
+The learning rate may have contributed to the network getting stuck in a local minima (outputting just zeros) and trying alternative learning rates may help the network learn.
+Other techniques such a momentum \ref{sutskever2013importance} which can assist in learning may help but are left as future work.
 
- - How could this be improved?
 
- - Was the spacial max-pooling an influence
+% - Why did it perform so badly?? -> signal to noise, but even attentional convolutional fail later... Something inherent to convolutions?
+ %- Was 1024 Units too many / not enough?
+% - Were kernels comparable to evolved kernels / Analytic kernels?
+% - How could this be improved?
+% - Was the spacial max-pooling an influence
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
