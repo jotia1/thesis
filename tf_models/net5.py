@@ -7,17 +7,17 @@ import math
 import h5py
 
 #DATA_FILE = 'arbAng_gt5.mat'
-N4_DATA_FILE = '8ang1_30ms_midActv.mat'
+N5_DATA_FILE = '8ang1_30ms_midActv.mat'
 #TENSORBOARD_DIR = '/home/Student/s4290365/thesis/tf_models/tensorBoard'
 #TENSORBOARD_DIR = 'net4_arbang25m/'
-N4_TENSORBOARD_DIR = 'net4_arbang/'
+N5_TENSORBOARD_DIR = 'net4_arbang/'
 #SAVE_DIR = '/home/Student/s4290365/thesis/tf_models/saveDir'
-N4_SAVE_DIR = N4_TENSORBOARD_DIR
-N4_MODEL_ID = 'net4_arbang.ckpt'
-N4_IMG_DIR = N4_TENSORBOARD_DIR + ''
-N4_LOAD_MODEL = True
-N4_SAVE_MODEL = False
-N4_WRITE_IMAGES = True
+N5_SAVE_DIR = N5_TENSORBOARD_DIR
+N5_MODEL_ID = 'net4_arbang.ckpt'
+N5_IMG_DIR = N5_TENSORBOARD_DIR + ''
+N5_LOAD_MODEL = True
+N5_SAVE_MODEL = False
+N5_WRITE_IMAGES = True
 
 # CONSTANTS
 TRAIN_INDEX = 0
@@ -27,15 +27,16 @@ TEST_INDEX = 2
 #TOTAL_PIXELS = IMAGE_SIZE * IMAGE_SIZE
 
 # Hyper params
-N4_BATCH_SIZE = 100
-N4_TOTAL_STEPS = 1
-N4_LEARNING_RATE = 0.1
-N4_ACTIVATION = 'linear'
+N5_BATCH_SIZE = 100
+N5_TOTAL_STEPS = 1
+N5_LEARNING_RATE = 0.1
+N5_NUM_HIDDEN_UNITS = 2
+N5_ACTIVATION = 'relu'
 
-def runNet(datafile=N4_DATA_FILE, tensorboard_dir=N4_TENSORBOARD_DIR, save_dir=N4_SAVE_DIR, 
-            model_id=N4_MODEL_ID, image_dir=N4_IMG_DIR, load_model=N4_LOAD_MODEL, 
-            save_model=N4_SAVE_MODEL, write_image=N4_WRITE_IMAGES, batch_size=N4_BATCH_SIZE, 
-            total_steps=N4_TOTAL_STEPS, learning_rate=N4_LEARNING_RATE, other_params={}):
+def runNet(datafile=N5_DATA_FILE, tensorboard_dir=N5_TENSORBOARD_DIR, save_dir=N5_SAVE_DIR, 
+            model_id=N5_MODEL_ID, image_dir=N5_IMG_DIR, load_model=N5_LOAD_MODEL, 
+            save_model=N5_SAVE_MODEL, write_image=N5_WRITE_IMAGES, batch_size=N5_BATCH_SIZE, 
+            total_steps=N5_TOTAL_STEPS, learning_rate=N5_LEARNING_RATE, other_params={}):
     # Load and separate datasets
     data = h5py.File(datafile)                                                  
     train_dataset = np.transpose(data.get('train_inputs'))                      
@@ -44,18 +45,21 @@ def runNet(datafile=N4_DATA_FILE, tensorboard_dir=N4_TENSORBOARD_DIR, save_dir=N
     valid_labels = np.transpose(data.get('valid_labels'))                       
     test_dataset = np.transpose(data.get('test_inputs'))                        
     test_labels = np.transpose(data.get('test_labels'))  
-    activation = other_params.get('activation', N4_ACTIVATION)
 
     #Get input size
     kx = int(data.get('kx')[0])
     ky = int(data.get('ky')[0])
+    num_hidden_units = other_params.get('num_hidden_units', N5_NUM_HIDDEN_UNITS) 
+    activation = other_params.get('activation', N5_ACTIVATION)
 
     # NETWORK PARAMS
     num_input_units = kx * ky
     #HIDDEN_UNITS = 16
     num_output_units = kx * ky
 
-    print("INPUT_UNITS:", num_input_units, "OUTPUT_UNITS:", num_output_units)
+    print("INPUT_UNITS:", num_input_units, 
+            "HIDDEN_UNITS:", num_hidden_units,
+            "OUTPUT_UNITS:", num_output_units)
 
 
     # Build graph
@@ -68,36 +72,53 @@ def runNet(datafile=N4_DATA_FILE, tensorboard_dir=N4_TENSORBOARD_DIR, save_dir=N
         label_placeholder = tf.placeholder(tf.float32, shape=(batch_size,
                                                             num_output_units))
         
-        # Define output layer
-        with tf.name_scope('out_layer'):
-            weights = tf.Variable(
-                tf.truncated_normal([num_input_units, num_output_units],
+        # Define hidden layer
+        with tf.name_scope('hidden_layer'):
+            h_weights = tf.Variable(
+                tf.truncated_normal([num_input_units, num_hidden_units],
                                     stddev=0.1),
-                name='weights')
+                name='h_weights')
 
-            biases = tf.Variable(tf.truncated_normal([num_output_units], 
+            h_biases = tf.Variable(tf.truncated_normal([num_hidden_units], 
                                     stddev=0.1),
-                name='biases')
-            h_logits = tf.matmul(input_placeholder, weights) + biases
-            
-            # Hidden layer activations?                                         
-            if activation == 'relu':                                            
-                logits = tf.nn.relu(h_logits, name='h_output')                
-            elif activation == 'sigmoid':                                       
-                logits = tf.sigmoid(h_logits, name='h_output')                
-            elif activation == 'linear':                                        
-                logits = h_logits                                             
-            else:                                                               
+                name='h_biases')
+            h_logits = tf.matmul(input_placeholder, h_weights) + h_biases
+
+            # Hidden layer activations?
+            if activation == 'relu':
+                h_output = tf.nn.relu(h_logits, name='h_output')
+            elif activation == 'sigmoid':
+                h_output = tf.sigmoid(h_logits, name='h_output')
+            elif activation == 'linear':
+                h_output = h_logits
+            else:
                 raise Exception('Activation not known: ' + activation)
 
 
-        tf.histogram_summary("out_biases", biases)
-        tf.histogram_summary("out_weights", weights)
-        tf.histogram_summary("logits", logits)
+        tf.histogram_summary("h_biases", h_biases)
+        tf.histogram_summary("h_weights", h_weights)
+        tf.histogram_summary("h_logits", h_logits)
+        tf.histogram_summary("h_output", h_output)
+
+        # Define output layer
+        with tf.name_scope('out_layer'):
+            o_weights = tf.Variable(
+                tf.truncated_normal([num_hidden_units, num_output_units],
+                                    stddev=0.1),
+                name='o_weights')
+
+            o_biases = tf.Variable(tf.truncated_normal([num_output_units], 
+                                    stddev=0.1),
+                name='o_biases')
+            o_logits = tf.matmul(h_output, o_weights) + o_biases
+
+        tf.histogram_summary("out_biases", o_biases)
+        tf.histogram_summary("out_weights", o_weights)
+        tf.histogram_summary("out_logits", o_logits)
 
         # loss function - Sum squared difference (well mean...)
         loss = tf.reduce_mean(
-            tf.square(label_placeholder - logits), name='loss')
+            tf.square(label_placeholder - o_logits), name='loss')
 
 
         # Log data
@@ -148,7 +169,8 @@ def runNet(datafile=N4_DATA_FILE, tensorboard_dir=N4_TENSORBOARD_DIR, save_dir=N
 # Save a checkpoint and evaluate the model periodically.            
             if step % total_steps - 1 == 0:                                     
                 eval_model(step, batch_size, valid_labels,                       
-                        valid_dataset, sess, logits, loss, input_placeholder, label_placeholder)  
+                        valid_dataset, sess, o_logits, loss, 
+                        input_placeholder, label_placeholder)  
             """
                 if step % total_steps - 1 == 0:
                     # RUN Network with validation data
@@ -173,7 +195,7 @@ def runNet(datafile=N4_DATA_FILE, tensorboard_dir=N4_TENSORBOARD_DIR, save_dir=N
         print("Attempting to write images now...")
         import visTools
         batch_data, batch_labels, preds = eval_model(step, batch_size, valid_labels, 
-                        valid_dataset, sess, logits, loss, input_placeholder, label_placeholder)
+                        valid_dataset, sess, o_logits, loss, input_placeholder, label_placeholder)
         visTools.write_preds(batch_data, batch_labels, preds, image_dir, kx)
 
 

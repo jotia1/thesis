@@ -7,13 +7,13 @@ import scipy.io
 import h5py
 
 #ND_DATA_FILE = 'arbAng_gt5.mat'
-ND_DATA_FILE = 'testDemo.mat'
+ND_DATA_FILE = 'AAD_6_6_100_exp.mat'
 #TENSORBOARD_DIR = '/home/Student/s4290365/thesis/tf_models/tensorBoard'
 #TENSORBOARD_DIR = 'net4_arbang25m/'
 ND_TENSORBOARD_DIR = 'testDemo/'
 #SAVE_DIR = '/home/Student/s4290365/thesis/tf_models/saveDir'
-ND_SAVE_DIR = 'attn_batch_results/6/6/165/'
-ND_MODEL_ID = 'exp8AD_attn_6_6_165k_exp'
+ND_SAVE_DIR = 'attnA_batch_results/6/6/165/'
+ND_MODEL_ID = 'expAAD_attn_6_6_165k_exp'
 ND_IMG_DIR = ND_TENSORBOARD_DIR + ''
 ND_LOAD_MODEL = True
 ND_SAVE_MODEL = False
@@ -140,7 +140,7 @@ def runNet(datafile=ND_DATA_FILE, tensorboard_dir=ND_TENSORBOARD_DIR, save_dir=N
         preds = sess.run(logits, feed_dict=feed_dict)
         result[offset : offset_end] = preds[0 : num_samples % batch_size]
 
-        scipy.io.savemat('preds.mat', dict(result=result))
+        scipy.io.savemat(datafile[:-4] + '_preds.mat', dict(result=result))
         #np.savez(datafile.strip('.mat'), preds=preds)
 
         """

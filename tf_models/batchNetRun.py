@@ -1,40 +1,63 @@
 import os as os
 import shutil as shutil
 
-k_values = [1, 16, 33, 100, 165]
-speed_values = [2, 4, 6, 8]
-size_values = [4, 6, 8]
+k_values = [165, 100, 33, 16, 1]
+speed_values = [6, 8, 4, 2]
+size_values = [6, 8, 4]
 decay_values = ['linear', 'exp']
 
-params = {}
+other_params = {}
 
-net = 'PILOT'  # Options: AE, ATTN, CONV, PILOT
-if net == "ATTN":
+net = 'CONV'  # Options: AE, ADC, CONV, PILOT, AHL
+if net == "ADC":
     import net4 as net
-    results_root = 'attn_1m_batch_results'
-    model_base = '8AD_attn'
+    activation = 'linear' # Options: relu, sigmoid, linear
+    results_root = 'ADCA{}_batch_results'.format(activation[0])
+    model_base = 'AAD_attn'
+    other_params.update({'activation': activation})
+elif net == 'AHL':
+    import net5 as net
+    hidden_units = 128
+    activation = 'relu'  # Options: relu, sigmoid, linear
+    results_root = 'AHL{0}h{1}_batch_results'.format(hidden_units, activation[0])
+    model_base = 'AAD_attn'
+    other_params.update({'num_hidden_units': hidden_units,
+                        'activation': activation})  
 elif net == "CONV":
     import cnet1 as net
-    results_root = 'attConv64_batch_results'
-    model_base = '8AD_attn'
-    params = {'num_features': 9,
-                'conv_size': 6,
-                'fc_units': 64,
-                }
+    model_base = '8AD'
+    kernels = 9
+    csize = 6
+    hunits = 64
+    activation = 'linear' # Options: relu, sigmoid, linear
+    #      format: CA9kr64h_batch_results/
+    results_root = 'C{0}k{1}{2}h_batch_results'.format(kernels, 
+                                                    activation[0],
+                                                    hunits)
+    other_params.update({'num_features': kernels,
+                'conv_size': csize,
+                'fc_units': hunits,
+                'activation': activation,
+                })
 elif net == "PILOT":
     import net2 as net
     results_root = 'pilotA_batch_results'
     model_base = 'AAD'
 elif net == "AE":
     import autoEnc as net
-    results_root = 'AE64h_batch_results'
-    model_base = '8AD_attn'
-    params = {'num_hidden': 64}
+    results_root = 'AE8hA_batch_results'
+    model_base = 'AAD_attn'
+    other_params.update({'num_hidden': 8})
 else:
     raise Exception("Net not known:" + net)
 
 # File system constants
-data_dir = '../data/AAD/processed'
+if model_base[0] == '8':
+    data_dir = '../data/8AD/processed'
+elif model_base[0] == 'A':
+    data_dir = '../data/AAD/processed'
+else:
+    raise Exception('Model base not known: ' + model_base)
 
 # If previous work exists, remove it
 if os.path.exists(results_root):
@@ -49,8 +72,6 @@ write_images = True
 batch_size = 100
 total_steps = 50001
 learning_rate = 0.5
-params.update({})  # any new consistant variables here
-other_params = params
 
 # Write parameters to file
 f = open(os.path.join(results_root, 'params.txt'), 'w')

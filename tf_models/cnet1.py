@@ -40,6 +40,7 @@ N3_CONV_SIZE = 6
 N3_FC_UNITS = 64  # TODO why?
 N3_NUM_INPUTS = N3_TOTAL_VOXELS
 N3_NUM_OUTPUTS = N3_TOTAL_VOXELS
+N3_ACTIVATION = 'linear'
 
 def runNet(datafile=N3_DATA_FILE, tensorboard_dir=N3_TENSORBOARD_DIR, 
     save_dir=N3_SAVE_DIR, model_id=N3_MODEL_ID, image_dir=N3_IMG_DIR, 
@@ -65,6 +66,7 @@ def runNet(datafile=N3_DATA_FILE, tensorboard_dir=N3_TENSORBOARD_DIR,
     num_features = other_params.get('num_features', N3_NUM_FEATURES)
     conv_size = other_params.get('conv_size', N3_CONV_SIZE)
     fc_units = other_params.get('fc_units', N3_FC_UNITS)
+    activation = other_params.get('activation', N3_ACTIVATION)
 
 
 
@@ -105,8 +107,8 @@ def runNet(datafile=N3_DATA_FILE, tensorboard_dir=N3_TENSORBOARD_DIR,
             h_conv = tf.nn.relu(conv2d(x_image, W_conv) + b_conv)
             h_pool = max_pool_2x2(h_conv)
 
-        tf.histogram_summary("conv_biases", b_conv)                              
-        tf.histogram_summary("conv_weights", W_conv)                            
+        #tf.histogram_summary("conv_biases", b_conv)                              
+        #tf.histogram_summary("conv_weights", W_conv)                            
     
         # Define second convolution
         """ Lets ignore a second convolution right now
@@ -120,10 +122,11 @@ def runNet(datafile=N3_DATA_FILE, tensorboard_dir=N3_TENSORBOARD_DIR,
 
         # Define a fully connected layer
         with tf.name_scope('fc1'):
-            W_fc = weight_variable([6 * 6 * num_features, fc_units])
+            dim = (kx // 2) * (ky //2) * num_features  # shrink after pooling
+            W_fc = weight_variable([dim, fc_units])
             b_fc = bias_variable([fc_units])
 
-            h_pool1_flat = tf.reshape(h_pool, [-1, 6 * 6 * num_features])
+            h_pool1_flat = tf.reshape(h_pool, [-1, dim])
             h_fc = tf.nn.relu(tf.matmul(h_pool1_flat, W_fc) + b_fc)
 
         tf.histogram_summary("fc_biases", b_fc)                              
@@ -137,7 +140,18 @@ def runNet(datafile=N3_DATA_FILE, tensorboard_dir=N3_TENSORBOARD_DIR,
             W_out = weight_variable([fc_units, num_outputs])
             b_out = bias_variable([num_outputs])
 
+        if activation == 'relu':
+            out_layer = tf.nn.relu(tf.add(tf.matmul(h_fc, W_out), b_out), name='out_layer')
+        elif activation == 'sigmoid':
+            out_layer = tf.sigmoid(tf.add(tf.matmul(h_fc, W_out), b_out), name='out_layer')
+        elif activation == 'linear':
             out_layer = tf.add(tf.matmul(h_fc, W_out), b_out, name='out_layer')
+        else:
+            raise Exception('Network activation not know: ' + activation)
+           
+            
+        
+
         
         tf.histogram_summary("out_biases", b_fc)                              
         tf.histogram_summary("out_weights", W_fc)                            
@@ -173,9 +187,6 @@ def runNet(datafile=N3_DATA_FILE, tensorboard_dir=N3_TENSORBOARD_DIR,
 
             _, loss_value = sess.run([train_op, loss], feed_dict=feed_dict)
     
-            if step % 1000 == 0:
-                print("step:", step, "loss:", loss_value)
-
             if step % 250 == 0:
                 summary_str = sess.run(summary_op, feed_dict=feed_dict)
                 summary_writer.add_summary(summary_str, step)
