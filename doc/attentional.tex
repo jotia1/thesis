@@ -1,8 +1,8 @@
 \chapter{Study 2 - Attentional Networks}
 \label{ch:attentional}
 To help simplify the learning problem the task was again reframed to improve the signal to noise ratio.
-The preprocessing was adjusted such that decay was applied around every event but instead of using the full image only an 11x11 decayed area was kept.
-In keeping with previous experiments decay was applied into the past and future to be the input and output. 
+The preprocessing was adjusted such that frames were accumulated around every 150th event and instead of using the full image only an 11x11 frame was kept.
+In keeping with previous experiments accumulation was applied into the past and future to be the input and output. 
 Figure \ref{fig:11inoutpair} is an example of such a pair.
 %Rather than applying decay to the whole image at uniform time intervals and using that as input the to the network each event was decayed around resulting in many more (albiet similar) training examples.
 %However only an 11x11 area around each event was considered meaning the signal to noise ratio was much higher. 
@@ -14,20 +14,20 @@ Figure \ref{fig:11inoutpair} is an example of such a pair.
     \label{fig:11inoutpair}
 \end{figure}
 
-Figure \ref{fig:11inoutpair} is a cherry picked training example though.
-The Attentional networks still have a noisy task to solve because all events, including noise events, are considered. 
-Many of the training examples derived from noise pixels could be filtered out efficiently by demmanding the total activity in a training example excede some low threshold.
+Figure \ref{fig:11inoutpair} is a cherry picked training example.
+The Attentional networks still had a noisy task to solve because all events, including noise events, are considered. 
+Many of the training examples derived from noise pixels could have been filtered out efficiently by demmanding the total activity in a training example excede some low threshold.
 However, the system should be able to deal with noise and setting such a threshold would create another unnecessary hyper-parameter to the model.
 Additonally such a parameter would be dependent on the time scale of the data and would need to be adjusted for each task. 
-As will be shown the network is able to learn even in the midst of such noise so it is left in. 
+As will be shown the network was able to learn even in the midst of such noise so it was left in. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%      ATTENTIONAL NN    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Attentional Directly Connected (ADC) Network}
 
 \subsection{Aims}
 % TODO Need to actually set some aims here
-This network, as the name suggests, is a direct connection between the input and output units.
-The prediction problem had been broken down into a seemingly simple task so it was expected that results could be achieved with a simple network. 
+The network, as the name suggests, is a direct connection between the input and output units with no hidden layer.
+The prediction problem had been broken down into a seemingly simple task so it was expected that results could be achieved with a simple network now the signal-to-noise ratio was larger within training examples.
 
 \subsection{Method}
 The network details are outlined in table \ref{tb:attnet1def}, with key points being the loss function has returned to the standard S.S.D. instead of the linearly weighted S.S.D. and the number of inputs has drastically decreased. 
@@ -55,14 +55,14 @@ The network details are outlined in table \ref{tb:attnet1def}, with key points b
 The simplest ADC network considered had only a linear activation to compute outputs. 
 This proved to be enough for the network to learn to make coherent predictions. 
 The two datasets (8 Angle and Arbitrary Angle) were considered, a network was trained on each and then made predictions on a set of validation data from it's own dataset and other dataset to see how it could generalise.
-For clarity the network trained on the 8AD will be called 8AngNet and the network trained on the AAD will be called ArbAngNet. 
+For clarity the networks trained on the 8AD will be called 8AngNets and the networks trained on the AAD will be called ArbAngNets. 
 
 \subsubsection{Linearly activated 8AngNet results}
 
 \begin{figure}
     \centering
     \includegraphics[width=0.8\textwidth]{ADC_8a_8a_13.png}
-    \caption{A good prediction from 8AngNet on the 8AD validation set.}
+    \caption{A reasonable prediction from 8AngNet on the 8AD validation set.}
     \label{fig:ADC_8a_8a_crct} 
 \end{figure}
 
@@ -79,13 +79,13 @@ This prediction looks promising that the network is capable of representing some
 %In figure \ref{fig:ADC_8a_8a_crct} the network is performing well and gives a prediction which is quite similar the ground truth (ignoring noise). 
 Figure \ref{fig:ADC_8a_8a_noisy} shows a noisy training example.
 The label does not intuitively follow from the input and the network only outputs small values.
-However the network does predict faintly along the top left diagonal which is sensible when considering the input has two pixels along the bottom right diagonal (the closer of which is highly active making it resemble a decayed path). 
+However the network does predict faintly along the North-West diagonal which is sensible when considering the input has two pixels along the South-East diagonal (the closer of which is highly active making it resemble a decayed path). 
 %However the network has noticed two pixels active along the bottom right diagonal (one of which is highly active) and the network predicts a faint output along the top left diagonal.
 
 \begin{figure}
     \centering
     \includegraphics[width=0.8\textwidth]{ADC_8a_aa_4.png}
-    \caption{8AngNet struggles to predict inbetween paths}
+    \caption{8AngNet struggles to predict AAD examples}
     \label{fig:ADC_8aNoaa}
 \end{figure}
 
@@ -102,13 +102,13 @@ This was not the case though, figure \ref{fig:ADC_8aNoaa} shows the network stug
 Most of the activity in the prediction falls in the East North-East section which is where the input was.
 There is some very limited activity that matches the label but this is insignificant compared to previous predictions and what can be realistically expected from the network. 
 Further figure \ref{fig:ADC_8aNoaa_fork} shows a slightly off center input which resembles an angle from 8AD. 
-The network has trouble interpreting this and makes 3 very faint predictions being the top right diagonal, to the right edge and along the input.
-This suggests the network is not able to efficiently represent the arbitrary angles as some combination of the angles it learnt and could perform reasonably well on.
+The network has trouble interpreting this and makes 3 very faint predictions being the North-East diagonal, the East edge and along the input.
+This suggests the network is not able to efficiently represent the arbitrary angles as some combination of the angles it learnt and must be using some other internal representation such as mapping between regions.
 
-An additional interesting case which further supports this claim is seen in figure \ref{fig:ADC_8aNoaa_special} which shows the network suffering from some neatly aligned noise. 
+An additional interesting case which supports a region mapping hypothesis is seen in figure \ref{fig:ADC_8aNoaa_special} in which the network suffering from some neatly aligned noise. 
 The network is well equipped to deal with inputs coming from one angle at a time but this noise makes it appear as if two dots may be crossing paths. 
-The networks behaviour to predict two strong output paths shows that each input path (and its predictions) are happening independently of the rest of the input.
-If the network was representing the input as an angle it would be reasonable to expect that the output might be a blur in the top right corner of the prediction.  
+The networks behaviour to predict two strong output paths shows that each input path (and its predictions) are happening (at least somewhat) independently of the rest of the input.
+If the network was representing the input as an angle it would be reasonable to expect that the output might be a blur in the North-East corner of the prediction.  
 Instead this clear prediction of two paths suggests the network is simply learning to map between areas of the input to areas of the output. 
 
 \begin{figure}
@@ -120,7 +120,7 @@ Instead this clear prediction of two paths suggests the network is simply learni
 
 
 \subsubsection{Linearly activated ArbAngNet results}
-It follows that a network trained on only 8 angles might have trouble generalising to arbitrary angles so a second network was trained on the Arbitrary Angles Dataset. 
+It follows that a network trained on only 8 angles would have trouble generalising to arbitrary angles so a second network was trained on the Arbitrary Angles Dataset. 
 In general the network trained on Arbitrary Angle data was less confident in its predictions (magnitude of predictions were lower) but in each guess it would cover a boarder area. 
 % TODO rewrite this sentence
 An example of this is figure \ref{fig:ADC_aaaa_crct} in which the prediction has many faintly coloured squares, in contrast to the more confident predictions made in figure \ref{fig:ADC_8a_8a_crct} by 8AngNet.
@@ -151,41 +151,143 @@ An example of this is figure \ref{fig:ADC_aaaa_crct} in which the prediction has
 
 The neat noise example which suggested that 8AngNet was simply mapping regions in the input to regions in the output shows a very different prediction from ArbAngNet.
 ArbAngNet does not predict any given angle strongly but instead has a very faint prediction along both but also between the two lines. 
-The significance of these prediction is questionable given small the predictions are but it does give some insight into the networks dynamics.
+The significance of these prediction is questionable given how small the predictions are but it does give some insight into the networks dynamics.
 It should be noticed that this does not exclude the possibility that ArbAngNet is also just mapping between regions of the input and output, rather this is still a promising theory.
+Finally, figure \cite{fig:ADC_aaaa_fork} shows ArbAngNets performance on the slightly off angle example that 8AngNet failed to predict in figure \ref{fig:ADC_8aNoaa_fork}.
 
 \subsection{Non-linear acitivation}
-Compare Sigmoidal with relu?
-
-\subsubsection{Sigmoid activation}
-Talk about both 8AD and AAD here
-
-\subsubsection{ReLU activiation}
-Talk about both 8AD and AAD here 
+Changing between a Linear, Sigmoid or ReLU activation layer had a minimal affect on the quality of the predicitons.
+Significantly more influential was the number of hidden units used, which itself plateaued as can be seen in figure \ref{fig:AHLrelu}.
 
 \subsection{Attentional Directly Connected network discussion}
-How did they go generally?
+The ADC networks were successfully able to make meaningful predictions on both the 8AD and AAD datasets even with only a linear activation.
+Neatly aligned noise suggests the networks internal representation is to map between pixels in the input to pixels in the output.
+This is supported by 8AngNets inability to generalise to the AAD, naturally if the network hasnt learnt that a region (i.e. between two angles of 8AD) should map to another region than it will not be able to generalise to this. 
+If the network had learnt to represent the training examples as angles then this generalisation should have been possible. 
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%      ATTENTIONAL NN    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Attentional Hidden Layer (AHL) Network}
 
 \subsection{Aims}
- using a hidden layer, what can learn? maybe line params, 1, 2, more hiddens
+The aim of the Attentional Hidden Layer (AHL) networks is to analyse how network depth affects what the network is able to learn. 
+Recent work in deep learning\cite{krizhevsky2012imagenet} has shown using multiple layers allows networks to represent increasing abstract features from the input. 
+In the ADC networks the output layer had full access to the activation of all the input layers, by forcing the dataflow through a hidden layer the network must learn to represent the input with the units in the hidden layer.  
+The datasets used could be efficiently encoded as a single angle (passing through the centre of the image) representing the gradient of the line.
+Alternatively the network could also use a more distributed representation where each hidden unit conributes partially to predicting the angle. 
+
 
 \subsection{Method}
+The methodology for the AHL networks remains constant from the ADC networks with the only difference being the addition of a hidden layer.
+The number of units in the hidden layer was varied being 1, 2, 4, 8, 16, 32, 64, 128.
+In keeping with the ADC networks the activations were varied being linear, sigmoid and ReLU. 
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{AHLrelu.png}
+    \caption{ReLU activated AHL network performance with varying hidden units}
+    \label{fig:AHLrelu}
+\end{figure}
 
 \subsection{Results}
-\subsubsection{1 hidden unit}
+Figure \ref{fig:AHLrelu} shows that forcing a network to represent the input with a single hidden unit severaly degrades prediction performance compared to having a fully connected network with no hidden layers (e.g. an ADC network). 
+The single hidden unit networks (linear, sigmoid and ReLU activated) all respond more actively when input is highly active (i.e. a strong signal or lots of noise) than if the input is quiet. 
+In general the number of hidden units is proportional to the prediction performance of the network.
+Noise still remains unpredictable which is to be expected. 
+Activation function has minimal effect on the final prediction. 
 
-\subsubsection{2 hidden units}
-
-\subsubsection{Many hidden units}
 
 \subsection{Discussion}
+Activity predicted by a single hidden unit network seems to be proportional to the activity in the input.
+This suggests the networks internal representation is a measure of activity rather than something more abstract such as the angle of the line.
+Near the centre of the image has the greatest probability of having some ground truth activity so the network predicts accordingly.
+The network predictions near the centre resembles a gaussian distribution although a more careful analysis would need to performed to determine how similar they are. 
+The network predicting activity when there is activity in the input might be a local minima the network gets stuck in rather than learning to represent the more abstract angle of movement. 
+Analysis of the ADC networks suggested they were mapping input regions to output regions, this may still be what the AHL networks are doing. 
+If the AHL networks are just mapping between regions than 1 hidden unit predicting near the centre based on activity in the input is a simple way to minimise loss. 
 
+\begin{wrapfigure}[27]{l}{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.4\textwidth]{AHLSectors.png}
+    \caption{Two AHL inputs/prediction pairs for different numbers of hidden units.}
+    \label{fig:AHLSectors}
+\end{wrapfigure}
+
+Prediction performance of the AHL networks improved as the number of hidden units increased as shown in \ref{fig:AHLSectors}.
+Two inputs representing the dot moving in two different directions are shown with the associated output from a network with a given number of hidden units.  
+When there is only 1 hidden unit the prediction is based solely on the activity of the input and resembles a gaussian blur around the centre.
+When there are two hidden units the network is better able to identify which quadrants the input is coming from and where the ground truth will be.
+Once 8 hidden units are used the network can reasonably predict which quadrant the ground truth will be in but still has a wide prediction arc.
+Using 128 hidden units (more hidden units than inputs) increases the prediction performance further. 
+
+Discrepencies between the different activation functions could be attributed to general network variability and do not seem to reveal any significant insight into the differences between the functions.
+Lack of any significant variation highlights that this problem is solvable without the need for non-linear units. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%      CONV NET    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Attentional convolutional networks}
+\subsection{Aims}
+With positive results from the ADC and AHL networks the possibility of the convolutional networks with the attentional training datasets was considered. 
+The simple, regular structure in the attentional training data might be enough for a shallow convolutional network to learn. 
+
+\subsection{Method}
+The network structure, methodology and manipulated variables were identical to that in section \ref{sec:convMethod} with some minor differences.
+These differences included the change in input/output size from 16384 to 121 and convolution size from 11x11 to 6x6. 
+The input/output layer size change was necessary given the smaller size of the training examples and the convolution size change was considered given the input was now only 11x11.
+As the attentional accumulation trims the training examples to 11x11 then in theory each temporal past/future should only take up a 6x6 grid. 
+
+\subsection{Results}
+Despite the attentional data and the reduced size the convolutional networks still become input invarient as shown in figure \ref{fig:CAInvariant}.
+The activity pattern shown is from the network using a size 8 dot moving with speed 4 accumulated with an exponential function and k value corresponding to a 33 ms period.
+This invariance was consistant (although the given activity pattern would change) regardless the number/size of feature maps, the fully connect layer depth and fully connected layer activation.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{attConvInvariance64.png}
+    \caption{Attentional Convolutional Net showing input invariance.}
+    \label{fig:CAInvariant}
+\end{figure}
+
+\subsection{Discussion}
+The cause for this invariance in not known, the most promising explaination being a problem similar to the invariance seen in the PilotNets.
+That is that the network quickly learns it can minimise the loss function by setting most values to zero and highlighting pixels based on frequency of appearing in the output.
+For the PilotNets the frequent pixels were the hot pixels, for the attentional convolutional networks the frequent pixels are those near the center.
+This explaination has trouble explaining why the convolutional networks would be unable to learn using the S.S.D. loss function when the ADC and AHL networks are able to make meaningful predictions using it.  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%      AUTO ENCODE     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Auto Encoder}
-How much could be cleaned up \\
-Retry other networks with cleaned up data -- How do they go? \\
+\subsection{Aims}
+Noise has been accepted as a fact of neuromorphic sensors so far in this work and models have been expected to be able to deal with this.
+A simple thresholding could have efficiently filter out many of the noise based training examples before use in training. 
+Such a threshold would be dataset specific (with larger/faster dots creating more events) and creates an unnecessary hyperparameter to the model. 
+Instead noise could be filtered out using an Autoencoder.
+%This possibility is explored with autoencoders of various size.
+The aim of this study is to determine to what degree autoencoders are able to clean up noise as a potential preprocessing of the temporal surfaces.
 
+\subsection{Method}
+Simple Autoencoders consisting of a single fully connected hidden layer were used.
+Hidden layer sizes used were 1, 2, 4, 8, 16, 32, 64, 128. 
+Three activation functions (linear, Sigmoid, ReLU) were used in the hidden layer.   
+
+\subsection{Results}
+Figure \ref{fig:AEUnits} shows how the number of hidden units affects the autoencoders ability to represent the data. 
+In general autoencoder predictions resembled what the input might look like if a blur had been applied. 
+%A standard prediction from the autoencoder had the appearance of if a blur to the original input. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.85\textwidth]{AEUnits.png}
+    \caption{Effects of additional hidden units on AAD dataset Autoencoder}
+    \label{fig:AEUnits}
+\end{figure}
+
+
+\subsection{Discussion}
+%As with the AHL Networks which forced the network to represent the input with a restricted number of uni 
+Autoencoders are made to represent the input with a restricted number of hidden units.
+Just as the AHL networks learnt to map between sections of the input and output the autoencoders also appear to define a similar mapping. 
+Figure \ref{fig:AEUnits} demonstrates as the number of hidden units increases so to does the networks ability to isolate a sector containing the input signal.
+The example in Figure \ref{fig:AEUnits} is further interesting because of the strong noise pixel in the bottom right of the image. 
+With only two or four hidden units the network gives the noise pixel region a large amount of weight.
+The network learns to better discriminate between noise and signal with 16, 32 and 64 hidden units, however it cannot completely remove the noise.
+Despite not remove the noise the network has significantly reduced its contribution to the input which is reasonable and may help future processing. 

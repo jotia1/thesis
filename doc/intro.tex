@@ -1,50 +1,125 @@
 \chapter{Introduction}
+\section{Context, significance and purpose}
 
-%The introductory chapter describes the importance of the field and the
-%scope and significance of your project.  It usually ends with an
-%overview of the remainder of the thesis.
+%\subsubsection{\textbf{TOTT: Event-based data accumulated into temporal surfaces implicitly encodes temporal information which can be leveraged by frame-based neural networks to make meaningful predictions.}}
 
-%Notice that Arabic page numbering begins with Chapter 1.  Preceding
-%pages (known as ``frontmatter'') have Roman numbering.  The
-%\texttt{book} document class in \LaTeX\ follows this numbering
-%convention by default (see Lamport~\cite{lamport}, p.\,80).
+% State the general topic and make a claim about why it is important
+    % what is the general topic? -> processing event-based data
+Having origins in the brain and eyes respectively, frame-based neural networks and neuromorphic vision sensors fail to interface well, raising the question of what is missing from these artificial replicas which would make them better able to re-create a full visual system. 
+%Despite artificial neural networks and neuromorhpic sesnors having roots in brains and eyes the two artificial replicas fail to work well together raising the question of what is missing that would allow the artificial repli
+%Despite frame-based neural networks having roots in biological neural networks and neuromorphic vision sensors taking inspiration from biological vision sensors (eyes) the two artificial replicas interface poorly.
+% Raising the question of what is necessarily for artificial systems to achieve biological level vision processing.
+% Important issue really is using the DVS as an input
+Traditional frame-based neural networks represent the state-of-the-art in machine vision, yet deal poorly with temporally rich information. 
+This performance deficit is in part due to an implicit assumption that vision data is discretised into dense, uniformly sampled snapshots (viz. sequences of 2D images). 
+Neuromorphic vision sensors challenge this assumption and offer an alternative approach based on tracking individual pixel changes in a scene (events) with a fine temporal resolution. 
+Whilst these sensors offer advantages such as low power, high-speed sensing they necessarily require alternative approachs to processing the event-based output. 
+Inspiration from biological systems make neural networks a sensible processing mechanism to apply. 
+However the discrepency between frame-based vision data (for which many years of in-depth processing literature exists) and event-based vision data mean state-of-the-art frame-based techniques cannot be readily applied.
+
+A break in the vision pipeline exists between sensor and processing model which needs to be addressed to leverage the full potential of neuromorphic sensors. 
+An appraoch could be the use of spiking neural networks as an alternative processing model better suited to interfacing with neuromorphic sensors.
+Currently spiking networks do not perform as well as frame-based models and are harder to train, making them a less appealing option.
+Alternatively, event-based information could be converted to frame-based input through the use of appropriate data structures and then readily applied to frame-based models. 
+How this conversion is performed will have a significant influence on the amount of information a neural network can extract.
+
+The purpose of this work is to analyse the performance of shallow neural networks with a frame-based representation of event-based data.
+In the frame-based representation, pixels within a frame are computed as a function of the distance between that frame and the most recent event registered by that pixel. 
+Accumulated frames then resemble a blur of motion from the past. 
+Doing the same accumulation into the future gives a blur of future motion which can be used as a ground truth in supervised training.
+These motion blurs, or temporal surfaces, convert the three dimensional (x, y and time) event-based data into a two dimensional image by implicitly encoding time as a scaled value.
+The hypothesis of this work is that frame-based nerual networks will be able to make meaningful predictions by leveraging the implicit temporal information encoded in temporal surfaces. 
+In this work a meaningful prediction is defined as one which aligns with the prediction of a human given the same input.  
+
+
+\section{Aims, Scope and boundries}
+The larger problem of which this work is a small instance is the use of neuromorphic vision sensors with processing models to create a functional visual system capable of extracting useful information. 
+Such a visual system would have numerous applications in machine vision, robotics, image processing and modelling natural vision systems for reserach. 
+There is a large body of literature on processing frame-based vision data but much of this literature is not applicable to event-based data without some degree of pre-processing. 
+The scope of this work is limited to examine just one such processing technique, temporal surfaces.
+Using temporal surfaces bridges the gap between new high-speed sensors and existing state-of-the-art processing techniques but this work is limited to the boundries mentioned.
+
+\textbf{Specific boundries:}
+Temporal surfaces are only created using a linear and exponential accumulation function with varying constants.
+These temporal surfaces are used in shallow neural networks with linear, sigmoid and Regularised Linear Units (ReLU). 
+Three different network architectures are examined being directly connected (input to output), convolutional and single hidden layer. 
+A new simple dataset of linear motion with constant velocity was collected and is presented as the stimulus. 
+
+\textbf{Aims:}
+The aim of this work is to present an analysis of the performance of temporal surfaces with shallow neural networks.
+In particular the ability of temporal surfaces to implicitly encode temporal information will be examined. 
+A further aim is an analysis of the ability of shallow neural networks to predict future temporal surfaces.
+An implictation of this ability would be that frame-based networks which traditionally struggle to represent temporal information explicity are able to use it implicitly. 
+This work makes the assumption that the performance of shallow neural networks with temporal surfaces can be used as a measure of the amount of temporal information in the surface as well as the networks ability to implicitly use temporal information. 
+Another aim of this project is to provide the community with an labelled event-based dataset of very simple linear motion with constant velocity. 
+A simple dataset will help standardise model comparison and development of simple event-based processing models. 
+
+
+\section{Chapter outline}
+This work is structured as follows:
+\begin{description}
+
+\item [Chapter 2 -- Literature - Sensors, Processing, Networks] - Reviews the current state of the literature outlining the current deficit of high-speed visual processing systems, software tools available and public datasets. 
+
+\item [Chapter 3 -- Data collection] - Outlines the considerations and process followed for collecting a simple dataset featuring simple linear motion with a constant velocity.
+
+\item [Chapter 4 -- Processing -- Accumulating the past and future] - Description of the processing performed on the collected data to convert it to temporal surfaces ready for neural network training.
+
+\item [Chapter 5 -- Pilot study -- Temporal surfaces as representations] - Initial exploration of the problem space to determine the suitability of full scene temporal surfaces with shallow networks.
+
+\item [Chapter 6 -- Study 1 -- Convolutional architectures] - Analyses the performance of evolved, analytic and standard convolutional networks with full scene temporal surfaces. 
+
+\item [Chapter 7 -- Study 2 -- Attentional Networks] - Reports the performance of all networks re-run with attentional (rather than full scene) temporal surfaces. Also discusses the performance of autoencoders to remove noise from the data.
+
+\item [Chapter 8 -- General discussion and conclusions] - Provides a summary of outcomes and limitations from the project. Also includes reccomendations for future work and general improvement.
+
+
+\end{description}
+
+%The representation used will create a 2D frame at distinguished points in time. 
+%Within each frame each pixel value is the result of some function of the temporal distance between that frame and the most recent time that the pixel registered an event.
+%Fine temporal resolution of change is a key feature of neuromorphic sensors and as such should be 
+%The biological solution to the vision processing is the complex, hierarchical, recurrent, massively parallel and asynchronous visual cortex from which artificial nerual networks can derive some origins. 
 
 
 
 
 
 %% Broard intro to topic, where did this come from, what is the problem, 
-Vision is the primary sense used by many natural agents to gather information about their environment.
-It would seem to follow that vision should be an important percept for artificial agents.
+%Vision is the primary sense used by many natural agents to gather information about their environment.
+%It would seem to follow that vision should be an important percept for artificial agents.
 %It would seem to follow that artificial agents should also be able to leverage visual sensors in a similar way.
 % TODO Is digital systems the right term to use here??
-However the apparent ease with which natural systems process visual information does not translate to standard digital arcitectures, making vision a seldom used sense. 
-In real time applications vision is often impractical due to the computational load required to extract meaningful information. 
+%However the apparent ease with which natural systems process visual information does not translate to standard digital arcitectures, making vision a seldom used sense. 
+%In real time applications vision is often impractical due to the computational load required to extract meaningful information. 
 %In its place alternatives such as Infra-red for distance sensing or L.I.D.A.R. for mapping are substituted.
 % TODO gonna need a refernce below
-In a more theoretical environment there are still many challenges in extracting meaningful information from standard vision data due to variations in lighting, orientation, position, scale etc.
+%In a more theoretical environment there are still many challenges in extracting meaningful information from standard vision data due to variations in lighting, orientation, position, scale etc.
 
 
 %% Breif into to neural nets
 %   Why they are better than hard coded rules -> they can learn
-A simplistic approach to vision processing would entail defining exact features of the object to be recognised.
-This would quickly become overwhelming though as the system decends into considering a seemlingly endless list of special cases and permuations that a single object could take in an image.
+%A simplistic approach to vision processing would entail defining exact features of the object to be recognised.
+%This would quickly become overwhelming though as the system decends into considering a seemlingly endless list of special cases and permuations that a single object could take in an image.
 % TODO will need a reference to standad analysis algoithms
 %Numerous algorithms and heuristics have emerged making meaningful analysis possible in some circumstances such as ****** Color filtering / normal face detection?? / Canny edges? *******.
 %Unfortunately these struggle to generalise to arbitrary object classification or prediction.
 % TODO reference some state-of-the-art networks
 %A promising alternative, Neural Networks, currently have state-of-the-art performance on many of the public benchmark datasets.
-Alternatively an algorithm designed to detect a specific object using heuristics or traditional vision processing methods could be used.
-Unfortuneately these only solve a smaller part of the processing problem, such as canny edge detection, or struggle to generalise to objects other than that they were designed for, such as ** face detection **.
-Neural networks offer a general solution to the problem of classification and prediction.
-Rather than relying on expertly designed heuristics or algorithms a neural network is randomly initialised and after repeated presentations of some stimuli can adjust internal parameters to minimise a loss function. 
-This ability to self adjust and decide which parts of the stimuli are important has lead to systems capable of learning representations far more complex than an expert would have been able to design explicitly. 
+%Alternatively an algorithm designed to detect a specific object using heuristics or traditional vision processing methods could be used.
+%Unfortuneately these only solve a smaller part of the processing problem, such as canny edge detection, or struggle to generalise to objects other than that they were designed for, such as ** face detection **.
+%Neural networks offer a general solution to the problem of classification and prediction.
+%Rather than relying on expertly designed heuristics or algorithms a neural network is randomly initialised and after repeated presentations of some stimuli can adjust internal parameters to minimise a loss function. 
+%This ability to self adjust and decide which parts of the stimuli are important has lead to systems capable of learning representations far more complex than an expert would have been able to design explicitly. 
 
 
-Breif into to Event-based sensors \hfill 
-   fast, low power, sparse, biologically realistic \hfill
+%Breif into to Event-based sensors \hfill 
+%   fast, low power, sparse, biologically realistic \hfill
 
-Why the DVS with NN's makes sense \hfill 
+%Why the DVS with NN's makes sense \hfill 
+
+
+
 
 
 %\section{}
