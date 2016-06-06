@@ -8,7 +8,7 @@ decay_values = ['linear', 'exp']
 
 other_params = {}
 
-net = 'CONV'  # Options: AE, ADC, CONV, PILOT, AHL
+net = 'KERNS'  # Options: AE, ADC, CONV, PILOT, AHL, KERNS
 if net == "ADC":
     import net4 as net
     activation = 'linear' # Options: relu, sigmoid, linear
@@ -23,6 +23,24 @@ elif net == 'AHL':
     model_base = 'AAD_attn'
     other_params.update({'num_hidden_units': hidden_units,
                         'activation': activation})  
+elif net == "KERNS":
+    import net6 as net
+    model_base = '8AD'
+    kernels = 9
+    csize = 11
+    hunits = 1024
+    kernel_file = '8angt_kernels.mat'
+    activation = 'linear' # Options: relu, sigmoid, linear
+    #      format: CA9kr64h_batch_results/
+    results_root = 'K{0}k{1}{2}h_batch_results'.format(kernels, 
+                                                    activation[0],
+                                                    hunits)
+    other_params.update({'num_features': kernels,
+                'conv_size': csize,
+                'fc_units': hunits,
+                'activation': activation,
+                'kernel_file': kernel_file,
+                })
 elif net == "CONV":
     import cnet1 as net
     model_base = '8AD'
