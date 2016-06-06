@@ -29,6 +29,7 @@ function [  ] = aedat2NetIn( filename, outfile, kx, ky, kz, msps, attentional, d
 %% Code
     %   load file
     [ xs, ys, ts, ~, seps ] = trimEvents(filename);
+    fprintf('%d seps found.\n', size(seps, 1));
     
     assert(kx == ky, 'Varying size kernels not supported yet');
     
@@ -40,10 +41,21 @@ function [  ] = aedat2NetIn( filename, outfile, kx, ky, kz, msps, attentional, d
     inputs = zeros(nsamples, kx * ky, 'single');
     labels = zeros(nsamples, kx * ky, 'single');
     
+    num_angles = 8;
+    trials_per_angle = 150;
+    
 %   For each pair in sep
     cur_sample = 1;
     fprintf('Starting Samples');
+    trial_starts = zeros(num_angles, 1);
+    ti = 1;
     for sep = 1:size(seps, 1);
+        if mod(sep, trials_per_angle) == 1;
+            trial_starts(ti) = cur_sample;
+            ti = ti + 1;
+            disp(sep);
+        end
+        
         if mod(sep, 10) == 0  % Give some feedback on progress
             fprintf('.');
         end
@@ -65,11 +77,46 @@ function [  ] = aedat2NetIn( filename, outfile, kx, ky, kz, msps, attentional, d
         inputs(cur_sample : cur_sample + size(ins, 1) - 1, :) = ins;
         labels(cur_sample : cur_sample + size(labs, 1) - 1, :) = labs;
         cur_sample = cur_sample + size(labs, 1);
-
+        
     end
     
-    fprintf('\nPreparing to save %s\n', outfile);
+    
+    
+    gen_analytic = 1;
+    if gen_analytic
+        num_kernels = num_angles + 1;
+        kernels = zeros(kx, kx, 1, num_kernels);
 
+        for i = 1 : num_angles;
+            angle_start = trial_starts(i);
+            if i == num_angles  % at last angle (section)
+                akern = reshape(sum(inputs(angle_start : end, :)), kx, kx);        
+            else
+                angle_end = trial_starts(i + 1);
+                akern = reshape(sum(inputs(angle_start : angle_end, :)), kx, kx);
+            end
+            akern(6, 6) = 0;
+            akern = akern / max(akern(:));
+            akern (6, 6) = 1;
+            kernels(:, :, 1, i) =  akern;
+            imagesc(akern);
+        end
+        
+        % Add noise detector
+        noise = zeros(kx, kx);
+        noise(6, 6) = 1;
+        kernels(:, :, 1, num_kernels) = noise;
+        
+        % DO SAVE
+        fprintf('\nSaving %s\n', [outfile, '_kernels']);
+        timestamp = date;
+        save([outfile, '_kernels'], 'kernels', 'kx', 'num_kernels', 'timestamp', ...
+                    '-v7.3');
+        fprintf('\nFinished saving %s\n', outfile);
+    end
+    
+    
+    fprintf('\nSegmenting data %s\n', outfile);
 %   Shuffle data
     perm = randperm(nsamples);
     inputs = inputs(perm, :);
@@ -87,13 +134,15 @@ function [  ] = aedat2NetIn( filename, outfile, kx, ky, kz, msps, attentional, d
     debug = 0;
     if debug
         disp('disp')
-        for i = 500:50:100000
+        for i = 2:1:100000
             waitforbuttonpress
-            imshow(mat2gray([reshape(train_inputs(i, :), 128, 128), ones(128, 7), reshape(train_labels(i, :), 128, 128)]))
+            kx = 11;
+            imshow(mat2gray([reshape(train_inputs(i, :), kx, kx), ones(kx, 5), reshape(train_labels(i, :), kx, kx)]))
         end
     end
     
 %   save result matrix   
+    fprintf('\nSaving %s\n', outfile);
     timestamp = date;
     save(outfile, 'train_inputs', 'train_labels', ...
                     'test_inputs', 'test_labels', ...
