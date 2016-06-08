@@ -2,19 +2,19 @@
 \label{ch:preprocess}
 
 \section{Aims}
-Representations have a significant affect of what and how quickly a network can learn\cite{akolkar2015can}. 
+Representations have a significant effect of what and how quickly a network can learn\cite{akolkar2015can}. 
 Thus for any system to predict motion it must necessarily encode some representation of time. 
-Traditional approaches to this have been to design Recurrent Neural Networks (RNNs) capable of storing some memory of previous states to inform future decsisions.  
-Alternatively a system may make use precise spike timings to encode information as in Spiking Neural Networks (SNNs). 
-Many state-of-the-art learning techniques poorly encode time by making the implicit assumption that time is discritised into the frame-rate of the camera used to make a recording.
-The decision then seems to be, work with mature state-of-the-art techniques such as deep learning which are poorly able to capture temporal information or RNN/SNNs better suited to process event-based data but with sub--optimal performance.   
-However this need not be the case, to leverage the existing literature and use these state-of-the-art models with event-based data, a representation that these networks can accept must be used. 
+Traditional approaches to this have been to design Recurrent Neural Networks (RNNs) capable of storing some memory of previous states to inform future decisions.  
+Alternatively, a system may make use of precise spike timings to encode information as in Spiking Neural Networks (SNNs). 
+Many state-of-the-art learning techniques poorly encode time by making the implicit assumption that time is discretised into the frame-rate of the camera used to make a recording.
+The decision then seems to be, work with mature state-of-the-art techniquesi, such as deep learning which are poorly able to capture temporal information, or RNN/SNNs better suited to process event-based data but with sub--optimal performance.   
+However this need not be the case; to leverage the existing literature and use these state-of-the-art models with event-based data, a representation that these networks can accept must be used. 
 This section will explore a method of representing event-based data in a frame-based structure while preserving as much temporal information as possible. 
 
 
 \section{Method}
 The simplest solution is to accumulate all the events in a given time slice into a 2D frame to recover images from the event-based data.
-This is somewhat counter intuitive though as this forfeits all the temporal information which seperates the DVS from traditional cameras and results in a blury low resolution image. 
+This accumulation is somewhat counter intuitive, as this forfeits all the temporal information which separates the DVS from traditional cameras and results in a blurry low resolution image. 
 
 \begin{wrapfigure}{r}{0.6\textwidth}
     \centering
@@ -23,16 +23,17 @@ This is somewhat counter intuitive though as this forfeits all the temporal info
     \label{fig:fadedhistory}
 \end{wrapfigure}
 
-An approach to this problem is to choose a distinguished point in time, then construct a 2D image in which each pixels value is a function of its temporal distance to that distinguished point.
-If only events that occured prior to the distiguished point in time are considered the resulting image would represent a faded history of what has just happened, this can be seen in figure \ref{fig:fadedhistory} in which a recent history of the scene (the moving dot from left to right) can be observed. 
-Such images can be considered as a faded past, but are also known by many other equivilent names such as; temporal surface, decayed surface, time fields or time surface and these terms can be used interchangeably. 
-There is no restriction as to why accumulation can only occur into the past, a similarly interesting image can be produced by accumulating into the future from a distinguished point in time.
+An approach to this problem is to choose a distinguished point in time, then construct a 2D image in which each pixel's value is a function of its temporal distance to that distinguished point.
+If only events that occurred prior to the distinguished point in time are considered the resulting image would represent a faded history of what has just happened. 
+A faded history can be seen in figure \ref{fig:fadedhistory} in which a recent history of the scene (the moving dot from left to right) can be observed. 
+Such images can be considered as a faded past, but are also known by many other equivalent names such as; temporal surface, decayed surface, time fields or time surface and these terms can be used interchangeably. 
+There is no restriction as to why accumulation can only occur into the past; a similarly interesting image can be produced by accumulating into the future from a distinguished point in time.
 These accumulated futures show where objects are moving. 
-Consequently if a distinguished point is chosen and an image is accumulated into both the past and future from this point (as per figure \ref{fadedhistory}) these two images can be used as input and labels in a neural netowrk. 
+Consequently if a distinguished point is chosen and an image is accumulated into both the past and future from this point (as per figure \ref{fig:fadedhistory}) these two images can be used as input and labels in a neural netowrk. 
 
 
 The data is now in a form which can be used in frame-based neural networks and some of the temporal information has been maintained.
-Still many questions remain to be explored such as what functions should be used to decay images and with what parameters.
+Many questions still remain to be explored such as what functions should be used to decay images and with what parameters.
 
 
 \section{Function specifics and implementation}
@@ -66,9 +67,9 @@ Characterised by equation \ref{eq:expDecay} the length of history considered is 
 %To generate network inputs and outputs distinguished times must be selected and decayed around.
 %Each event in the event-stream could be used as a distinguished point and an input/output pair decayed around it.
 To generate network input and output images distinguished events must be chosen to be accumulated around.
-Every event in the event-stream could be chosen however this would generate a lot of redundant data as many similar events make up any given line.
+Every event in the event-stream could be chosen however this would generate a lot of redundant data, as many similar events make up any given line.
 Rather an event was selected at uniform sequential intervals to be decayed around, that is, every 150th event would be decayed around. 
-Additionally after the accumulation into frames the order of training example pairs was randomised and split in 70\% training data, 20\% validation data and 10\% test data. 
+Additionally, after the accumulation into frames the order of training example pairs was randomised and split in 70\% training data, 20\% validation data and 10\% test data. 
 
 
 \subsection{Parameter influence}
@@ -77,8 +78,8 @@ A \textit{k} value seemed problem dependent, interesting values to check first w
 The values 1 and 100 \ms were chosen to give some idea of how smaller and larger time scales affected network performance. 
 A \textit{k} value is considered to be corresponding to a timeslice when at that temporal distance from the distinguished event the accumulation function gives an output of 0.5.
 This is a somewhat arbitrary definition as it may instead make more sense to define a corresponding timeslice to be when the accumulation function gives zero (or near zero). 
-As the exponential function will only ever appraoch zero the cut off point will be an arbitrary decision regardless.
-In practise using 0.5 was found to perform well as an arbitrary point and meant k values between linear and exponential are comparable.
+As the exponential function will only ever approach zero the cut off point will be an arbitrary decision regardless.
+In practice using 0.5 was found to perform well as an arbitrary point and meant k values between linear and exponential are comparable.
 %TODO include a graphic here demonstrating what corresponding means.
 For the linear accumulation function it can be derived that the k values that should be used are given by;
 
@@ -94,7 +95,7 @@ Similarly it can be derived that the \textit{k} values for the exponential case 
     k = \frac{-t}{\ln(0.5)}
 \end{equation}
 
-Which when combine result in table \ref{table:kvalues} outlining the choices of \textit{k} to be tested.
+Which when combined result in table \ref{table:kvalues} outlining the choices of \textit{k} to be tested.
 
 \begin{table}[h]
 \centering
@@ -125,14 +126,15 @@ It is worth noting these values are in \ms while the DVS recordings are in \us s
 
 
 %It is hard to believe the network will be able to learn any structure from the inputs accumulated over 1 and 16\ms time windows (figures \ref{fig:decay1mslinear}, \ref{fig:decay1msexp}, \ref{fig:decay16mslinear} and \ref{fig:decay16msexp}) in the full 128x128 images.
-Using a small time window like 1 or 16\ms may prove a challenging task for the network to learn structure as these are smaller than the refresh rate of the screen and may be too fine resolution to contain any motion structure. 
-In particular, in the 1\ms accumulation window inputs the signal is represented by only 1 or two pixels making it indistinguishable from noise in the image. 
-In the case of 16\ms the signal from the dot is several pixels but the temporal paths are still much less clear than in the 33 and 100\ms cases.
-The 33 and 100\ms accumulation windows allow enough signal to be collected that a clear temporal path can be decerned by a human visual system to derive directional information from just the input image.
+Using a small time window like 1 or 16 ms may prove a challenging task for the network to learn structure, as these are smaller than the refresh rate of the screen and may be too fine a resolution to contain any motion structure. 
+In particular, in the 1 ms accumulation window inputs the signal is represented by only one or two pixels making it indistinguishable from noise in the image. 
+In the case of 16 ms the signal from the dot is several pixels but the temporal paths are still much less clear than in the 33 and 100 ms cases.
+The 33 and 100 ms accumulation windows allow enough signal to be collected that a clear temporal path can be discerned by a human visual system to derive directional information from just the input image.
 This gives some confidence that the frame-based networks will also be able to extract and use this information.
 
-Overall the exponentially accumulated temporal paths are much more clearly visible in these examples due to the functions aysymptotic nature compared to the linear accumulations hard cut off after a certain temporal difference. 
-This also comes at a cost though as the exponentially accumulated images also retain noise events for longer so whilst the stimulus is present for longer this also allows noise to accumulate. 
+Overall, the exponentially accumulated temporal paths are much more clearly visible in these examples due to the function's aysymptotic nature compared to the linear accumulations hard cut off after a certain temporal difference. 
+This also comes at a cost as the exponentially accumulated images also retain noise events for longer.
+Whilst the stimulus is present for longer this also allows noise to accumulate. 
 
 These resulting images are blurs through time representing the past and future positions of the dot.
 This is in some ways analogous to presenting several sequential frames to a recurrent neural network, in that for each training example it considers not just the current position of the dot (brightest pixels) but also previous positions of the dot (faded pixels).
@@ -140,12 +142,13 @@ This is in some ways analogous to presenting several sequential frames to a recu
  
 
 \section{Discussion}
-The representation of time will have a profound affect on the performance of a network when dealing with data that is rich in temporal information. 
+The representation of time will have a profound effect on the performance of a network when dealing with data that is rich in temporal information. 
 Accumulating events into frames sacrifices some of that temporal information but will allow the use of state-of-the-art learning techniques which are typically frame-based. 
 Two different functions (exponential and linear) have been used to accumulate events around a distinguished point to generate training examples for model training. 
 Several parameter values were decided upon to give some resemblence to standard frame-based camera recordings rates (being 30 and 60 frames-per-second).
+%TODO Rewrite the sentance below
 Some values for k result in training examples which are informative to a human visual system and some which are not, which work for the networks examined may likely be a different set. 
-The final accumulations were seperated into a 70/20/10\% split of training/validation/test datasets for use in training networks later. 
+The final accumulations were separated into a 70/20/10\% split of training/validation/test datasets for use in training networks later. 
 
  
 

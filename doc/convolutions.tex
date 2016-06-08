@@ -7,7 +7,7 @@
 \subsection{Aims}
 %Tried to use evol kerns but sparse nature of data means no good
 After the results from the Pilot study it was clear the task needed to be reframed.
-Previous work using convolutions and kernels as feature detectors suggusted they might be able to provide feature maps necessary for a network to learn.
+Previous work using convolutions and kernels as feature detectors suggested they might be able to provide feature maps necessary for a network to learn.
 %Additonally using convolutions would have the advantage that they are able to ignore much of the image and focus on areas of activity.  
 Convolutions may be well suited to this problem as they naturally focus on only small segments of the image meaning the signal-to-noise ratio affecting the PilotNets may be less problematic. 
 Kernels capable of detecting dot motion were developed using an evolutionary algorithm. 
@@ -24,7 +24,7 @@ The feature maps were then used as training examples in a fully connected networ
 \end{figure}
 
 \subsection{Method}
-Three major steps were required to convert from a DVS recording to a prediction in this study, the final system is illustrated in figure \ref{fig:evoNetStructure}.
+Three major steps were required to convert from a DVS recording to a prediction in this study; the final system is illustrated in figure \ref{fig:evoNetStructure}.
 First kernels for convolutions were evolved to be specialised to the 8AD dataset using a 1 + 1 hillclimbing algorithm (described in Appendix \ref{ch:evolution}). 
 After sufficient evolution they were convolved with the DVS recording to produce feature map training examples.
 The feature maps specifying which kernel had responded most strongly for that pixel were fed into a fully connected network which predicted future feature maps at the output.  
@@ -40,9 +40,10 @@ The feature maps specifying which kernel had responded most strongly for that pi
 As no standard set of feature kernels to use with event-based data exists these would need to be created.
 Previous work developing kernels using an evolutionary algorithm made this a sensible place to start.
 In this work a kernel is considered as a matrix with each value being a weight describing how important an event at that position is.
-Kernels start randomly initialised and are iteratively updated by permuting kernel weights and convolving the new kernel with some sample data, improvements in kernel performance as measured by a fitness function are kept.
+Kernels start randomly initialised and are iteratively updated by permuting kernel weights and convolving the new kernel with some sample data.
+Improvements in kernel performance as measured by a fitness function are kept for the next step of evolution.
 Figure \ref{fig:evoStable} shows what a kernel evolving from an initially random state (top row) looks like after 200 evolutionary steps (bottom row).
-Each row in the image represents the kernels state at an evolution step while each column represents an individual pixels value at any step. 
+Each row in the image represents the kernels state at an evolution step while each column represents an individual pixel's value at any step. 
 A stable kernel signifies the kernel has found a local maximum in capturing information from a particular recording.
 Finer details of the evolutionary algorithm are discussed in Appendix \ref{ch:evolution}.
 A set of nine and a set of five kernels were created using this technique.
@@ -54,8 +55,8 @@ A kernel size of 11x11 pixels was chosen as this would capture much of the tempo
 
 \subsubsection{Processing training examples}
 Convolving the 9, 11x11 kernels with the 128x128 images gave 9, 128x128 feature maps.
-Rather than using pooling \textit{within} a feature map as is standard in convolutional neural networks max-pooling was applied \textit{between} the maps. 
-That is the result was a single 128x128 map created in which each position was the index of the feature map with the highest output at that pixel.
+Rather than using pooling \textit{within} a feature map as is standard in convolutional neural networks, max-pooling was applied \textit{between} the maps. 
+The result was a single 128x128 map created in which each position was the index of the feature map with the highest output at that pixel.
 An output feature map then represents which kernel the network predicts will be most active in any given pixel.
 Using the output feature map in combination with the kernels a future temporal surface could then be reconstructed. 
 %This decision was motivated by the idea that if the network learnt which kernels map to which a temporal surface prediction could be reconstructed using the output feature map with the kernels. 
@@ -63,7 +64,7 @@ Using the output feature map in combination with the kernels a future temporal s
 
 \subsubsection{Network design} 
 The networks used then resembled those of PilotNet2.
-Representing each pixel as the kernel which most strongly responds to it should make predicting future motion simple task for a shallow network to learn.
+Representing each pixel as the kernel which most strongly responds to it should make predicting future motion a simple task for a shallow network to learn.
 
 \begin{figure}
     \centering
@@ -74,7 +75,7 @@ Representing each pixel as the kernel which most strongly responds to it should 
 
 \subsubsection{Analytic kernels}
 Additionally an alternative set of kernels was developed based on the probabilities of event patterns in the training data.
-For all samples of a given angle an 11x11 matrix was cropped around each event, the probabilities of events in each position of the matrix was then calculated for that angle giving an analytic kernel.
+For all samples of a given angle an 11x11 matrix was cropped around each event; the probabilities of events in each position of the matrix was then calculated for that angle giving an analytic kernel.
 The process of cropping an 11x11 matrix around events is the same process as discussed in Chapter \ref{ch:attentional}.
 These kernels were significantly quicker to compute compared to the evolutionary kernels which required many convolutions of the full dataset for each evolution. 
 
@@ -88,7 +89,7 @@ These kernels were significantly quicker to compute compared to the evolutionary
 
 \subsection{Results}
 Using the available evolutionary algorithm proved to be too slow to develop meaningful 11x11 kernels on the large 8AD dataset.
-The kernels were not able to converge to a stable point after 14 days of training, example kernels are shown in \ref{fig:evoUnstableInsert}.
+The kernels were not able to converge to a stable point after 14 days of training; example kernels are shown in \ref{fig:evoUnstableInsert}.
 Kernels showed signs of moving towards appropriate features (e.g. higher activations along the South-West diagonal) but still needed more time to develop. 
 The kernel states after 14 days were applied to the data regardless to see if meaningful results could be achieved. 
 Kernels were evolved with integer values for weights but before use the values were mapped to the range 0 to 1.
@@ -99,14 +100,15 @@ The analytic kernels, shown in figure \ref{fig:anaKerns}, were also substituted 
 \subsection{Discussion}
 Developing kernels evolutionarily which would be specialised to the dataset proved to be too computationally expensive for the duration of this project. 
 A faster algorithm could have been implemented but was considered out of scope meaning only premature kernels were used.
-Analytic kernels offered a promising alternative to evolutionary algorithms being much faster to compute and resembling the 8 angles clearly.
+Analytic kernels offered a promising alternative to evolutionary algorithms, being much faster to compute and resembling the 8 angles clearly.
 However, the analytic kernels were also unable to produce meaningful results suggesting a deeper problem remains. 
 The deeper problem may be that the network which is still taking all 16384 inputs is suffering from a signal-to-noise-ratio problem.
 
 Using inter-layer pooling to generate a final feature map which has map indices from the previous layer as values may need to be reconsidered.
-In this scenario there is no meaningful reason why the kernels should be ordered yet they will be given order by the process of using their indices.
-Hypothetically if the North-East diagonal was index five, South-West was six and South-East was seven than the network would need some way of rationalising what a value of 5.5 or 6.5 meant. 
-Ordering the kernels based on angle might be a start to solve this problem but does not leave room for a noise kernel, further, this solution does not generalise to other more complex problem sets.
+In this scenario there is no meaningful reason why the kernels should be ordered, yet they will be given order by the process of using their indices.
+Hypothetically if the North-East diagonal was index five, South-West was six and South-East was seven, then the network would need some way of rationalising what a value of 5.5 or 6.5 meant. 
+Ordering the kernels based on angle might be a start to solve this problem but does not leave room for a noise kernel.
+Further, this solution does not generalise to other more complex problem sets.
 Methods of encoding the kernels as one-hot vectors were investigated but no functional method was found. 
 %Using feature maps as training examples for a fully connected network did not provide a suitable solution to produce meaningful predictions. 
 %The networks consistantly learnt to ignore the input, shift biases and output zeros to minimise loss quickly. 
@@ -156,10 +158,10 @@ Details are outlined in table \ref{tb:convNetdef}.
 
 \subsection{Results}
 The convolution networks quickly (\textless 250 epochs) become input invariant.
-This is shown in figure \ref{fig:convInputInvariance} in which despite a strong relatively clean signal the network is not able to make a meaningful prediction. 
+This is shown in figure \ref{fig:convInputInvariance} in which despite a strong, relatively clean signal the network is not able to make a meaningful prediction. 
 The mechanism for this invariance can be seen in the weights and biases of the network over the first 5000 epochs.
 The weights shift between 3 and -3 while the biases quickly shift towards -3, this example network (ReLU activated) then outputs just zeros.
-This trend was consistant across the other convolutional architectures and parameters outlined in table \ref{tb:convNetdef}.
+This trend was consistent across the other convolutional architectures and parameters outlined in table \ref{tb:convNetdef}.
 
 \begin{figure}[h]
     \centering
@@ -170,17 +172,18 @@ This trend was consistant across the other convolutional architectures and param
 
 \subsection{Discussion}
 Convolutional architectures should have been well suited to solving this sparse signal problem.
-The architectures used in this study were able to make any meaningful predictions and quickly learnt to just output a constant zero pattern much like like the PilotNets.
+The architectures used in this study were able to make any meaningful predictions and quickly learnt to just output a constant zero pattern much like the PilotNets.
 Several factors could have contributed to the poor performance of these networks including signal-to-noise ratio, number of epochs, learning rate or the training data. 
 
-The convolutional networks were believed to have been better able to deal with the signal-to-noise ratio however the ratio may have proved still too high for the networks.
-Convolution sizes were chosen to consider this with an 11x11 convolution resonably converying an accumulated past/future over a 33 ms window. 
-An 11x11 area may have been too large yet the 6x6 kernels were not able to learn either suggesting there may still be other problems.
+The convolutional networks were believed to have been better able to deal with the signal-to-noise ratio, however the ratio may have proved still too high for the networks.
+Convolution sizes were chosen to consider this with an 11x11 convolution reasonably conveying an accumulated past/future over a 33 ms window. 
+An 11x11 area may have been too large yet the 6x6 kernels were not able to learn either, suggesting there may still be other problems.
 The noise in the training data may have proved problematic for learning. 
 Each kernel may have specialised to pick up different kinds of noise and as noise is inherently unpredictable the kernels learn to predict zero. 
 
-Networks were trained with 50,000 epochs which when compared with how quickly the network became input invariant was considered sufficient.
-This number of epochs may not have been enough, perhaps the network needed more time to fine-tune the weights, this would be unlikely though given the lack of improvement in the first 50,000 epochs. 
+Networks were trained with 50,000 epochs, which when compared with how quickly the network became input invariant was considered sufficient.
+This number of epochs may not have been enough, perhaps the network needed more time to fine-tune the weights. 
+The need for fine-tuning would be unlikely given the lack of improvement in the first 50,000 epochs. 
 The learning rate may have contributed to the network getting stuck in a local minima (outputting just zeros) and trying alternative learning rates may help the network learn.
 Other techniques such a momentum \ref{sutskever2013importance} which can assist in learning may help but are left as future work.
 

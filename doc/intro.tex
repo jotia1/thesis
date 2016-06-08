@@ -18,7 +18,7 @@ Inspiration from biological systems make neural networks a sensible processing m
 However the discrepency between frame-based vision data (for which many years of in-depth processing literature exists) and event-based vision data mean state-of-the-art frame-based techniques cannot be readily applied.
 
 A break in the vision pipeline exists between sensor and processing model which needs to be addressed to leverage the full potential of neuromorphic sensors. 
-An appraoch could be the use of spiking neural networks as an alternative processing model better suited to interfacing with neuromorphic sensors.
+An approach could be the use of spiking neural networks as an alternative processing model better suited to interfacing with neuromorphic sensors.
 Currently spiking networks do not perform as well as frame-based models and are harder to train, making them a less appealing option.
 Alternatively, event-based information could be converted to frame-based input through the use of appropriate data structures and then readily applied to frame-based models. 
 How this conversion is performed will have a significant influence on the amount of information a neural network can extract.
@@ -37,7 +37,7 @@ The larger problem of which this work is a small instance is the use of neuromor
 Such a visual system would have numerous applications in machine vision, robotics, image processing and modelling natural vision systems for reserach. 
 There is a large body of literature on processing frame-based vision data but much of this literature is not applicable to event-based data without some degree of pre-processing. 
 The scope of this work is limited to examine just one such processing technique, temporal surfaces.
-Using temporal surfaces bridges the gap between new high-speed sensors and existing state-of-the-art processing techniques but this work is limited to the boundries mentioned.
+Using temporal surfaces bridges the gap between new high-speed sensors and existing state-of-the-art processing techniques, but this work is limited to the boundries mentioned.
 
 \textbf{Specific boundries:}
 Temporal surfaces are only created using a linear and exponential accumulation function with varying constants.
@@ -49,9 +49,9 @@ A new simple dataset of linear motion with constant velocity was collected and i
 The aim of this work is to present an analysis of the performance of temporal surfaces with shallow neural networks.
 In particular the ability of temporal surfaces to implicitly encode temporal information will be examined. 
 A further aim is an analysis of the ability of shallow neural networks to predict future temporal surfaces.
-An implictation of this ability would be that frame-based networks which traditionally struggle to represent temporal information explicity are able to use it implicitly. 
-This work makes the assumption that the performance of shallow neural networks with temporal surfaces can be used as a measure of the amount of temporal information in the surface as well as the networks ability to implicitly use temporal information. 
-Another aim of this project is to provide the community with an labelled event-based dataset of very simple linear motion with constant velocity. 
+An implication of this ability would be that frame-based networks which traditionally struggle to represent temporal information explicity are able to use it implicitly. 
+This work makes the assumption that the performance of shallow neural networks with temporal surfaces can be used as a measure of the amount of temporal information in the surface as well as the network's ability to implicitly use temporal information. 
+Another aim of this project is to provide the community with a labelled event-based dataset of very simple linear motion with constant velocity. 
 A simple dataset will help standardise model comparison and development of simple event-based processing models. 
 
 
@@ -71,7 +71,7 @@ This work is structured as follows:
 
 \item [Chapter 7 -- Study 2 -- Attentional Networks] - Reports the performance of all networks re-run with attentional (rather than full scene) temporal surfaces. Also discusses the performance of autoencoders to remove noise from the data.
 
-\item [Chapter 8 -- General discussion and conclusions] - Provides a summary of outcomes and limitations from the project. Also includes reccomendations for future work and general improvement.
+\item [Chapter 8 -- General discussion and conclusions] - Provides a summary of outcomes and limitations from the project. Also includes recomendations for future work and general improvement.
 
 
 \end{description}

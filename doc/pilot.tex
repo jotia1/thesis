@@ -7,13 +7,13 @@
 
 \subsection{Aims}
 The first network created is intended to act as an exploration of the problem space to see what can be learnt and act as a benchmark for later models. 
-It was designed to be simple to facilitate reasoning about it's internal dynamics with design decisions specified in table \ref{table:net1def}.
+It was designed to be simple to facilitate reasoning about its internal dynamics with design decisions specified in table \ref{table:net1def}.
 
 
 \subsection{Method}
 The weights for pilotNet1 were initialised with a truncated normal distribution with a standard deviation of $1 / ( number\_inputs * batch\_size )$ and the biases initialised to zero.
 These weight values were chosen to be proportional to the network size and mini-batch sizes. 
-Starting the biases at zero was chosen so each unit would consider it's inputs based solely on input weights initially and adjust the biases accordingly in training. 
+Starting the biases at zero was chosen so each unit would consider its inputs based solely on input weights initially and adjust the biases accordingly in training. 
 
 \begin{table}[h]
 \centering
@@ -43,7 +43,7 @@ The network was tested with both linear and non-linear activations to see if a n
 
 \subsection{Results}
 % TODO include some images from Net1 with input, label, output
-The performance of the network on a validation set showed a initally rapid decrease follow by very steady decrease suggesting the network has learnt the relatively simple task.
+The performance of the network on a validation set showed an initially rapid decrease followed by very steady decrease suggesting the network has learnt the relatively simple task.
 % TODO show sample outputs
 However sample outputs from the network were all exactly the same regardless of the input and seemed to be a somewhat random pattern of activations.
 
@@ -58,27 +58,30 @@ However sample outputs from the network were all exactly the same regardless of 
 
 \subsection{Discussion}
 Results from this network highlighted some fundamental properties of the task that were not previously considered as well as some smaller issues with its own design.
-Initialisation of the network weights using a standard deviation of $1 / ( number\_inputs * batch\_size )$ was reconsidered as this resulted in unecessarily small weights. 
+Initialisation of the network weights using a standard deviation of $1 / ( number\_inputs * batch\_size )$ was reconsidered as this resulted in unnecessarily small weights. 
 As the network inputs are in the range [0-1] using a constant standard deviation of 0.1 is expected to give better results. 
 Futher, initialisation of the biases to zero could have been causing ties during the back-progation phase and creating odd network dynamics.
 To avoid this biases can be initialised just as weights with a normal distribution and standard devition of 0.1.
 
-Training the network with a learning rate of 0.001 showed a smooth decrease in the validation error, increasing the learning rate resulted in a similar curve suggesting 0.001 was smaller than necessary to learn this simple pattern. 
+Training the network with a learning rate of 0.001 showed a smooth decrease in the validation error. 
+Increasing the learning rate resulted in a similar curve suggesting 0.001 was smaller than necessary to learn this simple pattern. 
 
 These minor issues with network design were insignificant in comparison to an issue discovered with using the S.S.D. as a loss function. 
 %The sample predictions from the network are identical despite different inputs suggesting the network was learning something unexpected.
 The network has become input invariant and will predict the same activity pattern for each input example. 
-In any given training example most ($>95\%$) of the input vector was zero or near zero meaning when computing the loss for a prediction the network could quickly achieve a small loss by simply outputting zero (or near zero) for every pixel regardless of what the input was. 
-Pixels constant in the output correspond to 'hot pixels' in the DVS hardware, given they fire independently of stimuli with their own frequency and location they constitute a sensible prediction for the model. 
+In any given training example most ($>95\%$) of the input vector was zero or near zero. 
+When computing the loss for a prediction the network could quickly achieve a small loss by simply outputting zero (or near zero) for every pixel regardless of what the input was. 
+Pixels constant in the output correspond to 'hot pixels' in the DVS hardware. 
+Given that these pixels fire independently of stimuli with their own frequency and location they constitute a sensible prediction for the model. 
 %The network achieved this by reducing the biases to the hidden layer isolating the output from the input.
 Figure \ref{fig:pilotInvariance} shows that the network achieved this by reducing the hidden layer biases so the hidden layer would output near zero values. 
 It simultaneously moved the output biases to near zero meaning the final logits were near also. 
-It could then activate just the hot pixels based on each's frequency and keep the others off. 
+It could then activate just the hot pixels based on each ones own frequency and keep the other pixels off. 
 %The network achieved this by simply reducing its biases with weights staying relatively stable meaning the input signal (the decayed trace of the dot's path) was lost as noise in the system. 
 
 
-When running the network simulations it was abruptly clear that the network with 16384 hidden units was too large as the Tensorflow computation graph could not fit within the 12GB of memory on a single G.P.U.
-The computation graph could be seperated onto multiple G.P.U.s to achieve results however this was considered unnecessary after discovering the problems associated with the loss function and considering the simple nature of the dataset.
+When running the network simulations it quickly became clear that the network with 16384 hidden units was too large as the Tensorflow computation graph could not fit within the 12GB of memory on a single G.P.U.
+The computation graph could be separated onto multiple G.P.U.s to achieve results, however this was considered unnecessary after discovering the problems associated with the loss function and considering the simple nature of the dataset.
 
 
 
@@ -87,8 +90,6 @@ The computation graph could be seperated onto multiple G.P.U.s to achieve result
 \section{pilotNet2}
 
 \subsection{Aims}
-% TODO section...
-
 After pilotNet1 some refinements were made although many of the features outlined in table \ref{table:net1def} were kept constant. 
 This network is intended to continue the exploratory work on pilotNet1 to see what is immediately possible with a simple network.
 The performance of a new loss function which weights mistakes differently is examined as a solution to the input invariance of pilotNet1.
@@ -106,13 +107,14 @@ The pilotNet1 loss function suffered from each error the network made being equa
 In any given image the vast majority of pixels should be predicted as near zero, while very few (roughly 20) of the remaining pixels should be active. 
 If the network mispredicts an \textit{on} pixel (that is a pixel which should be near one), this is a much more serious issue than if the network was to mispredict an \textit{off} pixel (a pixel that should be near zero). 
 To minimise this issue a penalty could be applied to each type of mistake weighing incorrect active pixels (i.e. predicting one instead of zero) as only a small error while mispredicting an inactive pixel is considered a serious error.
-Essentially penalising the network heavily for failing to predict the path of decayed pixels. 
+Essentially this meant penalising the network heavily for failing to predict the path of decayed pixels. 
 
 \subsubsection{Weighted prediction penalty}
 The weighting of penalty should be proportional to the activity in the input, such that if the signal is weak then any mispredictions should be penalised heavily compared with a strong signal where a few mistakes make less difference. 
 % TODO Tidy up this maths and maybe take it out of line
 The activity of a given image is defined as the sum of the activity of each pixel within the image.
-If the activity is given by some variable $g$ then the penalty weighting for mispredicting a pixel as \textit{off} when it should be \textit{on} should be $(16384 - g) / 16384$, similarly a misprediction of a pixel as \textit{on} when it should be \textit{off} should only be $g / 16384$. 
+If the activity is given by some variable $g$ then the penalty weighting for mispredicting a pixel as \textit{off} when it should be \textit{on} should be $(16384 - g) / 16384$. 
+Similarly, a misprediction of a pixel as \textit{on} when it should be \textit{off} should only be $g / 16384$. 
 In a system where neuron outputs were binary this would be all, however in the continuous output demmanded by a decayed representation inbetween values must be considered.
 % TODO Add in linear equation and reference below
 Interpolating linearly between these two points gives Equation \ref{eq:weightedPenalty} which can be used to calculate the loss weighting for a given pixel, $p$.
@@ -149,7 +151,7 @@ This invariance was not affected by the number of hidden units used
 
 \subsection{Discussion}
 Despite the various improvements offered over pilotNet1 this network still suffers from shifting weights and biases to generate a constant output regardless of the input. 
-The signal to noise ratio of roughly $20/16384$ is to great to overcome with a simple linear weighting as specified above.
+The signal to noise ratio of roughly $20/16384$ is too great to overcome with a simple linear weighting as specified above.
 Perhaps the same tests with a larger dot which causes a greater number of events might be able to learn the pattern. 
 Such an experiment is in some ways analogous to the work done in chapter \ref{ch:attentional}. 
 Alternatively if the network could ignore large sections of the input and just search in smaller patches it may be able to extract some useful information.

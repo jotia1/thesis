@@ -7,23 +7,23 @@
 %Why would we want a DVS? microparticle tracking \cite{ni2012asynchronous}
 %Neuromorphic systems are becoming more wide spread \cite{delbruck2014research}
 % Introduction to AVS 
-%Introduce different kind of sesnsors which asynchronously fr
+%Introduce different kind of senssors which asynchronously fr
 Asynchronous Vision Sesnors (AVS) offer a frame--free, event--driven approach to capturing vision information\cite{delbruck2010activity}. 
 These sensors continuously output light intensity changes from a scene in the form of precisely timed (sub \ms) events. 
-Each pixel in the sensor array acts indpendently based the light in it's receptive field resulting in a sparse, stimulus--based output. 
+Each pixel in the sensor array acts independently based on the light in its receptive field resulting in a sparse, stimulus--based output. 
 A recent spike in technology facilitated the development of many alternative asynchronous vision sensors with varying properties and speeds\cite{delbruck2014research}.
 These systems are united in an attempt at emulating the efficient, high--speed, event--based spiking behaviour in biological vision systems\cite{delbruck2010activity}.
 %Environments requiring low-power, low-latacy and dynamic range are well suited 
 Asynchronous vision sensors are well suited to environments requiring dynamic range, low-power and low--latency sensing, such as microparticle tracking\cite{ni2012asynchronous}, robotics\cite{roboGoalie2013} or motion tracking and classification\cite{Lee2014, reverter2015neuromorphic}.
 
 % How do they work
-In contrast to tradition vision systems which densely sample the world at discrete time intervals, AVSs follow a stimulus driven paradigm only recording changes in the environment meaning redudant information in the scene (e.g. stationary items or backgrounds) are not captured.  
+In contrast to traditional vision systems which densely sample the world at discrete time intervals, AVSs follow a stimulus driven paradigm only recording changes in the environment, meaning redundant information in the scene (e.g. stationary items or backgrounds) are not captured.  
 The resulting data format, Address-Event Representation (AER)\cite{mahowald1992vlsi}, is in the form $\textless (x, y), t, p \textgreater$, where $(x, y)$ is the pixel location of a change, $t$ is the precise time of the change and $p$ is the polarity indicating if the light intensity change was brighter (positive event) or dimmer (negative event)i\cite{delbruck2010activity}. 
 % TODO really should find a AER specific paper for this
 This dramatically different data representation means new approaches to vision processing will be required to extract meaningful information from AER sensors\cite{akolkar2015can}. 
 
 % They why. What are the advantages and disadvantages
-Asynchronous vision sensors offer a new paradigm in which to appraoch capturing vision information bringing with it many new opportunities and challenges. 
+Asynchronous vision sensors offer a new paradigm in which to approach capturing vision information, bringing with it many new opportunities and challenges. 
 The low--redundancy asynchronous nature of these sensors allows low--power, low--computation processing in a more biologically realistic setting.
 
 
@@ -52,13 +52,13 @@ Like the DAVIS the ATIS is also capable of capturing scene illumination as well 
 % Introduction to standard vision processing 
 Standard vision processing has long been based on processing full 2D frames using well understood techniques such as Canny Edge detection\cite{canny1986computational}. 
 Many techniques exist for various tasks such as face detection\cite{viola2004robust}, object tracking using kernels\cite{comaniciu2003kernel} or object classification\cite{krizhevsky2012imagenet}.
-The method of these appraoches varies significantly from gradient based computation in Canny Edge detection to kernel based object tracking to deep neural networks.
+The method of these approaches varies significantly from gradient based computation in Canny Edge detection to kernel based object tracking to deep neural networks.
 Yet they all make the same implicit assumption that vision information is temporally discretised into the frame-rate of the vision sensor used in recording. 
 
 Frame-based techniques and associated applications are thus bound by the limitations of the recording device with respect to data speed and quality. 
 In particular if a standard 30 fps camera is used a realtime system must wait 33ms between frames (excluding any processing time required). 
-Using a higher frame--rate recording device has a bound on performance as this necessarily means there will be more data (much of which is redundant) to process such that the processing time of the system becomes the bottle neck. 
-Further image quality in frame-based systems is proportional the amount of processing required to extract features.
+Using a higher frame--rate recording device has a bound on performance as this necessarily means there will be more data (much of which is redundant) to process, such that the processing time of the system becomes the bottle neck. 
+Further image quality in frame-based systems is proportional to the amount of processing required to extract features.
 Despite limitations from recording devices, many impressive results have come from these techniques, in particular deep neural networks\cite{krizhevsky2012imagenet}.
 However the computation required for these state-of-the-art systems makes their use on low--power, low--computation devices impractical. 
 
@@ -69,28 +69,28 @@ However the computation required for these state-of-the-art systems makes their 
 \section{Event-based processing}     % 2 page
 % Intro to what event based processing is (using events)
 Event-based data brings with it the need for radically different processing paradigms compared to frame-based approaches\cite{perez2013mapping, martin2015spiking, tan2015benchmarking}.
-Conventional sensors generate large amounts of redundant data which is computationally expensive to process making efficient event-based data an attractive option\cite{vanarse2016review}. 
+Conventional sensors generate large amounts of redundant data which is computationally expensive to process, making efficient event-based data an attractive option\cite{vanarse2016review}. 
 Event-based processing is not limited to vision sensors however, as discussed in \cite{vanarse2016review} neuromorphic auditory and olfactory sensors also exist using the AER format. 
-Challenges facing event-based vision sesnors are shared among these other neuromorphic sensors as well as more common (and low cost) sensors (like IMUs for gait cycle measurments\cite{fida2015pre}).
+Challenges facing event-based vision sensors are shared among these other neuromorphic sensors as well as more common (and low cost) sensors (like IMUs for gait cycle measurments\cite{fida2015pre}).
 
 Many standard machine learning techniques have implicit assumptions that data is discretised into uniform time samples or that temporal information is not present/important.
-There have been attempts to integrate temporally rich data with standard frame-based appraoches such as the recurrent Temporal Restricted Boltzmann Machine (TRBM)\cite{sutskever2009recurrent} to model motion capture data or using deep-belief networks with spiking systems\cite{Neftci2014, pedroni2013neuromorphic, OConnor2013}.
+There have been attempts to integrate temporally rich data with standard frame-based approaches such as the recurrent Temporal Restricted Boltzmann Machine (TRBM)\cite{sutskever2009recurrent} to model motion capture data or using deep-belief networks with spiking systems\cite{Neftci2014, pedroni2013neuromorphic, OConnor2013}.
 More suited to dealing with event-based data are the family of Spiking Neural Networks (SNN)\cite{henderson2015spike, perez2013mapping}.
-SNNs are harder to train than the frame-based counterparts leading many to train frame-based networks and convert the trained model into an equivilant spiking network at some small performance drop\cite{perez2013mapping, pedroni2013neuromorphic, OConnor2013}.
+SNNs are harder to train than the frame-based counterparts, leading many to train frame-based networks and convert the trained model into an equivilant spiking network at some small performance drop\cite{perez2013mapping, pedroni2013neuromorphic, OConnor2013}.
 
-Event-based processing is not limited to neural networks and other techniques are being adapted or created to take advantage of these new highspeed sesnors\cite{ni2015visual}.
-A '\textit{RoboGoalie}' was created as an example application leveraging the low-latency sensor to stop fast moving ping-pong balls entering a goal\cite{delbruck2007fast}. 
+Event-based processing is not limited to neural networks and other techniques are being adapted or created to take advantage of these new highspeed sensors\cite{ni2015visual}.
+A \textit{RoboGoalie} was created as an example application leveraging the low-latency sensor to stop fast moving ping-pong balls entering a goal\cite{delbruck2007fast}. 
 A simple event clustering algorithm was sufficient to allow the RobotGoalie to track incoming balls and respond within 3\ms with a peak performance load of 4\% on a standard computer. 
-This was conducted in a heavily constrained system though, where lumince was controlled, the DVS station and with a constant background. 
+This was conducted in a heavily constrained system though, where luminance was controlled, the DVS stationary and with a constant background. 
 Strict weight, power and computational requirements of a quadrotor form a near-perfect environment in which traditional cameras fail and event-based sensors shine\cite{mueggler2014event}.
 These low-power and low-computation features of event-based sensors make them particularly attractive for applications in mobile robotics and navigation\cite{weikersdorfer2013simultaneous, milford2015place}.
-Which has lead to focused efforts on developing efficent algorithms to calculate odometry \cite{censi2014low}, visual flow \cite{benosman2014event} and corner detection\cite{clady2015asynchronous}.
+These constraints have led to focused efforts on developing efficent algorithms to calculate odometry \cite{censi2014low}, visual flow \cite{benosman2014event} and corner detection\cite{clady2015asynchronous}.
 
 % More on applications here then next para will support why they make sense
 
-The systems described have shown that through careful datastructures and representations learning models are able to leverage temporal information from the precise spike timings of event-based data. 
-It is well known the eye does not act as a tradition vision sensor capturing and transfering full frames to the brain but rather sends only relevent visual information in the form of spikes\cite{delbruck2010activity}.
-In an attempt to mimic this spiking behaviour some have attempted convert frame-based benchmark datasets into spiking equivilants using grayscale values to produce rate-coded spiking outputs, while others have suggested why this may be problematic \cite{akolkar2015can} and suggest guidelines to ensure dataset quality\cite{tan2015benchmarking}.
+The systems described have shown that through careful datastructures and representations, learning models are able to leverage temporal information from the precise spike timings of event-based data. 
+It is well known the eye does not act as a traditional vision sensor capturing and transfering full frames to the brain but rather sends only relevant visual information in the form of spikes\cite{delbruck2010activity}.
+In an attempt to mimic this spiking behaviour some have attempted to convert frame-based benchmark datasets into spiking equivilants using grayscale values to produce rate-coded spiking outputs, while others have suggested why this may be problematic \cite{akolkar2015can} and suggest guidelines to ensure dataset quality\cite{tan2015benchmarking}.
 Studies have found that coding schemes using the precise timing of events may be more biologically realistic and account for situations where processing happens too quickly to be explained by rate-coded information transfer\cite{thorpe2001spike}. 
 It was similarly found that the precise spike timings of events in event-based data has a significant contribution to the amount of information contained in the recording\cite{akolkar2015can}.
 % NOTE: Thus precise spike timings are important so maybe using a screen is bad. 
@@ -129,7 +129,7 @@ This relatively new format has few algorithms that can fully leverage the struct
 %   Could use Spiking neural networks (but hard to train)
 % Temporal surface
 A middle ground between direct frame accumulation and AER formats is the use of a short term window in which events have some influence.
-Memory surfaces are present in the literature in forms such as gaussians approximating position \cite{conradt2009pencil}, queues of events \cite{ni2012asynchronous} or as this work will investigate, functions of temporal difference.
+Memory surfaces are present in the literature in forms such as gaussians approximating position \cite{conradt2009pencil}, queues of events \cite{ni2012asynchronous} or as this work will investigate, functions of temporal difference \cite{afshar2016investigation}.
 
 
 % 
@@ -151,47 +151,57 @@ Memory surfaces are present in the literature in forms such as gaussians approxi
 
 \section{Neural Networks}     % 1 page
 % Neural networks are loosely based on the brain
+Artificial neural networks have origins as software implementations of brain functions\cite{mcculloch1943logical}.
+Several seminal breakthroughs, noteable being backpropagation (popularised by \cite{Rumelhart1986}), convolutional neural networks \cite{lecun1998gradient} and more recently deep learning \cite{schmidhuber2015deep} have made neural networks a powerful tool in many learning tasks. 
 % Impressive performance (state of art) in image classification
-% Many make a frame-based assumption, with exception of spiking
-%   Look at Oconnors good work
+In particular neural networks have become the state-of-the-art in many image recognition and classification tasks \cite{krizhevsky2012imagenet, szegedy2015going}.
+
+% Composed of layers of processing units (neurons)
+Neural networks are made up of many processing units each which does a small computation and produces output. 
+% Type and function of units affects network dynamics
+The function each individual processing unit (sometimes also called neurons) computes can have a significant affect on the network performance. 
+%   perceptron
+The first, and perhaps simplest, processing unit is the perceptron which computes a binary classification based on a weighted sum of inputs inputs. 
+%   Sigmoid
+%   ReLU
+%   More complex LSTM units exist but not used
+
+% Specifying weights impossible so we use back prop and SGD to refine weights
+Adjusting internal parameters of the network cause it to compute different functions on the input, its performance can then be evaluated according to some loss function. 
+% Loss functions play a big role
+% Correct weight initialisation also
 
 
-
-
-
-Use in image processing recently
-Made popular by advents in learning agorithms **cite lecun**, learning rules  \cite{Rumelhart1986} and datasets ** cite datasets**
 
 % Mention:
 % Perceptions, sigmoidals, ReLUs, SGD, backprop
 %Learning representations by back--propagating errors\cite{Rumelhart1986}
-%Interesting learning rules for SNNs \cite{Bichler} not exaimined here though.
 
+\subsubsection{Autoencoders}
+% What they do and how they work to clean data/form representations
 
-\subsection{Shallow networks}  
-% Mention simple networks and what they can learn
-
-%\subsubsection{Auto-Encoders}  % 1 page
-%Who made these?
 
 \subsubsection{Convolutional networks}
 % Use in image processing 
 
 \subsection{Deeper networks}   % 1 page
 ResNet etc. % TODO find resnet reference
+ImageNet etc.
 This was some deep network work \cite{pedroni2013neuromorphic}
 Oconor used deep networks \cite{OConnor2013}
 
 \subsection{Spiking networks}    % 1 page
 O'Connors work on spiking deep belief networks \cite{OConnor2013}
-Used a spiking network to train feature detectors \cite{afshar2016investigation}
+Using echo state networks to extract spatiotemporal features from event-based \cite{lagorce2015spatiotemporal}
 Move to spiking networks accompanied by converstions from 2D to 1D temporal trains \cite{afshar2013ripple}
 Discussion on 2D images and converting to spikes vs just using spiking sensor and the information preserved \cite{akolkar2015can}
 Paper on spiking networks for vision tasks, usese the DVS and compares to convNets \cite{martin2015spiking}
 Feeding a DVS output directly into spiking NN \cite{Bichler}
+%Interesting learning rules for SNNs \cite{Bichler} not exaimined here though.
 
 \subsection{Software frameworks}   % 1 page
-Caffe\cite{jia2014caffe} Theano Torch7 Tensorflow CNTK
+Many software frameworks exist for implementing and running neural networks including; Caffe\cite{jia2014caffe}, Theano\cite{bastien2012theano}, Torch7\cite{collobert2011torch7} and Tensorflow\cite{abaditensorflow} plus many more.
+Each package 
 
 \section{Neural Networks with event-based data}
 What is the standard approach, what have people tried and what is lacking. \cite{OConnor2013}  ** TOBI CAR WITH CONVOLUTIONS ** ** UWS temporal surfaces paper if published now ** ** AMYs work ** (who does amy reference?)
