@@ -1,8 +1,27 @@
-\chapter{Evolutionary Kernels}
+\chapter{Evolutionary Kernel Algorithm}
 \label{ch:evolution}
 
-Content about the evolutionary kernels
+\textbf{NOTE: The work described in this section was completed by the author during a seperate reserach project.}
 
-Convolutions only applied AT events (don't want noisy edges)
+A 1+1 evolutionary hill climber algorithm was used to competitively train a number of initially random kernels on event-based data.
+The DVS data was discretised as a 3D grid in which a voxel was assigned a value of 1 if any event occurred or a placeholder value (-1/27) otherwise.
+The small negative weight was chosen as a penalty when the kernel highlights an area with no events.
+The value of -1/27 is kept from previous work upon which this method is based and has no significance to this project but is kept for it's properties as a penalty. 
+Kernels were constrained to be zero sum during training and individual elements were limited to the range of -27 to 27.
+The range is also from previous work and arbitrarily kept as the specific values used will have little impact on the structure of evolution. 
+During evolution only positions in which the centre of the kernel was on an event were included in calculations so that kernels could specialise to centered events rather than trying to capture features with the edges of the kernel. 
+At each evolution the champion from the previous evolution step and its mutant were scored against the other champions from the previous evolution.
+If the mutant performed better by a fitness function it was considered the champion for that evolution step otherwise the champion would remain. 
+Only one mutant was tried per kernel at each step of evolution.
 
-Convolutions only applied AT events (don't want noisy edges)
+\section{Selection algorithm}
+The selection function used describes how well a kernel performs on some data. 
+In this work the kernel was assigned the value of the sum of its output on each event in which it was the highest scoring kernel out of the competitors. 
+A biological analogy being the sum of the calories in all of the meals the kernel won. 
+Only rewarding a kernel when it ‘wins’ an event helps the kernels niche out sections of the data. 
+Then once niched they can continue to specialise to that niche by maximising their output (calories) on the events they have won. 
+
+\section{Mutant operations}
+A mutation could include, two zeros being made to a -1 and 1 (or vice-versa) or two elements may be selected at random and have +1 and -1 added to them. In practise the kernels quickly removed any ones or zeros so the only mutation applied was that of randomly incrementing and decrementing elements. This proved a flexible algorithm that allowed a kernel to escape from mistakes it makes. Using smaller or more proportional changes may have resulted in different behaviour however this wasn’t explored widely. 
+
+

@@ -16,24 +16,35 @@ The feature maps were then used as training examples in a fully connected networ
 %Kenels specialised to the datasets were developed, these were then used to preprocess the input/output decayed images to produce feature maps which could then be used to train the network as per normal.
 %Kernels  to the datsets were developed and then used to process recordings into training examples.
 
-
-%TODO Need a clear definition of what the kernels are 
-% Things like:
-%   - Size
-%   - Limits (27) why...
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{evoNetStructure.png}
+    \caption{Structure of the Evolutionary Kernels processing pipeline}
+    \label{fig:evoNetStructure}
+\end{figure}
 
 \subsection{Method}
-Three major steps were required to move from a DVS recording to a prediction in this study, the final system is illustrated in figure \ref{fig:evoNetStructure}.
+Three major steps were required to convert from a DVS recording to a prediction in this study, the final system is illustrated in figure \ref{fig:evoNetStructure}.
 First kernels for convolutions were evolved to be specialised to the 8AD dataset using a 1 + 1 hillclimbing algorithm (described in Appendix \ref{ch:evolution}). 
 After sufficient evolution they were convolved with the DVS recording to produce feature map training examples.
-Finally the feature maps specifying which kernel had responded most strongly for that pixel were fed into a fully connected network which was predicted feature maps at the output.  
+The feature maps specifying which kernel had responded most strongly for that pixel were fed into a fully connected network which predicted future feature maps at the output.  
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{evoStableTrimmed.png}
+    \caption{An example kernel evolution converging to a stable state}
+    \label{fig:evoStable}
+\end{figure}
 
 \subsubsection{Evolving kernels}
 As no standard set of feature kernels to use with event-based data exists these would need to be created.
 Previous work developing kernels using an evolutionary algorithm made this a sensible place to start.
 In this work a kernel is considered as a matrix with each value being a weight describing how important an event at that position is.
 Kernels start randomly initialised and are iteratively updated by permuting kernel weights and convolving the new kernel with some sample data, improvements in kernel performance as measured by a fitness function are kept.
-Finer details of the evolutionary algorithm are discussed in Appendix\ref{ch:evolution}.
+Figure \ref{fig:evoStable} shows what a kernel evolving from an initially random state (top row) looks like after 200 evolutionary steps (bottom row).
+Each row in the image represents the kernels state at an evolution step while each column represents an individual pixels value at any step. 
+A stable kernel signifies the kernel has found a local maximum in capturing information from a particular recording.
+Finer details of the evolutionary algorithm are discussed in Appendix \ref{ch:evolution}.
 A set of nine and a set of five kernels were created using this technique.
 Motivation for using nine kernels was inspired by the 8AD dataset with anticipation that each kernel would specialise for one of the angles plus one kernel to detect noise.
 Five was chosen to see if similar behaviour could be modelled as weighted combinations of less kernels.
@@ -42,26 +53,24 @@ A kernel size of 11x11 pixels was chosen as this would capture much of the tempo
 
 
 \subsubsection{Processing training examples}
-Convolving the 9, 11x11 kernels with the 128x128 images gave 9, 128x128 features maps (likewise for the 5 kernels).
+Convolving the 9, 11x11 kernels with the 128x128 images gave 9, 128x128 feature maps.
 Rather than using pooling \textit{within} a feature map as is standard in convolutional neural networks max-pooling was applied \textit{between} the maps. 
 That is the result was a single 128x128 map created in which each position was the index of the feature map with the highest output at that pixel.
-
-
-% TODO How were ties broken?!
-% TODO add a picture of what this process looks like, event-data -> decayed image -> kernels -> back on decayed image -> network input and output
+An output feature map then represents which kernel the network predicts will be most active in any given pixel.
+Using the output feature map in combination with the kernels a future temporal surface could then be reconstructed. 
+%This decision was motivated by the idea that if the network learnt which kernels map to which a temporal surface prediction could be reconstructed using the output feature map with the kernels. 
 
 
 \subsubsection{Network design} 
 The networks used then resembled those of PilotNet2.
 Representing each pixel as the kernel which most strongly responds to it should make predicting future motion simple task for a shallow network to learn.
 
-\begin{figure}[h]
+\begin{figure}
     \centering
-    \includegraphics[width=0.8\textwidth]{evoNetStructure.png}
-    \caption{Structure of the Evolutionary Kernels processing pipeline}
-    \label{fig:evoNetStructure}
+    \includegraphics[width=0.75\textwidth]{anaKerns.png}
+    \caption{Example of four analytic kernels used}
+    \label{fig:anaKerns}
 \end{figure}
-
 
 \subsubsection{Analytic kernels}
 Additionally an alternative set of kernels was developed based on the probabilities of event patterns in the training data.
@@ -69,23 +78,38 @@ For all samples of a given angle an 11x11 matrix was cropped around each event, 
 The process of cropping an 11x11 matrix around events is the same process as discussed in Chapter \ref{ch:attentional}.
 These kernels were significantly quicker to compute compared to the evolutionary kernels which required many convolutions of the full dataset for each evolution. 
 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{evoUnstableInsert.png}
+    \caption{(a) Non-converged evolution history for the final kernel shown in (b)}
+    \label{fig:evoUnstableInsert}
+\end{figure}
+
 \subsection{Results}
 Using the available evolutionary algorithm proved to be too slow to develop meaningful 11x11 kernels on the large 8AD dataset.
-The kernels were not able to converge to a stable point after 14 days of training, example kernels are shown in \ref{fig:unstableKernel}. \textbf{[TODO: add images of kernel state]}
+The kernels were not able to converge to a stable point after 14 days of training, example kernels are shown in \ref{fig:evoUnstableInsert}.
+Kernels showed signs of moving towards appropriate features (e.g. higher activations along the South-West diagonal) but still needed more time to develop. 
 The kernel states after 14 days were applied to the data regardless to see if meaningful results could be achieved. 
-Figure \ref{fig:exampleFeatureMap} \textbf{[TODO: example input/feature map pair]} shows an example feature map resulting from the prematurely stopped kernel. 
-\textbf{[TODO: Depending on figure used, comment on the performance of the kernel and how clearly the input stimulus is represented]}.
+Kernels were evolved with integer values for weights but before use the values were mapped to the range 0 to 1.
+After application to the data the network became input invariant as per the pilotNets. 
+The analytic kernels, shown in figure \ref{fig:anaKerns}, were also substituted in place of the evolved kernels and the processing pipeline re-run to get the same input invariant results. 
 
-Applying the analytic kernels to the input produced feature maps as shown in figure \ref{fig:analyticFeatureMap}\textbf{[TODO: choose and include an analytic map, discuss image]}.
 
-Figure \ref{fig:evoNetOut} \textbf{[TODO: collect output images into one figure and include]} illustrates that  
-% TODO DISCUSSION SECTION
 \subsection{Discussion}
- - Algorithm is to blame, needs redesigning but out of scope of thesis
-\\ - Also there is an additional problem of a disparity between training and test data
-\\ - SHould be okay though because its just the shape we need but still issues because of magnitude of
-\\ - white pixels near center vs binary 1's everywhere
-\\ - Using the index of the feature map is not informative to the poor network...Maybe should have been converted to a hot vector
+Developing kernels evolutionarily which would be specialised to the dataset proved to be too computationally expensive for the duration of this project. 
+A faster algorithm could have been implemented but was considered out of scope meaning only premature kernels were used.
+Analytic kernels offered a promising alternative to evolutionary algorithms being much faster to compute and resembling the 8 angles clearly.
+However, the analytic kernels were also unable to produce meaningful results suggesting a deeper problem remains. 
+The deeper problem may be that the network which is still taking all 16384 inputs is suffering from a signal-to-noise-ratio problem.
+
+Using inter-layer pooling to generate a final feature map which has map indices from the previous layer as values may need to be reconsidered.
+In this scenario there is no meaningful reason why the kernels should be ordered yet they will be given order by the process of using their indices.
+Hypothetically if the North-East diagonal was index five, South-West was six and South-East was seven than the network would need some way of rationalising what a value of 5.5 or 6.5 meant. 
+Ordering the kernels based on angle might be a start to solve this problem but does not leave room for a noise kernel, further, this solution does not generalise to other more complex problem sets.
+Methods of encoding the kernels as one-hot vectors were investigated but no functional method was found. 
+%Using feature maps as training examples for a fully connected network did not provide a suitable solution to produce meaningful predictions. 
+%The networks consistantly learnt to ignore the input, shift biases and output zeros to minimise loss quickly. 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%      CONVOLUTIONAL NN    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -99,15 +123,6 @@ Directly using a conventional convolutional network represented the logical prog
 The experimental design remained similar to the evolutionary kernels as described in figure \ref{fig:evoNetStructure}.
 The difference being for this study the 128x128 temporally accumulated images were directly used as inputs to the network which was responsible for developing the kernels and feature maps and pooling was done spatially within a feature map rather than between feature maps.
 This study should be able to leverage the advantages of convolution networks (e.g. focused feature detectors on smaller parts of the image) whilst still being trainable in reasonable time. 
-
-%Rather than using an evolutionary algorithm to evolve kernels with which to later apply convolutions to the data this can all be done within a Convolutional Neural Network. 
-%This network should be able to produce much of the behaviour of the evolved kernels (because it will be designing its own during training) but shouldn't suffer from the slow training time and possible inconsitancys between training and test data.
-
-\subsection{Method}
-\label{sec:convMethod}
-The network used in this work consisted of an input layer followed by a convolution layer with 9, 11x11 convolutions followed by a 2x2 max pooling layer feeding into a fully connected layer. 
-The output layer of the network was differently activated to compare performance. 
-Details are outlined in table \ref{tb:convNetdef}.
 
 \begin{table}[h]
 \centering
@@ -129,12 +144,14 @@ Details are outlined in table \ref{tb:convNetdef}.
 \label{tb:convNetdef}
 \end{table}
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{convNetInvariance.png}
-    \caption{An example of a convolutional network input invariance and the corresponding fully connected layer features}
-    \label{fig:convInputInvariance}
-\end{figure}
+%Rather than using an evolutionary algorithm to evolve kernels with which to later apply convolutions to the data this can all be done within a Convolutional Neural Network. 
+%This network should be able to produce much of the behaviour of the evolved kernels (because it will be designing its own during training) but shouldn't suffer from the slow training time and possible inconsitancys between training and test data.
+
+\subsection{Method}
+\label{sec:convMethod}
+The network used in this work consisted of an input layer followed by a convolution layer with 9, 11x11 convolutions followed by a 2x2 max pooling layer feeding into a fully connected layer. 
+The output layer of the network was differently activated to compare performance. 
+Details are outlined in table \ref{tb:convNetdef}.
 
 
 \subsection{Results}
@@ -144,6 +161,12 @@ The mechanism for this invariance can be seen in the weights and biases of the n
 The weights shift between 3 and -3 while the biases quickly shift towards -3, this example network (ReLU activated) then outputs just zeros.
 This trend was consistant across the other convolutional architectures and parameters outlined in table \ref{tb:convNetdef}.
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{convNetInvariance.png}
+    \caption{An example of a convolutional network input invariance and the corresponding fully connected layer features}
+    \label{fig:convInputInvariance}
+\end{figure}
 
 \subsection{Discussion}
 Convolutional architectures should have been well suited to solving this sparse signal problem.

@@ -1,26 +1,51 @@
 \chapter{General discussion and conclusions}
 
-\subsubsection{\textbf{TOTT: Event-based data accumulated into temporal surfaces implicitly encodes temporal information which can be leveraged by frame-based neural networks to make meaningful predictions.}}
-
 \section{Major findings}
-Chapter \ref{ch:attentional} demonstrates that frame-based shallow neural networks are able to leverage implicitly encoded temporal information to make meaningful predictions of future temporal surfaces. 
-A network with direct linear connections between input and output units is capable of making predictions when the input 
+The studies in this work show that neural networks were able to make meaningful predictions of temporal surfaces.
+These predictions could be achieved with a single linearly activated output layer which highlights how readily available temporal information is to the networks.
+Using deeper networks with a single hidden layer reduced the performance of the predictions in some cases due to the network being forced to represent the stimulus with the number of units in the hidden layer (typically less than the input). 
+Convolutional networks which were expected to be able to deal well with the full scene temporal surfaces became input invariant even with the attentional surfaces.
+This result in light of the simpler networks learning suggest the problem may be with the convolutional structure used in these studies and that other strucutres may be able to produce meaningful predictions.
+Autoencoders were shown to be able to smooth out the input data and may be useful in future work where noise is a concern. 
+None of the examined networks were able make meaningful predictions directly using the full scene temporal surfaces.
+However a demostration of how attentional surfaces can be used to recreate full scene predictions is also presented. 
 
-- Shallow networks struggle with full scene temporal surfaces
+Additional insights from the research found little difference between using a linear or exponential accumulation function. 
+Linear had fewer but more highly active pixels while exponential had a longer accumulation tail but also retained noise pixels for longer.
+All major trends in terms of network performance were found with both accumulation functions.
+Similarly the dot size and speed had no influence on the overall trends of network performance. 
+Together, testing these parameters (function, speed and size) contributed to a 24 times increase in number of networks run and over compute power/time used. 
+It was found that the constant used in the accumulation function did impact the performance of the network.
+Such an impact is expected, as the amount of time in a given accumulation period decreases so does the amount of past imformation available to the network to learn from. 
+A requirement of a given time period to make meaningful predictions does not exclude this kind of processing from realtime systems, the time period required can be used as a sliding window so processing can be done at any time based on the last time period worth of information. 
 
-- With attentional data a simple network can make meaningful predictions
-
-- The used concolution networks could not learn the pattern but may just be a problem with the structure not the idea of conv nets
-
-- Autoencoders can be used to help smooth data
-
-- No need to run so many permutations of the networks, they did not reveal much insight and just wanted space, time and compute power. 
-
-
-%% Significance of results
-
+% Move 4a & 3b - impact of the results on the aims
+It has been demonstrated that frame-based shallow neural networks are able to leverage implicitly encoded temporal information to make meaningful predictions of future temporal surfaces. 
+These successful predictions suggest that temporal surfaces are capable of implicitly encoding temporal information and that frame-based nerual networks are able to leverage it meeting the aims of this work. 
+A general result from this work being verification of the functionality of temporal surfaces as an intermediary between event-based vision sensors and frame-based neural networks in simple cases such as linear motion. 
+%While it does not seem like the networks were able to learn abstract features such as representing the data as angles they were able to make meaningful predictions from implicitly encoded 
+Using temporal surfaces brings neuromorphic sensors one step closer to state-of-the-art vision processing techniques. 
+While long term gains from neuromorphic hardware will come from the development of purpose built algorithms, short term gains in vision processing may come from representations such as temporal surfaces.  
 
 
 \section{Possible future work}
-Should only be 2 or 3 points that are as big as honours/masters or PhD level problems. 
+A natural expansion on this work would be to validate the use of temporal surfaces with more complex datasets and networks. 
+An intial starting point would be to use the multi-dot datasets to verify if results generalise to these cases.
+A particular direction for this would be to apply temporal surfaces to real world dataset like robot motion such as those in \cite{Gibson2014, barranco2016dataset}. 
+More complex networks may be required to extract visual features and as such further network design is a future direction for projects in this area. 
+Convolutional networks which traditionally do very well with 2D images performed poorly in this work, this is likely due to a network structure weakness or problem with the loss function. 
+Exploring the difference between expected and actual performance may yield insight into the problem and a solution. 
+
+During this work only a single time scale was considered in an experiment, a complex visual system would likely operates with a hierarchy of spatial and temporal scales.
+A system of processing modules working simultaneously analysing temporal surfaces with different spatial (attentional size) and temporal scales (accumulation function constant size) might be able to extract complex real world features. 
+Using a high-speed event-based sensor rather than a frame-based sensor would give this system the ability to process events according to some metric (based on previous processing or metrics of the events coming in) rather than uniformly as required by frame-based systems. 
+The system could leverage the feature extraction ability of frame-based models with temporal freedom of the frame-free vision sensors.
+
+
+
+
+
+
+
+
 

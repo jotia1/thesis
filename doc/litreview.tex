@@ -18,7 +18,7 @@ Asynchronous vision sensors are well suited to environments requiring dynamic ra
 
 % How do they work
 In contrast to tradition vision systems which densely sample the world at discrete time intervals, AVSs follow a stimulus driven paradigm only recording changes in the environment meaning redudant information in the scene (e.g. stationary items or backgrounds) are not captured.  
-The resulting data format, Address-Event Representation (AER)\cite{boahen2000point}, is in the form $\textless (x, y), t, p \textgreater$, where $(x, y)$ is the pixel location of a change, $t$ is the precise time of the change and $p$ is the polarity indicating if the light intensity change was brighter (positive event) or dimmer (negative event)i\cite{delbruck2010activity}. 
+The resulting data format, Address-Event Representation (AER)\cite{mahowald1992vlsi}, is in the form $\textless (x, y), t, p \textgreater$, where $(x, y)$ is the pixel location of a change, $t$ is the precise time of the change and $p$ is the polarity indicating if the light intensity change was brighter (positive event) or dimmer (negative event)i\cite{delbruck2010activity}. 
 % TODO really should find a AER specific paper for this
 This dramatically different data representation means new approaches to vision processing will be required to extract meaningful information from AER sensors\cite{akolkar2015can}. 
 
@@ -104,67 +104,83 @@ It was similarly found that the precise spike timings of events in event-based d
 %event-based corner detection\cite{clady2015asynchronous}
 
 
-\subsection{Biologically realistic representations}
+\subsection{Visual information representations}
+
+% The eye can process well
+The ease with which biological systems can process visual information suggests it should be a key percept in artificial agents, but it is not.
+% But uses funny data formats
+The challenges limiting artificial vision systems may be in part due to the fundamental differences between the biological equivilant in both recording and data format.
+% DVS is like the eye
+Neuromorphic vision sensors have started to emerge closing the gap between artificial systems and biology\cite{mahowald1992vlsi}.
+% and has similar data formats
+These sensors record and output data which much more closely resembles the retina\cite{akolkar2015can}. 
+% Could convert to Frames
+Although more biologically realistic, the data formats from these sensors are fundamentally different to frame-based representations prohibiting standard processing techniques. 
+Converting between events and frames can be as simple as collecting all events from a time period into a frame as in \cite{kogler2009bio, schraml2010dynamic} or involve more complex calcuations about the events usefulness\cite{mueggler2015lifetime}.
+Inversely, there has been work converting from frames back to realistic spike-train\cite{afshar2013ripple} showing this conversion is not a simple mapping but contains losses in conversion\cite{akolkar2015can}. 
+%   Not-bio but it works
+Accumulating events into frames works with current processing paradigms but departs from biology which is likely using precise neuron firings as representations\cite{akolkar2015can}.
+% If we want to process well we must learn to process data formats too
+To achieve biological system level performance is may be necessary to preserve additional qualities of the biological data format and processing. 
+% We have AER
+Perhaps the most biologically realistic format considered for processing is the AER format \cite{mahowald1992vlsi}.
+%   But this is limited in number algorithms
+This relatively new format has few algorithms that can fully leverage the structure, some worthy mentions include a high-speed pencil balancing robot \cite{conradt2009pencil}, a robotic goalie \cite{roboGoalie2013} and scene reconstruction with super-pixel resolution\cite{kim2008simultaneous}.
+%   Could use Spiking neural networks (but hard to train)
+% Temporal surface
+A middle ground between direct frame accumulation and AER formats is the use of a short term window in which events have some influence.
+Memory surfaces are present in the literature in forms such as gaussians approximating position \cite{conradt2009pencil}, queues of events \cite{ni2012asynchronous} or as this work will investigate, functions of temporal difference.
+
+
 % 
-Disucss how this is more like the eye and the advantages of this model of processing \cite{mahowald1992vlsi}
 
-Rumelhart's back prop might not actually be biologically realistic but effective in learning regardless \cite{Rumelhart1986}. \\
-Converts 2D images to more realistic spike trains \cite{afshar2013ripple}
-Discusses the biological realism of using spikes \cite{akolkar2015can}
-What does this paper say about representations maybe bio isn't always an answer \cite{fida2015pre}
+%Disucss how this is more like the eye and the advantages of this model of processing \cite{mahowald1992vlsi}
 
-\subsection{Temporally accumulated representations}  % 1 page
-What other work has been done with decayed representations and how does it affect/influence this project
-Temporal surfaces \cite{afshar2016investigation}
+%Interest in event-based processing and sensors stems from the analogies to biological vision and processing\cite{mahowald1992vlsi}. 
+%Necessarily vision sensors more like biological retinas must use  essence of neural processing data structures which closely resemble real .
+
+%Rumelhart's back prop might not actually be biologically realistic but effective in learning regardless \cite{Rumelhart1986}.
+%Discusses the biological realism of using spikes \cite{akolkar2015can}
+%What does this paper say about representations maybe bio isn't always an answer \cite{fida2015pre}
+
+%Temporal surfaces \cite{afshar2016investigation}
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  NEURAL NETWORKS   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Neural Networks}     % 1 page
+% Neural networks are loosely based on the brain
+% Impressive performance (state of art) in image classification
+% Many make a frame-based assumption, with exception of spiking
+%   Look at Oconnors good work
+
+
+
+
+
 Use in image processing recently
 Made popular by advents in learning agorithms **cite lecun**, learning rules  \cite{Rumelhart1986} and datasets ** cite datasets**
 
-\subsection{Neuron types}
-Different neurons have different properties ...
-Need for non-linear neurons
-
-\subsubsection{Perceptron}
-Brief history, successes and problems
-
-\subsubsection{Sigmoid}
-Improvements over perceptrons
-
-\subsubsection{ReLU}
-Improvements over Sigmoid
-
-\subsection{Learning rules}
-Learning representations by back--propagating errors\cite{Rumelhart1986}
-Interesting learning rules for SNNs \cite{Bichler} not exaimined here though.
-
-\subsubsection{Stochastic Gradient Descent (S.G.D.)}
-
-\subsubsection{Adam Optimiser}
-Adam: A Method for Stochastic Optimization \cite{kingma2014adam}
-
-\subsubsection{Backpropagation}
+% Mention:
+% Perceptions, sigmoidals, ReLUs, SGD, backprop
+%Learning representations by back--propagating errors\cite{Rumelhart1986}
+%Interesting learning rules for SNNs \cite{Bichler} not exaimined here though.
 
 
 \subsection{Shallow networks}  
+% Mention simple networks and what they can learn
 
-\subsubsection{Auto-Encoders}  % 1 page
-Who made these?
+%\subsubsection{Auto-Encoders}  % 1 page
+%Who made these?
 
 \subsubsection{Convolutional networks}
+% Use in image processing 
 
 \subsection{Deeper networks}   % 1 page
 ResNet etc. % TODO find resnet reference
 This was some deep network work \cite{pedroni2013neuromorphic}
 Oconor used deep networks \cite{OConnor2013}
-
-\subsection{Recurrent networks}  % 1 page
-Elman and his work\cite{elman1990}
-Also some work done by Sutskever and Hinton with recurrent boltzmann machines (might be the motion data? if not should quote that too)\cite{sutskever2009recurrent}
 
 \subsection{Spiking networks}    % 1 page
 O'Connors work on spiking deep belief networks \cite{OConnor2013}
