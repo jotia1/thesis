@@ -117,7 +117,7 @@ These sensors record and output data which much more closely resembles the retin
 % Could convert to Frames
 Although more biologically realistic, the data formats from these sensors are fundamentally different to frame-based representations prohibiting standard processing techniques. 
 Converting between events and frames can be as simple as collecting all events from a time period into a frame as in \cite{kogler2009bio, schraml2010dynamic} or involve more complex calcuations about the events usefulness\cite{mueggler2015lifetime}.
-Inversely, there has been work converting from frames back to realistic spike-train\cite{afshar2013ripple} showing this conversion is not a simple mapping but contains losses in conversion\cite{akolkar2015can}. 
+Inversely, there has been work converting from frames back to realistic spike-train\cite{afshar2013ripple} showing this conversion is not a simple mapping but contains losses\cite{akolkar2015can}. 
 %   Not-bio but it works
 Accumulating events into frames works with current processing paradigms but departs from biology which is likely using precise neuron firings as representations\cite{akolkar2015can}.
 % If we want to process well we must learn to process data formats too
@@ -152,73 +152,157 @@ Memory surfaces are present in the literature in forms such as gaussians approxi
 \section{Neural Networks}     % 1 page
 % Neural networks are loosely based on the brain
 Artificial neural networks have origins as software implementations of brain functions\cite{mcculloch1943logical}.
-Several seminal breakthroughs, noteable being backpropagation (popularised by \cite{Rumelhart1986}), convolutional neural networks \cite{lecun1998gradient} and more recently deep learning \cite{schmidhuber2015deep} have made neural networks a powerful tool in many learning tasks. 
+Several seminal breakthroughs, notably backpropagation (popularised by \cite{Rumelhart1986}), convolutional neural networks \cite{lecun1998gradient} and more recently deep learning \cite{schmidhuber2015deep} have made neural networks a powerful tool in many learning tasks. 
 % Impressive performance (state of art) in image classification
 In particular neural networks have become the state-of-the-art in many image recognition and classification tasks \cite{krizhevsky2012imagenet, szegedy2015going}.
 
 % Composed of layers of processing units (neurons)
-Neural networks are made up of many processing units each which does a small computation and produces output. 
+Artificial Neural networks are made up of many processing units (neurons) each which does a small computation and produces output. 
 % Type and function of units affects network dynamics
-The function each individual processing unit (sometimes also called neurons) computes can have a significant affect on the network performance. 
+The function that each individual processing unit computes can have a significant affect on the network performance (measured by a loss function). 
 %   perceptron
-The first, and perhaps simplest, processing unit is the perceptron which computes a binary classification based on a weighted sum of inputs inputs. 
+The first, and perhaps simplest, processing unit is the perceptron which computes a binary classification based on whether a weighted sum of inputs excedes a threshold.
+Perceptrons represent a simple base line from which to compare other unit activation functions.
+Learning with a binary output can be troublesome and perceptrons can be augmented to accept real valued input and give real valued output.
+These augmentations means the units will compute a linear function of the input.
 %   Sigmoid
+%More complex, non-linear, functions may be necessary in a le
+Many challenging tasks cannot be solved using a linear transformation of the input leading to more complex, non-linear, activation functions being used.
+In particular sigmoid (along with other bounded, nonconstant) activation functions have been shown to be universal approximatiors\cite{hornik1991approximation}.
 %   ReLU
+More recently Rectified Linear Units (ReLU) have become a popular non-linear unit\cite{lecun2015deep} for the faster training times and biological realism compared to sigmoid units \cite{glorot2011deep}.
 %   More complex LSTM units exist but not used
+Even more complex units with special properties such as memory in Long Short Term Memory units \cite{hochreiter1997long} could be used to keep a state in the network. 
 
 % Specifying weights impossible so we use back prop and SGD to refine weights
-Adjusting internal parameters of the network cause it to compute different functions on the input, its performance can then be evaluated according to some loss function. 
+%Adjusting internal parameters of the network cause it to compute different functions on the input, its performance can then be evaluated according to some loss function. 
+A network simply computes some function on input producing output, for the network to solve a task the weights of each unit need to be set appropriately.
+Setting these weights using human experts would not be possible due to complexity and number of units.
+Instead learning rules can be used to adjust the weights in the network based on the networks performance on training examples (input and output pairs). 
 % Loss functions play a big role
-% Correct weight initialisation also
+The network's performance on any given training example is measured by a loss function which the learning rule aims to minimise. 
+A widely used learning rule is Stochastic Gradient Descent (S.G.D.) which adjust weights based on computing the steepest gradient using the backpropogation algorithm\cite{Rumelhart1986}.
 
-
-
-% Mention:
-% Perceptions, sigmoidals, ReLUs, SGD, backprop
-%Learning representations by back--propagating errors\cite{Rumelhart1986}
 
 \subsubsection{Autoencoders}
 % What they do and how they work to clean data/form representations
+Autoencoders are typically feed forward neural networks tasked with finding efficient data codings\cite{hinton1994autoencoders}.
+A simple structure entails a single hidden layer which converts an input into a compressed code.
+The activations of the hidden layer can then be converted back into a representation of the input through the weights of the output layer.  
+That is, the input and output are identical so the network must learn to encode the dataset with the units in it's hidden layer. 
+These networks are also useful for denoising datasets and dimensionality reduction\cite{hinton2006reducing}.
 
 
 \subsubsection{Convolutional networks}
 % Use in image processing 
+Loosely analogous to receptive fields found in mammalian visual systems \cite{hubel1962receptive, hubel1968receptive}, units in convolutional nerual networks can focus on small spatial regions of the input for specific features. 
+In standard networks weights must be specialised to extract a particular feature from a given location in an image.
+If the weights have specialise and the input undergoes a spatial translation the weights will no longer be able to effeciently extract the feature.
+Convolutional networks develop specialised visual feature detectors and use them repeatedly in a grid like pattern across the input to extract information\cite{lecun1998gradient}. 
+This translational invariance means convolutional networks can create more feature detectors for the same number of weights as a standard network.
+Using feature detectors in this way allows networks to ignore parts of the input while focusing on the current area. 
+%Networks are also able to ignore background noise in an input and 
+%By using the same feature detector at different locations on the same input commonly occuring features can be extracted from different spatial locations without the need for repeated weights 
 
-\subsection{Deeper networks}   % 1 page
-ResNet etc. % TODO find resnet reference
-ImageNet etc.
-This was some deep network work \cite{pedroni2013neuromorphic}
-Oconor used deep networks \cite{OConnor2013}
+%\subsection{Deeper networks}   % 1 page
+%ResNet etc. % TODO find resnet reference
+%ImageNet etc.
+%This was some deep network work \cite{pedroni2013neuromorphic}
+%Oconor used deep networks \cite{OConnor2013}
 
-\subsection{Spiking networks}    % 1 page
-O'Connors work on spiking deep belief networks \cite{OConnor2013}
-Using echo state networks to extract spatiotemporal features from event-based \cite{lagorce2015spatiotemporal}
-Move to spiking networks accompanied by converstions from 2D to 1D temporal trains \cite{afshar2013ripple}
-Discussion on 2D images and converting to spikes vs just using spiking sensor and the information preserved \cite{akolkar2015can}
-Paper on spiking networks for vision tasks, usese the DVS and compares to convNets \cite{martin2015spiking}
-Feeding a DVS output directly into spiking NN \cite{Bichler}
+%\subsection{Spiking networks}    % 1 page
+%O'Connors work on spiking deep belief networks \cite{OConnor2013}
+%Using echo state networks to extract spatiotemporal features from event-based \cite{lagorce2015spatiotemporal}
+%Move to spiking networks accompanied by converstions from 2D to 1D temporal trains \cite{afshar2013ripple}
+%Discussion on 2D images and converting to spikes vs just using spiking sensor and the information preserved \cite{akolkar2015can}
+%Paper on spiking networks for vision tasks, usese the DVS and compares to convNets \cite{martin2015spiking}
+%Feeding a DVS output directly into spiking NN \cite{Bichler}
 %Interesting learning rules for SNNs \cite{Bichler} not exaimined here though.
 
 \subsection{Software frameworks}   % 1 page
 Many software frameworks exist for implementing and running neural networks including; Caffe\cite{jia2014caffe}, Theano\cite{bastien2012theano}, Torch7\cite{collobert2011torch7} and Tensorflow\cite{abaditensorflow} plus many more.
-Each package 
+
+\textbf{Caffe} is a deep learning framework created by the Berkeley Vision and Learning Center and released with a BSD 2-Clause license.
+Caffe has GPU support, API's for the command line, python and matlab while underlying code base consists of C++ and CUDA.
+Network structure and parameters are specified in Google's Protobuf format as Directed Aycyclic Graphs.
+
+\textbf{Theano} is an python based computation library for mathmatical expressions that works closely with Numpy multi-dimensional arrays.
+Networks are defined in python as computation graphs which can then implicitly use underlying C implementations or GPU routines for calculations. 
+Theano is relased with a BSD 3-Clause license.
+
+\textbf{Torch7} is a compution framework with a focus on GPU computation.
+Calculations are specified in the LuaJIT programming language and calculations are done with underlying C and CUDA implementations. 
+Torch7 is released under the GNU Public License.
+
+\textbf{Tensorflow} is Google's numerical computation library with a focus on support for many different systems including CPU, GPU, mobile and embedded systems.
+Computation graphs are specified in Python while calculations are done with underlying C and CUDA implementations. 
+
+All of these frameworks have the required functionality for this project.
+Theano and Torch7 have been competing for faster processing times \cite{bergstra2010theano, collobert2011torch7, bastien2012theano} in recent years securing them both processing times better than Tensorflow or Caffe\cite{bahrampour2015comparative}.
+However as only shallow neural networks will be used optimised performance is not strictly needed.
+Caffe requires a complex installation of many components/libraries and uses a less intuative model specification (protobuf). 
+Torch7 also uses the less standard LuaJIT for model specification.
+Tensorflow was indentified as the slowest but also as the most flexible framework.
 
 \section{Neural Networks with event-based data}
-What is the standard approach, what have people tried and what is lacking. \cite{OConnor2013}  ** TOBI CAR WITH CONVOLUTIONS ** ** UWS temporal surfaces paper if published now ** ** AMYs work ** (who does amy reference?)
-Using event-based data and feeding it into a network (Saeed) \cite{afshar2016investigation}
+With some exceptions, neural networks map a set of inputs to a set of outputs.
+% Doesnt mesh well with DVS data
+This paradigm does not mesh well with event-based data which has no natural segments to use as inputs as frame-based vision has frames. 
+% Need different ways to incorporate the data 
+Many different appraoches have been taken to convert event-based data into a format the network can accept but perhaps the most natural is the use of spiking neural networks. 
+% We could try spiking nets naturally these make sense, oconnor, spiking convs and Amy
+Unlike frame-based neural networks spiking neural networks use the timing of input to transfer information \cite{akolkar2015can}.
+A set of spikes is called a spike train and spiking neural networks can learn to differentiate between individual or collections of spike trains. 
+% Contrastive divergence (spiking version as well)
+Despite this suitability for event-based data spiking neural networks are harder to train and require different learning rules \cite{walter2015neuromorphic, henderson2015spike}.
+Some notable work converted a fully trained, frame-based, deep belief network into an event-based spiking neural network with less than 1\% drop in performance\cite{OConnor2013}. 
+% Saeed convert from spiking to feature maps
+%Using event-based data and feeding it into a network (Saeed) \cite{afshar2016investigation}
+Alternatively spiking networks have been used as just a part of the processing to extract meaningful features before using a standard network for classification\cite{afshar2016investigation}.
+Work has also been done trying to convert frame-based techniques like contrastive divergence \cite{Neftci2014} or backpropagation (SpikeProp) \cite{bohte2002error}.
+Specific spike-based algorithms for extracting features from event-based sensors also exist \cite{Bichler} but are much less common than frame-based methods. 
+
 
 \subsection{Benchmark datasets}
-Some benchmark datasets have been given \cite{Gibson2014} and **OTTHER** but represent complex strucutre in the real world.
-Creates own plane dataset \cite{afshar2016investigation}
-Creates own letter (on rolling board) and DMD projector dataset \cite{akolkar2015can}
-Newest dataset of motion and visual navigation, emphasises the need for dataset \cite{barranco2016dataset}
+To fairly compare models it is necessary for the community to have standardised datasets\cite{barranco2016dataset, Gibson2014, tan2015benchmarking}.
+Many datasets exist for frame-based models from well formatted and normalised datasets (such as MNIST\cite{lecun1998gradient}) to large complex datasets (such as ImageNet\cite{deng2009imagenet}).
+In an attempt to compare event-based processing models to frame-based models some have used DVS recordings of the classic MNIST dataset, being either with stationary images and a moving sensor \cite{OConnor2013, orchard2015converting} or with a sationary sensor and moving images on a screen \cite{serrano2015poker, akolkar2015can}.
+Notably different to others is the secondary digit dataset in \cite{akolkar2015can} in which a DVS performs vertical saccades while recording digits on a rotating cylinder.
+However, in trying to be comparable with frame-based models these datasets fail to realise the full potential of the DVS to capture complex spatio-temporal surfaces because the simulus is inherently two dimensional.
+Newer benchmark datasets have addressed this problem offering a wide range of stimuli, in particular complex real world self motion for a mobile robot \cite{Gibson2014, barranco2016dataset}.
+There is still a deficency of extremely simple datasets around which strong foundations can be formed to allow a deeper understanding of network dynamics.
+Further as capturing movement is a key advantage of the DVS over frame-based sensors this should be emphasised in datasets.
+
+
+%Creates own plane dataset \cite{afshar2016investigation}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    SUMMARY    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Literature summary}      % 1 page
-Revisit each section in a sentance or two and link them all together.
+%Revisit each section in a sentance or two and link them all together.
+Asynchronous
+% Asynchronous vision sensors, summarise pos, neg and diff and motive why we look at them
+% This work will only use the DVS
+% Standard vision processing has come a long way and has good techniques but bad assumptions
+% Event-based data is dramatically different
+    % Doesnt work with standard vision techniques
+% We can try and convert from DVS to frames but need to be careful 
+% Neurel networks are awesome at processing so lets use those, 
+    % We should try different activations
+    % should try different structures, convolution for its bio inspired ness
+    % We might also be able to use networks to clearn the data (autoenc)
+    % Several software frameworks examined, gonna use tf 
+% A sensible apparoch to evnet-based is spiking nets but lets use frame-based anyways
+% But before we get started lets see what kind of datasets already exist for us to use...
 
-Evolving probabilistic spiking neural networks for spatio-temporal pattern recognition: A preliminary study on moving object recognition \cite{kasabov2011evolving}
+
+
+
+
+
+
+
+%Evolving probabilistic spiking neural networks for spatio-temporal pattern recognition: A preliminary study on moving object recognition \cite{kasabov2011evolving}
 
 Neuromorphic adaptations of restricted boltzmann machines and deep belief networks, These guys (in particular Pedroni) had something stuff \cite{pedroni2013neuromorphic}
 

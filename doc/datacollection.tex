@@ -2,14 +2,20 @@
 
 %\section{The need for a dataset}
 \section{Aims of a dataset}
-To fairly compare models it is necessary for the community to have standardised datasets\cite{barranco2016dataset, Gibson2014, tan2015benchmarking}.
-Many datasets exist for frame-based models from well formatted and normalised datasets (such as MNIST\cite{lecun1998gradient}) to large complex datasets (such as ImageNet\cite{deng2009imagenet}).
-In an attempt to compare event-based processing models to time-stepped models some have used DVS recordings of the classic MNIST dataset, being either with stationary images and a moving sensor \cite{OConnor2013, orchard2015converting} or with a sationary sensor and moving images on a screen \cite{serrano2015poker, akolkar2015can}.
-Notably different to others is the secondary digit dataset in \cite{akolkar2015can} in which a DVS performs vertical saccades while recording digits on a rotating cylinder.
-However in trying to be comparable with frame-based models these datasets fail to encompass the full potential of the DVS to capture complex spatio-temporal surfaces because the simulus is inherently two dimensional.
-Newer benchmark datasets have addressed this problem offering a wide range of stimuli, in particular complex real world self motion for a mobile robot \cite{Gibson2014, barranco2016dataset}. 
-Unfortunately there is still a deficency of extremely simple datasets around which strong mathmatical foundations can be laid to allow a deep understanding of network dynamics.
-Further as capturing movement is a key advantage of the DVS over frame-based sensors this should be emphasised in the dataset. 
+The aims of collecting a dataset are to present a new set of recordings of a simple stimulus around which careful indepth analysis is possible. 
+The dataset should emphasise the qualities the DVS has which standard cameras do not. 
+In particular, motion information should be sought as datasets of inherently two dimensional stimuli (e.g. characters) already exist and make less sense as a processing task for the DVS.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%       MOVED TO LIT REVIEW      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%To fairly compare models it is necessary for the community to have standardised datasets\cite{barranco2016dataset, Gibson2014, tan2015benchmarking}.
+%Many datasets exist for frame-based models from well formatted and normalised datasets (such as MNIST\cite{lecun1998gradient}) to large complex datasets (such as ImageNet\cite{deng2009imagenet}).
+%In an attempt to compare event-based processing models to time-stepped models some have used DVS recordings of the classic MNIST dataset, being either with stationary images and a moving sensor \cite{OConnor2013, orchard2015converting} or with a sationary sensor and moving images on a screen \cite{serrano2015poker, akolkar2015can}.
+%Notably different to others is the secondary digit dataset in \cite{akolkar2015can} in which a DVS performs vertical saccades while recording digits on a rotating cylinder.
+%However in trying to be comparable with frame-based models these datasets fail to encompass the full potential of the DVS to capture complex spatio-temporal surfaces because the simulus is inherently two dimensional.
+%Newer benchmark datasets have addressed this problem offering a wide range of stimuli, in particular complex real world self motion for a mobile robot \cite{Gibson2014, barranco2016dataset}. 
+%Unfortunately there is still a deficency of extremely simple datasets around which strong mathmatical foundations can be laid to allow a deep understanding of network dynamics.
+%Further as capturing movement is a key advantage of the DVS over frame-based sensors this should be emphasised in the dataset. 
 %This work offers such a dataset consisting of dots moving linearly with constant velocity. 
 
 \section{Requirements and details}
