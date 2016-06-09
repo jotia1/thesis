@@ -280,37 +280,35 @@ Further as capturing movement is a key advantage of the DVS over frame-based sen
 
 \section{Literature summary}      % 1 page
 %Revisit each section in a sentance or two and link them all together.
-Asynchronous
 % Asynchronous vision sensors, summarise pos, neg and diff and motive why we look at them
+Asynchronous vision sensors offer a new approach to processing vision information. 
+By capturing only the changes in light intensity the output becomes sparse and temporally rich.
 % This work will only use the DVS
+The Dynamic Vision Sensor (DVS) will be used as the source of event-based data for processing in this work.
 % Standard vision processing has come a long way and has good techniques but bad assumptions
+This data will be processed using traditional machine learning techniques, which have produced impressive results for frame-based visual information. 
 % Event-based data is dramatically different
+However these techniques make an implcit assumption that vision infomration is discretised into 2D frames which means they are not compatible with event-based data.
     % Doesnt work with standard vision techniques
 % We can try and convert from DVS to frames but need to be careful 
+In an attempt to leverage the existing vision processing literature the DVS output must be converted to a compatible format. 
+The new format should preserve as much of the encoded temporal information as possible.
+
 % Neurel networks are awesome at processing so lets use those, 
+Various types of neural networks will be used to compare how changing parameters affects what can be learnt.
     % We should try different activations
+Different neuron activations, namely linear, sigmoid and ReLU, may cause the network to learn differently if non-linearity is necessary. 
     % should try different structures, convolution for its bio inspired ness
+More drastic structural changes like using convolutional neural networks may also be able to extract meaningful features using specialised feature detectors. 
     % We might also be able to use networks to clearn the data (autoenc)
+Autoencoder networks could also be used to analyse encodings learnt in the hidden layers of networks or to denoise the dataset.
     % Several software frameworks examined, gonna use tf 
+Implementation of these networks will be done in Tensorflow because of the flexibility of the framework, the slowly performance will not be a problem for the shallow networks used.
 % A sensible apparoch to evnet-based is spiking nets but lets use frame-based anyways
+Spiking neural networks will not be used in this project but form a logical next step for investigation of the representation power of event-based data. 
 % But before we get started lets see what kind of datasets already exist for us to use...
+However, to compare networks fairly a standard task and dataset must be established.
+Current public dataset are replications of frame-based datasets or complex real world datasets, a simpler task needs to be established so network performance and dynamics can be carefully considered. 
 
 
 
-
-
-
-
-
-%Evolving probabilistic spiking neural networks for spatio-temporal pattern recognition: A preliminary study on moving object recognition \cite{kasabov2011evolving}
-
-Neuromorphic adaptations of restricted boltzmann machines and deep belief networks, These guys (in particular Pedroni) had something stuff \cite{pedroni2013neuromorphic}
-
-
-Double check the use of this paper \cite{gil2014active}
-
-How does this paper fit? applications? what are they doing? temporal surfaces maybe? \cite{davide2014high}
-
-again high speed object tracking (diff authors) \cite{saner2014high} 
-
-More somewhat unrelated, must just use about the methods of processing \cite{mueggler2015continuous}
