@@ -80,9 +80,15 @@
 % By default, frontmatter has Roman page-numbering (i,ii,...).
 
 \begin{titlepage}
+\vspace*{3mm}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.85\textwidth]{UQlogo.png}
+\end{figure}
+
 \renewcommand{\baselinestretch}{1.0}
 \begin{center}
-\vspace*{35mm}
+\vspace*{15mm}
 \Huge\bf
 		Evaluating frame-based \\
         networks with temporal surfaces \\
@@ -109,9 +115,9 @@
 \cleardoublepage
 
 \begin{flushright}
-	ADDRESS LINE 1\\
-	ADDRESS LINE 2\\
-	Tel.\ (07) nnnn nnnn\\
+	41 The Grass Country Rd\\
+	Eubenangee, QLD, 4860\\
+	Tel.\ (07) 4063 3945\\
 	\medskip
 	\today
 \end{flushright}
@@ -133,7 +139,7 @@ Electrical and Computer Engineering,
 Software Engineering,
 Mechatronic Engineering,
 I present the
-following thesis entitled ``Analysing time-stepped neural networks with temporally rich frame-based data''.  This work was performed under the supervision of Prof. Janet Wiles.
+following thesis entitled ``Evaluating frame-based networks with temporal surfaces''.  This work was performed under the supervision of Prof. Janet Wiles.
 
 I declare that the work submitted in this thesis is my own, except as
 acknowledged in the text and footnotes, and has not been previously
@@ -150,14 +156,6 @@ institution.
 
 \cleardoublepage
 
-% Dedication (if you want it):
-\vspace*{70mm}
-\begin{center}
-\renewcommand{\baselinestretch}{1.0}
-\sl
-	For my parents, whose support has been unwaivering.
-\end{center}
-
 \chapter{Acknowledgments}
 
 % Janet
@@ -167,7 +165,7 @@ Her passion and ideas have been inspiring and illuminating.
 I would also like to thank the people with whom I have shared the lab with over the past three years; including the many Summer/Winter students, RHD students and in particular; Amy, Brian, Scott, Jon and Wilson.
 % Family
 %I would not be here without the unending support and encouragement from my parents
-For reading drafts and endless encouragement I would like to acknowledge my parents who have always supported me. 
+For reading drafts and endless encouragement I would like to acknowledge and thank my parents. 
 
 
 
@@ -214,7 +212,6 @@ By retaining a time based accumulation in training data, frame-based networks ar
 \include{attentional}       % 8
 %\include{networks}       
 \include{discussion}        
-%\include{conclusions}       % 4 
 
 
 
@@ -242,6 +239,7 @@ By retaining a time based accumulation in training data, frame-based networks ar
 % \include appendix chapters here.
 
 \include{evolution}
+\include{code}       
 %\include{tbnets}
 
 \cleardoublepage

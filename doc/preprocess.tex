@@ -41,10 +41,7 @@ Many questions still remain to be explored such as what functions should be used
 %Include some resulting images and discussion about each image as to why it is good or bad \\
 
 Two accumulation functions are considered in this work, the first and simplest being linear. 
-It can be characterised by equation \ref{eq:linearDecay}, in which the gradient (k) directly affects how much of the past (or future) is considered. 
-Here $\Delta t$ is the temporal difference between the closest event for a given pixel and the distinguished point in time. 
-
-% TODO why is this 1/k??
+At each pixel, for linear accumulation $f(\Delta t)$ over a period of time, $\Delta t$, is defined as:
 
 \begin{equation}
  \label{eq:linearDecay}
@@ -55,18 +52,20 @@ Here $\Delta t$ is the temporal difference between the closest event for a given
    \end{cases}
 \end{equation}
 
+where $k$ directly affects how much of the past (or future) is considered by adjusting the gradient.
 An exponential function was also considered as a way to focus on only the most recent history.
-Characterised by equation \ref{eq:expDecay} the length of history considered is dependent on the parameter k used. 
+%Characterised by equation \ref{eq:expDecay} the length of history considered is dependent on the parameter k used. 
+For each pixel, the exponential accumulation $f(\Delta t)$ over a period of time, $\Delta t$, is defined as:
 
 \begin{equation}
  \label{eq:expDecay}
     f(\Delta t) = exp\left(\frac{-\Delta t}{k}\right) \\
 \end{equation}
 
-
+where $k$ affects the rate of decay. 
 %To generate network inputs and outputs distinguished times must be selected and decayed around.
 %Each event in the event-stream could be used as a distinguished point and an input/output pair decayed around it.
-To generate network input and output images distinguished events must be chosen to be accumulated around.
+To generate network training examples distinguished events must be chosen to be accumulated around.
 Every event in the event-stream could be chosen however this would generate a lot of redundant data, as many similar events make up any given line.
 Rather an event was selected at uniform sequential intervals to be decayed around, that is, every 150th event would be decayed around. 
 Additionally, after the accumulation into frames the order of training example pairs was randomised and split in 70\% training data, 20\% validation data and 10\% test data. 
@@ -74,14 +73,15 @@ Additionally, after the accumulation into frames the order of training example p
 
 \subsection{Parameter influence}
 %Show some example parameters and how they affect the data \\
-A \textit{k} value seemed problem dependent, interesting values to check first were those corresponding to 1, 16, 33 and 100 (\ms). These values were chosen for similarity to conventional frame-based cameras, 16 and 33\ms corresponding to 60 and 30 frames-per-second cameras respectively. 
-The values 1 and 100 \ms were chosen to give some idea of how smaller and larger time scales affected network performance. 
-A \textit{k} value is considered to be corresponding to a timeslice when at that temporal distance from the distinguished event the accumulation function gives an output of 0.5.
-This is a somewhat arbitrary definition as it may instead make more sense to define a corresponding timeslice to be when the accumulation function gives zero (or near zero). 
-As the exponential function will only ever approach zero the cut off point will be an arbitrary decision regardless.
-In practice using 0.5 was found to perform well as an arbitrary point and meant k values between linear and exponential are comparable.
+Optimal \textit{k} values will be problem dependent, interesting values to check first were those corresponding to 1, 16, 33, 100 and 165 (\ms). 
+These values were chosen for similarity to conventional frame-based cameras, 16 and 33\ms corresponding to 60 and 30 frames-per-second cameras respectively. 
+The values 1, 100 and 165 \ms were chosen to give some idea of how smaller and larger time scales affected network performance. 
+A \textit{k} value is considered to be corresponding to a timeslice when at that temporal distance from the distinguished event the accumulation function, using that \textit{k} value, gives an output of 0.5.
+This is an arbitrary definition and it may instead make more sense to define a corresponding timeslice to be when the accumulation function gives zero (or near zero). 
+As the exponential function will only ever approach zero, the cut off point will be an arbitrary decision regardless.
+In practice using 0.5 was found to perform well as an arbitrary point and meant \textit{k} values between linear and exponential are comparable.
 %TODO include a graphic here demonstrating what corresponding means.
-For the linear accumulation function it can be derived that the k values that should be used are given by;
+Rearranging the linear accumulation function (when set equal to 0.5) it can be derived that the k values that should be used are given by;
 
 \begin{equation}
     \label{kvalues4linear}
@@ -110,7 +110,7 @@ Which when combined result in table \ref{table:kvalues} outlining the choices of
 \label{table:kvalues}
 \end{table}
 
-It is worth noting these values are in \ms while the DVS recordings are in \us so the actual \textit{k} values used are 1000 times larger. 
+It is worth noting these values are in \si\milli s while the DVS recordings are in \si\micro s so the actual \textit{k} values used are 1000 times larger. 
 
 
 
@@ -119,7 +119,7 @@ It is worth noting these values are in \ms while the DVS recordings are in \us s
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{varying_accumulation.png}
-    \caption{Varying accumulation}
+    \caption{Varying accumulation training example pairs}
     \label{fig:varyingaccum}
 \end{figure}
 
@@ -144,10 +144,11 @@ This is in some ways analogous to presenting several sequential frames to a recu
 \section{Discussion}
 The representation of time will have a profound effect on the performance of a network when dealing with data that is rich in temporal information. 
 Accumulating events into frames sacrifices some of that temporal information but will allow the use of state-of-the-art learning techniques which are typically frame-based. 
-Two different functions (exponential and linear) have been used to accumulate events around a distinguished point to generate training examples for model training. 
+Two different functions (exponential and linear) have been used to accumulate events around distinguished points to generate training examples. 
 Several parameter values were decided upon to give some resemblence to standard frame-based camera recordings rates (being 30 and 60 frames-per-second).
-%TODO Rewrite the sentance below
-Some values for k result in training examples which are informative to a human visual system and some which are not, which work for the networks examined may likely be a different set. 
+Some of the results from the processing appear to be informative for a human visual system and some are not (1 \si\milli s).
+Which time periods are informative for learning systems may be different to the human informative set.
+%Some values for k result in training examples which are informative to a human visual system and some which are not, which work for the networks examined may likely be a different set. 
 The final accumulations were separated into a 70/20/10\% split of training/validation/test datasets for use in training networks later. 
 
  

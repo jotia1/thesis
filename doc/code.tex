@@ -1,0 +1,15 @@
+\chapter{Software, datasets and implementation comments}
+
+\section{Software repository}
+All software produced for and metioned in this thesis can be accessed from GitHub using the link; \hyperref[https://github.com/jotia1/thesis]{https://github.com/jotia1/thesis}.
+
+\section{Dataset and results access}
+The original DVS recordings and ground truth logs for 8AD, AAD and multi-dot total more than 5 Gb and can be accessed at \hyperref[https://goo.gl/PT1y88]{https://goo.gl/PT1y88}.
+All network models with tensorboard logs, sample images and pre-processed data took over 100 Gb of hard drive space.
+Representative models (saved in Tensorflow's format) of the working networks are available from the same link as the datasets.
+
+\section{Implementation comments}
+% Actual results will be deleted
+Tensorflow network implementations were written in Python version 3.5.1 and run with Tensorflow version 0.7 installed on The University of Queensland's Goliath computing cluster. 
+Tesla K80 GPUs were used whilst training models. Testing was done on a Dell XPS 13 inch laptop.
+Pre-processing and analysis was done in a combination of Python and Matlab (R2015b).

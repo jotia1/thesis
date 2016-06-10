@@ -35,17 +35,14 @@ Starting the biases at zero was chosen so each unit would consider its inputs ba
 \label{table:net1def}
 \end{table}
 
-% TODO discuss S.S.D loss function
-
 %Where each input/output corresponds to a single pixel in the decayed past/future.
 Motivation to use one or two units in the hidden layer was derived from the linear nature of the dataset and the thought that the network may be able to model the data with just the gradient of the input.
 The network was tested with both linear and non-linear activations to see if a non-linear layer was necesary.
 
 \subsection{Results}
-% TODO include some images from Net1 with input, label, output
 The performance of the network on a validation set showed an initially rapid decrease followed by very steady decrease suggesting the network has learnt the relatively simple task.
-% TODO show sample outputs
 However sample outputs from the network were all exactly the same regardless of the input and seemed to be a somewhat random pattern of activations.
+The reason for this can be seen in figure \ref{fig:pilotInvariance} in which the hidden layer output (hidden) goes to zero and the network output (logits) can then specialise on the labels.
 
 \begin{figure}[h]
     \centering
@@ -111,17 +108,14 @@ Essentially this meant penalising the network heavily for failing to predict the
 
 \subsubsection{Weighted prediction penalty}
 The weighting of penalty should be proportional to the activity in the input, such that if the signal is weak then any mispredictions should be penalised heavily compared with a strong signal where a few mistakes make less difference. 
-% TODO Tidy up this maths and maybe take it out of line
 The activity of a given image is defined as the sum of the activity of each pixel within the image.
 If the activity is given by some variable $g$ then the penalty weighting for mispredicting a pixel as \textit{off} when it should be \textit{on} should be $(16384 - g) / 16384$. 
 Similarly, a misprediction of a pixel as \textit{on} when it should be \textit{off} should only be $g / 16384$. 
 In a system where neuron outputs were binary this would be all, however in the continuous output demmanded by a decayed representation inbetween values must be considered.
-% TODO Add in linear equation and reference below
 Interpolating linearly between these two points gives Equation \ref{eq:weightedPenalty} which can be used to calculate the loss weighting for a given pixel, $p$.
 Combining this weighting with the normal S.S.D. error function gives Equation \ref{eq:linearLoss} which describes the loss for each pixel. 
 %In a binary system this would simply be a matter of weighing each  equation used is given in *** Ref equation *** 
 
-% TODO Equation goes here
 \begin{equation}
     \label{eq:weightedPenalty}
     W(p) = \frac{16384 - 2g}{16384} p + \frac{g}{16384}
@@ -157,6 +151,7 @@ Such an experiment is in some ways analogous to the work done in chapter \ref{ch
 Alternatively if the network could ignore large sections of the input and just search in smaller patches it may be able to extract some useful information.
 This will be explored further in chapter \ref{ch:convolutions}. 
 
-% TODO Consider moving to final discussion
-The pilot study while unsuccessful in itself revealed interesting insight into the nature of the problem, primarily the signal to noise ratio and helped inform other network design decisions.
+The pilot study while unsuccessful in itself revealed interesting insight into the nature of the problem and in particular the signal-to-noise ratio.
+These insights influenced the project to explore networks that might be better suited to this data, in particular convolutional networks that find small features in an image. 
+%Primarily these insights were the signal to noise ratio and helped inform future project direction.
  

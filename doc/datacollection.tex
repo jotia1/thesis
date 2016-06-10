@@ -2,7 +2,7 @@
 
 %\section{The need for a dataset}
 \section{Aims of a dataset}
-The aims of collecting a dataset are to present a new set of recordings of a simple stimulus around which careful indepth analysis is possible. 
+The aims of collecting a dataset are to present a new labelled set of recordings of a simple stimulus around which careful indepth analysis is possible. 
 The dataset should emphasise the qualities the DVS has which standard cameras do not. 
 In particular, motion information should be sought as datasets of inherently two dimensional stimuli (e.g. characters) already exist and make less sense as a processing task for the DVS.
 
@@ -100,8 +100,8 @@ The non-continuous stimuli issue can likewise be alliviated by restricting the d
 
 The DVS's temporal resolution of \SI{15}{\micro\second} means it should be able to detect screen refresh rates (every \SI{16}{\milli\second} on a 60Hz screen). 
 It would be expected that every \SI{16}{\milli\second} there should be activity across the whole sensor for a short time period. 
-%TODO come back and fix, opened backets and not closed.
-This does not seem to be the case with the DVS; the same experiment run with the newer DAVIS sensor (with temporal resolution of \SI{3}{\micro\second} occasionally is able to capture the screen refresh rate but even this is not consistent as shown in figure \ref{fig:refreshFlashes}.
+This does not seem to be the case with the DVS; the newer DAVIS sensor (with temporal resolution of \SI{3}{\micro\second}) is occasionally able to capture the screen refresh rate. 
+However even with the DAVIS, capturing the refresh rateis not consistent as shown in figure \ref{fig:refreshFlashes}.
 
 
 \begin{figure}
@@ -172,17 +172,15 @@ This phenomena is not expected to reveal any significant insight related to this
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%          METHODOLOGY         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%TODO maybe this should just be a sub section since its so small, what else should go here?
 \section{Method}
 The datasets were collected automatically overnight by the python program dot\_gen. 
 The dot\_gen software was custom made to present the stimulus on screen while logging the ground truth and interfacing with the jAER software package over UDP to start and stop recordings. 
 The Tkinter software library was used for drawing the stimuli on screen. 
-Experiments were run overnight to avoid any disturbances of general laboratory use during work hours as well as to mitigate ambient light changes for different times of day. 
-A sample is defined as 1200 trials for a particular size and velocity pair for the dot.
+Experiments were setup as per figure \ref{fig:DVSdotgen} and were run overnight to avoid any disturbances of general laboratory use during work hours as well as to mitigate ambient light changes for different times of day. 
+In this work a sample is defined as 1200 trials for a particular size and velocity pair for the dot.
 On a given night either samples from the 8AD or AAD dataset were collected. 
-By recording all parameters on all nights the noise between parameter combinations (due to computer screens in the lab or other ambient light changes) should remain somewhat uniform.
+By recording all parameters on all nights the noise between parameter combinations (due to computer screens in the lab or other ambient light changes) should remain uniform.
 
-% TODO reference this figure somewhere
 \begin{figure}
     \centering
     \includegraphics[width=0.7\textwidth]{DVS_dotgen.jpg}
@@ -192,14 +190,12 @@ By recording all parameters on all nights the noise between parameter combinatio
 
 
 
-
-
-% TODO this section mentions meta-flashes, should check they are explained above
+% NOTE this section mentions meta-flashes, should check they are explained above
 %The final system consisted of a program called dot\_gen written in python which would display the dot moving along a trajectory with meta-flashes.
 %The dot\_gen software also had tools to automatically start and stop DVS recordings, adjust dot parameters (size and velocity) and help set up the DVS correctly. 
 %It would log the ground truth of the dots position to a CSV file in the format <x, y, time> every time the screen was updated.
 %The screen recorded from was a Dell U2414H Monitor with a refresh rate of 60Hz.
-% TODO Talk about the need for automation and overnight recordings
+% NOTE Talk about the need for automation and overnight recordings
 %Experiements were specified in the dot\_gen source code and were then run automatically overnight to avoid changes in ambient light.
 
 \section{Per-event labels}
@@ -217,11 +213,10 @@ While care was taken to ensure the DVS captured just the stimulus screen, no met
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%         FINAL SPECS          %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Discussion}
-% TODO Fill in placeholders below
-The final dataset submitted consists of ***EVENTS*** events from ***HOURS*** of recording split into ***NUMBER*** different files.
 %This work offers a new datset consisting of simple linear motion for training and comparing models.
+The datasets combine have over 24 hours of recordings and ground truths attached.
 This work is a step towards filling the gap in current literature for a simple labelled motion-based dataset. 
-Two main new datasets are presented featuring linear motion with constant velocity along 8 Angles or Arbitrary Angles.
+Two main new datasets are presented featuring linear motion with constant velocity along 8 Angles or Arbitrary Angles as well as two additional multi-dot datasets.
 These datasets fill the requirements of being simple, motion based, labelled and simple to collect automatically.
 Some concerns for data quality remain as to whether refresh rates are noticeable in the dataset and whether the slight transformations between DVS pixels and screen pixels will affect the per-event labelling accuracy.
 By embedding meta-flashes directly in the data some degree of calibration in the labels can be maintained along with the ground truth logs. 

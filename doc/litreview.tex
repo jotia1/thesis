@@ -19,7 +19,6 @@ Asynchronous vision sensors are well suited to environments requiring dynamic ra
 % How do they work
 In contrast to traditional vision systems which densely sample the world at discrete time intervals, AVSs follow a stimulus driven paradigm only recording changes in the environment, meaning redundant information in the scene (e.g. stationary items or backgrounds) are not captured.  
 The resulting data format, Address-Event Representation (AER)\cite{mahowald1992vlsi}, is in the form $\textless (x, y), t, p \textgreater$, where $(x, y)$ is the pixel location of a change, $t$ is the precise time of the change and $p$ is the polarity indicating if the light intensity change was brighter (positive event) or dimmer (negative event)i\cite{delbruck2010activity}. 
-% TODO really should find a AER specific paper for this
 This dramatically different data representation means new approaches to vision processing will be required to extract meaningful information from AER sensors\cite{akolkar2015can}. 
 
 % They why. What are the advantages and disadvantages
@@ -205,7 +204,6 @@ Using feature detectors in this way allows networks to ignore parts of the input
 %By using the same feature detector at different locations on the same input commonly occuring features can be extracted from different spatial locations without the need for repeated weights 
 
 %\subsection{Deeper networks}   % 1 page
-%ResNet etc. % TODO find resnet reference
 %ImageNet etc.
 %This was some deep network work \cite{pedroni2013neuromorphic}
 %Oconor used deep networks \cite{OConnor2013}
